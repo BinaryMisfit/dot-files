@@ -1,0 +1,26 @@
+[user]
+	name = Willie Roberts
+	email = diagoza@me.com
+[core]
+	excludesfile = /Users/wirob/.gitignore_global
+	editor = mvim -v
+	autocrlf = input
+[url "https://"]
+	insteadOf = git://
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
+[push]
+	default = simple
+[credential]
+	helper = osxkeychain
+[color]
+	ui = true
+[pull]
+	rebase = true
+[rerere]
+	enabled = true
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
