@@ -11,7 +11,6 @@ test -e "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" && source "${ZDOTDIR:-$HOME}/.zpre
 # Customize to your needs...
 # Build PATH
 test -e "/usr/local/bin/brew" && export PATH="/usr/local/sbin:$PATH" 
-test -e "/usr/local/opt" && export PATH="/usr/local/opt:$PATH"
 test -e "/usr/local/opt/sqlite/bin" && export PATH="/usr/local/opt/sqlite/bin:$PATH"
 test -e "$HOME/Library/Android/sdk/platform-tools/" && export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
 test -e "$HOME/.rvm/bin" && export PATH="$PATH:$HOME/.rvm/bin"
