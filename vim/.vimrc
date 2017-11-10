@@ -108,27 +108,11 @@ call vundle#begin()
 " Vundle Plugin Manager
 Plugin 'gmarik/Vundle.vim'
 
-" Rename current file
-Plugin 'Rename2'
-
-" Automatically create directory
-Plugin 'DataWraith/auto_mkdir'
+" Ayu Theme
+Plugin 'ayu-theme/ayu-vim'
 
 " Tmux config editor
 Plugin 'tmux-plugins/vim-tmux'
-
-" Syntastic Syntax Checking
-" Install: csslint, jsonlint, jshint, html5tidy, handlebars, jsbeautifier,
-" ruby-lint (Gem), pylint (Pip)
-Plugin 'scrooloose/syntastic'
-let g:syntastic_check_on_open=1
-let g:syntastic_enable_signs=1
-let g:syntastic_javascript_checkers = ["jshint"]
-let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-","<a> attribute \"href\" lacks value"]
-let g:syntastic_always_populate_loc_list=1
-
-" Theme Solarized
-Plugin 'altercation/vim-colors-solarized'
 
 " Surrounding Wrapper Support
 Plugin 'tpope/vim-surround'
@@ -136,20 +120,13 @@ Plugin 'tpope/vim-surround'
 " Tabular Alignment Support
 Plugin 'godlygeek/tabular'
 
-" JavaScript/HTML Indentation
-Plugin 'vim-scripts/JavaScript-Indent'
-
-" Handlebars/Mustage formatting
-Plugin 'mustache/vim-mustache-handlebars'
-
 " Git Gutter Info
 Plugin 'airblade/vim-gitgutter'
 
 " Status line plugin
 Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-let g:airline_theme = 'solarized'
-let g:airline_solarized_bg='light'
+let g:airline_theme = 'sol'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#syntastic#enabled = 1
@@ -166,7 +143,7 @@ filetype plugin indent on
 " Enable syntax highlighting
 syntax enable			
 
-"Custom Mappings
+" Custom Mappings
 " Remove Up/Down/Left/Right
 nnoremap <up> <nop>
 nnoremap <down> <nop>
@@ -179,14 +156,10 @@ autocmd Filetype gitcommit setlocal spell textwidth=72
 " Auto Change Directory
 autocmd BufEnter * silent! lcd %:p:h
 
-" Set Background
-set background=light
-
-" Enable 256 colors
-set t_Co=256
-
 " Set theme
-colorscheme solarized
+set termguicolors
+let ayucolor="light"
+colorscheme ayu
 
 " Set GUI font
-set guifont=Meslo\ LG\ L\ DZ\ Regular\ for\ Powerline:h12
+set guifont=Roboto\ Mono\ for\ Powerline:h12
