@@ -36,6 +36,7 @@ test -e "/usr/local/bin/brew" && export HOMEBREW_GITHUB_API_TOKEN="4c392dee7b077
 test -e "/usr/local/bin/mvim" && export EDITOR="mvim -v"
 test -e "/usr/local/bin/mvim" && export VISUAL="mvim -v"
 test -e "${HOME}/.nvm" && export NVM_DIR="${HOME}/.nvm"
+test -e "/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home" && export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home"
 
 # Export aliases
 test -e "/usr/local/bin/brew" && alias brew-update="brew update; brew upgrade; brew cleanup; brew doctor"
