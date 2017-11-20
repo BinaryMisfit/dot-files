@@ -41,6 +41,7 @@ test -e "/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home" && ex
 # Export aliases
 test -e "/usr/local/bin/brew" && alias brew-update="brew update; brew upgrade; brew cleanup; brew doctor"
 test -e "/usr/local/bin/mvim" && alias vi="mvim -v"
+test -e "/usr/local/bin/mvim" && alias vim="mvim -v"
 
 # Source additional scripts
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
