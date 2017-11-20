@@ -111,9 +111,6 @@ Plugin 'gmarik/Vundle.vim'
 " Ayu Theme
 Plugin 'ayu-theme/ayu-vim'
 
-" Tmux config editor
-Plugin 'tmux-plugins/vim-tmux'
-
 " Surrounding Wrapper Support
 Plugin 'tpope/vim-surround'
 
@@ -134,6 +131,9 @@ let g:airline#extensions#hunks#enabled = 1
 
 " Git Fugitive
 Plugin 'tpope/vim-fugitive'
+
+" Polyglot
+Plugin 'sheerun/vim-polyglot'
 
 call vundle#end()    
 
