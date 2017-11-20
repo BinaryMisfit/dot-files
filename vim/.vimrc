@@ -158,7 +158,7 @@ autocmd BufEnter * silent! lcd %:p:h
 
 " Set theme
 set termguicolors
-let ayucolor="light"
+let ayucolor="dark"
 colorscheme ayu
 
 " Set GUI font
