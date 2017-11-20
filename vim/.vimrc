@@ -157,6 +157,8 @@ autocmd Filetype gitcommit setlocal spell textwidth=72
 autocmd BufEnter * silent! lcd %:p:h
 
 " Set theme
+set t_8f=[38;2;%lu;%lu;%lum
+set t_8b=[48;2;%lu;%lu;%lum
 set termguicolors
 let ayucolor="dark"
 colorscheme ayu
