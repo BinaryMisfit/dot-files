@@ -1,3 +1,4 @@
 ssh/.ssh/id_*
 ssh/.ssh/known_hosts
 vim/.vim/*
+.DS_Store
