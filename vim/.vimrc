@@ -160,7 +160,7 @@ autocmd BufEnter * silent! lcd %:p:h
 set t_8f=[38;2;%lu;%lu;%lum
 set t_8b=[48;2;%lu;%lu;%lum
 set termguicolors
-let ayucolor="dark"
+let ayucolor="light"
 colorscheme ayu
 
 " Set GUI font
