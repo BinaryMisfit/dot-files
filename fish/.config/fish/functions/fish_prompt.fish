@@ -1,1 +1,1 @@
-/Users/wirob/.local/share/omf/themes/agnoster/fish_prompt.fish
+/Users/wirob/.local/share/omf/themes/bobthefish/fish_prompt.fish
