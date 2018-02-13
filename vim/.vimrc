@@ -1,6 +1,9 @@
 " Not compatible with legacy vi
 set nocompatible		
 
+" Set Shell
+set shell=/bin/bash
+
 " Switch of filetype handling
 filetype off
 
@@ -108,8 +111,8 @@ call vundle#begin()
 " Vundle Plugin Manager
 Plugin 'gmarik/Vundle.vim'
 
-" Ayu Theme
-Plugin 'ayu-theme/ayu-vim'
+" Themes
+Plugin 'kristijanhusak/vim-hybrid-material'
 
 " Surrounding Wrapper Support
 Plugin 'tpope/vim-surround'
@@ -157,9 +160,8 @@ autocmd Filetype gitcommit setlocal spell textwidth=72
 autocmd BufEnter * silent! lcd %:p:h
 
 " Set theme
-set t_8f=[38;2;%lu;%lu;%lum
-set t_8b=[48;2;%lu;%lu;%lum
-set termguicolors
+set background=light
+colorscheme hybrid_material
 
 " Set GUI font
-set guifont=Roboto\ Mono\ for\ Powerline:h12
+set guifont=Fira\ Mono\ for\ Powerline:h12
