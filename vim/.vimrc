@@ -125,7 +125,7 @@ Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 let g:airline_theme = 'sol'
 let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 0
 let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#hunks#enabled = 1
 
@@ -160,8 +160,6 @@ autocmd BufEnter * silent! lcd %:p:h
 set t_8f=[38;2;%lu;%lu;%lum
 set t_8b=[48;2;%lu;%lu;%lum
 set termguicolors
-let ayucolor="light"
-colorscheme ayu
 
 " Set GUI font
 set guifont=Roboto\ Mono\ for\ Powerline:h12
