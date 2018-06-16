@@ -1,0 +1,8 @@
+autopep8
+futures
+pycodestyle
+yapf
+pybeautifier
+isort
+python-dateutil
+lxml
