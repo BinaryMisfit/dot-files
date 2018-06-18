@@ -111,9 +111,6 @@ call vundle#begin()
 " Vundle Plugin Manager
 Plugin 'gmarik/Vundle.vim'
 
-" Themes
-Plugin 'kristijanhusak/vim-hybrid-material'
-
 " Surrounding Wrapper Support
 Plugin 'tpope/vim-surround'
 
@@ -126,7 +123,6 @@ Plugin 'airblade/vim-gitgutter'
 " Status line plugin
 Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-let g:airline_theme = 'sol'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 0
 let g:airline#extensions#syntastic#enabled = 1
@@ -160,8 +156,7 @@ autocmd Filetype gitcommit setlocal spell textwidth=72
 autocmd BufEnter * silent! lcd %:p:h
 
 " Set theme
-set background=light
-colorscheme hybrid_material
+set background=dark
 
 " Set GUI font
 set guifont=Fira\ Mono\ for\ Powerline:h12
