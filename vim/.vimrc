@@ -58,9 +58,6 @@ set noswapfile
 " Disable undo files
 set noundofile
 
-" Blinking Cursor
-set gcr=a:blinkon0		
-
 " Automatically ident
 set autoindent			
 
@@ -124,7 +121,7 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 0
+let g:airline_powerline_fonts = 1
 let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#hunks#enabled = 1
 
@@ -140,7 +137,7 @@ call vundle#end()
 filetype plugin indent on
 
 " Enable syntax highlighting
-syntax enable			
+syntax enable
 
 " Custom Mappings
 " Remove Up/Down/Left/Right
@@ -154,9 +151,6 @@ autocmd Filetype gitcommit setlocal spell textwidth=72
 
 " Auto Change Directory
 autocmd BufEnter * silent! lcd %:p:h
-
-" Set theme
-set background=dark
 
 " Set GUI font
 set guifont=Fira\ Mono\ for\ Powerline:h12
