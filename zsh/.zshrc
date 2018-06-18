@@ -1,5 +1,6 @@
-export ZSH="/Users/server/.oh-my-zsh"
+export ZSH="/Users/wirob/.oh-my-zsh"
 ZSH_THEME="agnoster"
+DEFAULT_USER=$USER
 plugins=(
   brew
   command-not-found
