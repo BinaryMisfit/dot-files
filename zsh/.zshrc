@@ -48,6 +48,7 @@ test -e "/usr/local/bin/brew" && alias brew-update="brew update; brew upgrade; b
 
 # Source additional scripts
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+test -e "/usr/local/bin/jenv" && eval "$(jenv init -)"
 
 # Additional setups
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
