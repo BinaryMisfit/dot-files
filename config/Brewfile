@@ -8,8 +8,6 @@ tap "homebrew/bundle"
 tap "homebrew/services"
 tap "caskroom/cask"
 tap "caskroom/versions"
-cask "java8"
-cask "java"
 cask "macvim", args: { force: true }
 brew "automake"
 brew "cmake"
