@@ -8,6 +8,7 @@ tap "homebrew/bundle"
 tap "homebrew/services"
 tap "caskroom/cask"
 tap "caskroom/versions"
+cask "aerial"
 cask "macvim", args: { force: true }
 brew "automake"
 brew "cmake"
