@@ -11,6 +11,7 @@ plugins=(
   tmux
   xcode
   zsh_reload
+  zsh-syntax-highlighting
 )
 
 # Source oh my ZSH
