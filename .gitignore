@@ -1,5 +1,6 @@
 ssh/.ssh/id_*
 ssh/.ssh/known_hosts
+ssh/.ssh/google*
 vim/.vim/*
 .DS_Store
 fishd*
