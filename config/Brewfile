@@ -23,6 +23,7 @@ brew "ffmpeg", args: ["with-fdk-aac", "with-ffplay", "with-freetype", "with-frei
 brew "mas"
 brew "media-info"
 brew "mkvtoolnix"
+brew "node"
 brew "openssl"
 brew "python2"
 brew "python"

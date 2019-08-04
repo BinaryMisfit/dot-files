@@ -108,25 +108,22 @@ call vundle#begin()
 " Vundle Plugin Manager
 Plugin 'gmarik/Vundle.vim'
 
-" Surrounding Wrapper Support
-Plugin 'tpope/vim-surround'
-
-" Tabular Alignment Support
-Plugin 'godlygeek/tabular'
-
 " Git Gutter Info
 Plugin 'airblade/vim-gitgutter'
 
+" Ayu Theme
+Plugin 'ayu-theme/ayu-vim'
+
 " Status line plugin
 Plugin 'bling/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
+let g:airline_theme='ayu'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#hunks#enabled = 1
 
-" Git Fugitive
-Plugin 'tpope/vim-fugitive'
+" indentLine
+Plugin 'Yggdroot/indentLine'
 
 " Polyglot
 Plugin 'sheerun/vim-polyglot'
@@ -138,6 +135,14 @@ filetype plugin indent on
 
 " Enable syntax highlighting
 syntax enable
+
+" Enable True Colors
+set termguicolors
+
+" Set Ayu to Light
+let ayucolor="light"
+
+colorscheme ayu
 
 " Custom Mappings
 " Remove Up/Down/Left/Right
@@ -151,6 +156,3 @@ autocmd Filetype gitcommit setlocal spell textwidth=72
 
 " Auto Change Directory
 autocmd BufEnter * silent! lcd %:p:h
-
-" Set GUI font
-set guifont=Fira\ Mono\ for\ Powerline:h12

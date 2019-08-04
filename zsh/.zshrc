@@ -1,6 +1,7 @@
 export ZSH="/Users/wirob/.oh-my-zsh"
-ZSH_THEME="powerlevel9k/powerlevel9k"
+ZSH_THEME=agnoster-light
 DEFAULT_USER=$USER
+ZSH_DISABLE_COMPFIX=true
 plugins=(
   brew
   command-not-found
@@ -20,7 +21,6 @@ source $ZSH/oh-my-zsh.sh
 # Build PATH
 test -e "/usr/local/bin/brew" && export PATH="/usr/local/sbin:$PATH" 
 test -e "/usr/local/opt" && export PATH="/usr/local/opt:$PATH"
-test -e "$HOME/.rvm/bin" && export PATH="$HOME/.rvm/bin:$PATH"
 test -e "$HOME/Library/Android/sdk/platform-tools/" && export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
 
 # Export environment variables 
@@ -39,13 +39,6 @@ export JAVA_HOME=`/usr/libexec/java_home -v 11`
 # Bind ZSH Keys
 bindkey "^[[A" history-substring-search-up
 bindkey "^[[B" history-substring-search-down
-
-# Check if running in iTerm
-if [ ! -z $TERM_PROGRAM ] && [[ "$TERM_PROGRAM" == "iTerm.app" ]]; then
-    alias tmux="tmux -u -CC attach || tmux -u -CC new"
-else
-    alias tmux="tmux -u attach || tmux -u new"
-fi
 
 # Cleanup
 typeset -U PATH
