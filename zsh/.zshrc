@@ -1,4 +1,6 @@
 export ZSH="/Users/wirob/.oh-my-zsh"
+export LANG=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
 ZSH_THEME=agnoster-light
 DEFAULT_USER=$USER
 ZSH_DISABLE_COMPFIX=true
