@@ -114,13 +114,11 @@ Plugin 'airblade/vim-gitgutter'
 " Ayu Theme
 Plugin 'ayu-theme/ayu-vim'
 
+" Airline Themes
+Plugin 'vim-airline/vim-airline-themes' 
+
 " Status line plugin
 Plugin 'bling/vim-airline'
-let g:airline_theme='ayu'
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#syntastic#enabled = 1
-let g:airline#extensions#hunks#enabled = 1
 
 " indentLine
 Plugin 'Yggdroot/indentLine'
@@ -142,7 +140,18 @@ set termguicolors
 " Set Ayu to Light
 let ayucolor="light"
 
+" Set background light
+set background=light
+
+" Set colorscheme
 colorscheme ayu
+
+" Airline config 
+let g:airline_theme="ayu"
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#syntastic#enabled = 1
+let g:airline#extensions#hunks#enabled = 1
 
 " Custom Mappings
 " Remove Up/Down/Left/Right
