@@ -29,6 +29,7 @@ test -e "/usr/local/bin/brew" && export HOMEBREW_GITHUB_API_TOKEN="37b2481840fba
 
 # Export aliases
 test -e "/usr/local/bin/brew" && alias brew-update="brew update; brew upgrade; brew cleanup; brew doctor"
+test -e "/usr/local/bin/screenfetch" && alias screenfetch='screenfetch -E'
 
 # Additional setups
 fpath=(/usr/local/share/zsh-completions $fpath)
@@ -40,3 +41,6 @@ bindkey "^[[B" history-substring-search-down
 # Cleanup
 typeset -U PATH
 export PATH
+
+# Print OS info
+test -e "/usr/local/bin/screenfetch" && screenfetch
