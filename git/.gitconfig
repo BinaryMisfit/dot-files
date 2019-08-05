@@ -3,10 +3,8 @@
 	email = diagoza@me.com
 [core]
 	excludesfile = /Users/wirob/.gitignore_global
-	editor = mvim -v
+	editor = vi
 	autocrlf = input
-[url "https://"]
-	insteadOf = git://
 [filter "media"]
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
@@ -27,3 +25,5 @@
 	required = true
 [rebase]
 	autoStash = true
+[alias]
+	s = status -s

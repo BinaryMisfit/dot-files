@@ -1,7 +1,7 @@
 export ZSH="/Users/wirob/.oh-my-zsh"
 export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
-ZSH_THEME=agnoster-light
+ZSH_THEME=spaceship
 DEFAULT_USER=$USER
 ZSH_DISABLE_COMPFIX=true
 plugins=(
@@ -23,20 +23,15 @@ source $ZSH/oh-my-zsh.sh
 # Build PATH
 test -e "/usr/local/bin/brew" && export PATH="/usr/local/sbin:$PATH" 
 test -e "/usr/local/opt" && export PATH="/usr/local/opt:$PATH"
-test -e "$HOME/Library/Android/sdk/platform-tools/" && export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
 
 # Export environment variables 
-test -e "/usr/local/bin/brew" && export HOMEBREW_GITHUB_API_TOKEN="4c392dee7b0775db22adcc3dde1ed8cbc7a411ae"
+test -e "/usr/local/bin/brew" && export HOMEBREW_GITHUB_API_TOKEN="37b2481840fba079edeaf5d808fff915ca03bd7e"
 
 # Export aliases
 test -e "/usr/local/bin/brew" && alias brew-update="brew update; brew upgrade; brew cleanup; brew doctor"
 
-# Source additional scripts
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
 # Additional setups
 fpath=(/usr/local/share/zsh-completions $fpath)
-export JAVA_HOME=`/usr/libexec/java_home -v 11`
 
 # Bind ZSH Keys
 bindkey "^[[A" history-substring-search-up
@@ -45,9 +40,3 @@ bindkey "^[[B" history-substring-search-down
 # Cleanup
 typeset -U PATH
 export PATH
-typeset -U LDFLAGS
-export LDFLAGS
-typeset -U CPPFLAGS
-export CPPFLAGS
-typeset -U PKG_CONFIG_PATH
-export PKG_CONFIG_PATH
