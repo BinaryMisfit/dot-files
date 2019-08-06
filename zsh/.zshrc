@@ -15,6 +15,7 @@ plugins=(
   xcode
   zsh_reload
   zsh-syntax-highlighting
+  zsh-completions
 )
 
 # Source oh my ZSH
@@ -32,7 +33,7 @@ test -e "/usr/local/bin/brew" && alias brew-update="brew update; brew upgrade; b
 test -e "/usr/local/bin/screenfetch" && alias screenfetch='screenfetch -E'
 
 # Additional setups
-fpath=(/usr/local/share/zsh-completions $fpath)
+autoload -U compinit && compinit
 
 # Bind ZSH Keys
 bindkey "^[[A" history-substring-search-up
@@ -42,5 +43,5 @@ bindkey "^[[B" history-substring-search-down
 typeset -U PATH
 export PATH
 
-# Print OS info
-test -e "/usr/local/bin/screenfetch" && screenfetch
+# Print system info
+test -e "/usr/local/bin/screenfetch" && /usr/local/bin/screenfetch -E
