@@ -300,6 +300,8 @@ tmux_conf_copy_to_os_clipboard=false
 unbind C-b
 set-option -g prefix C-w
 bind-key C-w send-prefix
+bind | split-window -h
+unbind _
 
 # Hacks
 set -sg escape-time 0
