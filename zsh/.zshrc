@@ -43,4 +43,7 @@ typeset -U PATH
 export PATH
 
 # Print system info
-test -e "/usr/local/bin/screenfetch" && /usr/local/bin/screenfetch -E
+if [ -z "$TMUX" ] 
+then
+    test -e "/usr/local/bin/screenfetch" && /usr/local/bin/screenfetch -E
+fi
