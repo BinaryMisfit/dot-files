@@ -30,6 +30,7 @@ test -e "/usr/local/bin/brew" && export HOMEBREW_GITHUB_API_TOKEN="37b2481840fba
 
 # Export aliases
 test -e "/usr/local/bin/brew" && alias brew-update="brew update; brew upgrade; brew cleanup; brew doctor"
+test -e "/usr/bin/vi" && alias sudoedit="sudo vi "
 
 # Additional setups
 autoload -U compinit && compinit
