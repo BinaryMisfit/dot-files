@@ -26,4 +26,6 @@
 [rebase]
 	autoStash = true
 [alias]
-	s = status -s
+    s = "status -s"
+    clr = "rm -r --cached ."
+    ac = "!f(){ git add . && git commit -m \"$@\"; };f"

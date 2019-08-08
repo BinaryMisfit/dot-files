@@ -1,21 +1,21 @@
 export ZSH="$HOME/.oh-my-zsh"
 export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
+export SOLARIZED_THEME=light
 ZSH_THEME=agnoster-light
 DEFAULT_USER=$USER
 ZSH_DISABLE_COMPFIX=true
 plugins=(
-  brew
   command-not-found
-  git
-  history-substring-search
-  iterm2
-  osx
+  systemadmin
+  thefuck
   tmux
+  vundle
   xcode
+  zsh-completions
+  zsh-navigation-tools
   zsh_reload
   zsh-syntax-highlighting
-  zsh-completions
 )
 
 # Source oh my ZSH
@@ -30,14 +30,16 @@ test -e "/usr/local/bin/brew" && export HOMEBREW_GITHUB_API_TOKEN="37b2481840fba
 
 # Export aliases
 test -e "/usr/local/bin/brew" && alias brew-update="brew update; brew upgrade; brew cleanup; brew doctor"
+test -e "/usr/local/bin/brew" && alias brew-bundle="brew bundle --global "
 test -e "/usr/bin/vi" && alias sudoedit="sudo vi "
 
 # Additional setups
 autoload -U compinit && compinit
 
-# Bind ZSH Keys
-bindkey "^[[A" history-substring-search-up
-bindkey "^[[B" history-substring-search-down
+# Manage tmux
+export ZSH_TMUX_AUTOSTART=true
+export ZSH_TMUX_AUTOSTART_ONCE=true
+export ZSH_TMUX_AUTOCONNECT=true
 
 # Cleanup
 typeset -U PATH
