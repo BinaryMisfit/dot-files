@@ -19,7 +19,7 @@ set hlsearch
 " Incremental searching
 set incsearch
 
-" Searches are case sensitive
+" Searches are case insensitive
 set ignorecase
 
 " Searches are not case sensitive if they contain a single uppercase
@@ -29,10 +29,10 @@ set smartcase
 set tabstop=4			
 
 " SoftTab Width
-set softtabstop=4		
+set softtabstop=2
 
 " Shift Width
-set shiftwidth=4		
+set shiftwidth=2
 
 " Expand tabs to spaces
 set expandtab			
@@ -108,23 +108,17 @@ call vundle#begin()
 " Vundle Plugin Manager
 Plugin 'gmarik/Vundle.vim'
 
-" Git Gutter Info
-Plugin 'airblade/vim-gitgutter'
+" Lightline
+Plugin 'itchyny/lightline.vim'
 
-" Ayu Theme
-Plugin 'ayu-theme/ayu-vim'
-
-" Airline Themes
-Plugin 'vim-airline/vim-airline-themes' 
-
-" Status line plugin
-Plugin 'bling/vim-airline'
-
-" indentLine
-Plugin 'Yggdroot/indentLine'
+" Material Theme
+Plugin 'kaicataldo/material.vim'
 
 " Polyglot
 Plugin 'sheerun/vim-polyglot'
+
+" Terminus
+Plugin 'wincent/terminus'
 
 call vundle#end()    
 
@@ -137,21 +131,13 @@ syntax enable
 " Enable True Colors
 set termguicolors
 
-" Set Ayu to Light
-let ayucolor="light"
+" Configure Material Theme
+let g:material_terminal_italics = 1
+let g:material_theme_style = 'lighter'
+colorscheme material
 
-" Set background light
-set background=light
-
-" Set colorscheme
-colorscheme ayu
-
-" Airline config 
-let g:airline_theme="ayu"
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#syntastic#enabled = 1
-let g:airline#extensions#hunks#enabled = 1
+" Configure Lightline
+let g:lightline = { 'colorscheme': 'material_vim' }
 
 " Custom Mappings
 " Remove Up/Down/Left/Right
