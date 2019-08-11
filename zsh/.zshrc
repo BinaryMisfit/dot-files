@@ -22,6 +22,7 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 
 # Build PATH
+test -e "/usr/local/bin/python3" && export PATH="/Users/wirob/Library/Python/3.7/bin:$PATH"
 test -e "/usr/local/bin/brew" && export PATH="/usr/local/sbin:$PATH" 
 test -e "/usr/local/opt" && export PATH="/usr/local/opt:$PATH"
 
