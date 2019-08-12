@@ -23,8 +23,9 @@ source $ZSH/oh-my-zsh.sh
 
 # Build PATH
 test -e "/usr/local/bin/python3" && export PATH="/Users/wirob/Library/Python/3.7/bin:$PATH"
-test -e "/usr/local/bin/brew" && export PATH="/usr/local/sbin:$PATH" 
+test -e "/usr/local/share/dotnet/dotnet" && export PATH="/usr/local/share/dotnet/sdk:$PATH"
 test -e "/usr/local/opt" && export PATH="/usr/local/opt:$PATH"
+test -e "/usr/local/bin/brew" && export PATH="/usr/local/sbin:$PATH" 
 
 # Export environment variables 
 test -e "/usr/local/bin/brew" && export HOMEBREW_GITHUB_API_TOKEN="37b2481840fba079edeaf5d808fff915ca03bd7e"
