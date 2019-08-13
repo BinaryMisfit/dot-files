@@ -111,11 +111,11 @@ Plugin 'gmarik/Vundle.vim'
 " Lightline
 Plugin 'itchyny/lightline.vim'
 
-" Material Theme
-Plugin 'kaicataldo/material.vim'
-
 " Polyglot
 Plugin 'sheerun/vim-polyglot'
+
+" Solarized Themes
+Plugin 'altercation/vim-colors-solarized'
 
 " Terminus
 Plugin 'wincent/terminus'
@@ -131,13 +131,9 @@ syntax enable
 " Enable True Colors
 set termguicolors
 
-" Configure Material Theme
-let g:material_terminal_italics = 1
-let g:material_theme_style = 'lighter'
-colorscheme material
-
-" Configure Lightline
-let g:lightline = { 'colorscheme': 'material_vim' }
+" Customize Theme
+set background=light
+colorscheme solarized
 
 " Custom Mappings
 " Remove Up/Down/Left/Right
