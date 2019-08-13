@@ -114,11 +114,11 @@ Plugin 'itchyny/lightline.vim'
 " Polyglot
 Plugin 'sheerun/vim-polyglot'
 
-" Solarized Themes
-Plugin 'altercation/vim-colors-solarized'
-
 " Terminus
 Plugin 'wincent/terminus'
+
+" Theme
+Plugin 'altercation/vim-colors-solarized'
 
 call vundle#end()    
 
@@ -128,12 +128,14 @@ filetype plugin indent on
 " Enable syntax highlighting
 syntax enable
 
-" Enable True Colors
-set termguicolors
-
 " Customize Theme
 set background=light
 colorscheme solarized
+
+" Customize Lightline
+set noshowmode
+set laststatus=2
+let g:lightline = { 'colorscheme': 'solarized' }
 
 " Custom Mappings
 " Remove Up/Down/Left/Right
