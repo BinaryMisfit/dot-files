@@ -108,17 +108,24 @@ call vundle#begin()
 " Vundle Plugin Manager
 Plugin 'gmarik/Vundle.vim'
 
-" Lightline
-Plugin 'itchyny/lightline.vim'
-
 " Polyglot
 Plugin 'sheerun/vim-polyglot'
+
+" Statusline
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+
+" Syntastic
+Plugin 'vim-syntastic/syntastic'
 
 " Terminus
 Plugin 'wincent/terminus'
 
 " Theme
 Plugin 'altercation/vim-colors-solarized'
+
+" Tmux Line
+Plugin 'edkolev/tmuxline.vim'
 
 call vundle#end()    
 
@@ -129,13 +136,22 @@ filetype plugin indent on
 syntax enable
 
 " Customize Theme
+if (has("termguicolors"))
+  set termguicolors
+endif
+
 set background=light
 colorscheme solarized
 
-" Customize Lightline
+" Customize Status
 set noshowmode
-set laststatus=2
-let g:lightline = { 'colorscheme': 'solarized' }
+let g:airline_powerline_fonts=1 
+
+" Syntastic
+let g:syntastic_always_populate_loc_list=1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
 
 " Custom Mappings
 " Remove Up/Down/Left/Right

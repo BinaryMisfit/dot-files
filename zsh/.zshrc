@@ -1,15 +1,12 @@
 export ZSH="$HOME/.oh-my-zsh"
-export LANG=en_US.UTF-8
-export LC_CTYPE=en_US.UTF-8
-export SOLARIZED_THEME=light
-ZSH_THEME=darkblood-light
+SOLARIZED_THEME=light
+ZSH_THEME=agnoster
 DEFAULT_USER=$USER
 ZSH_DISABLE_COMPFIX=true
 plugins=(
   command-not-found
   systemadmin
   thefuck
-  tmux
   vundle
   xcode
   zsh-completions
@@ -21,6 +18,14 @@ plugins=(
 # Source oh my ZSH
 source $ZSH/oh-my-zsh.sh
 
+# Exports
+export LANG=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
+export SOLARIZED_THEME=light
+export CLICOLOR=1
+export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+export GREP_OPTIONS='--color=auto'
+
 # Build PATH
 test -e "/usr/local/bin/python3" && export PATH="/Users/wirob/Library/Python/3.7/bin:$PATH"
 test -e "/usr/local/share/dotnet/dotnet" && export PATH="/usr/local/share/dotnet/sdk:$PATH"
@@ -31,17 +36,15 @@ test -e "/usr/local/bin/brew" && export PATH="/usr/local/sbin:$PATH"
 test -e "/usr/local/bin/brew" && export HOMEBREW_GITHUB_API_TOKEN="37b2481840fba079edeaf5d808fff915ca03bd7e"
 
 # Export aliases
-test -e "/usr/local/bin/brew" && alias brew-update="brew update; brew upgrade; brew cleanup; brew doctor"
-test -e "/usr/local/bin/brew" && alias brew-bundle="brew bundle --global "
-test -e "/usr/bin/vi" && alias sudoedit="sudo vi "
+test -e "/usr/local/bin/brew" && alias brew-update="/usr/local/bin/brew update; brew upgrade; brew cleanup; brew doctor"
+test -e "/usr/local/bin/brew" && alias brew-bundle="/usr/local/bin/brew bundle --global "
+test -e "/usr/bin/vi" && alias sudoedit="sudo /usr/bin/vi "
+test -e "/usr/local/bin/tmux" && alias tmux="/usr/local/bin/tmux attach || /usr/local/bin/tmux new"
+test -e "$HOME/.tmux/plugins/tpm/bin/install_plugins" && alias tpm-install="$HOME/.tmux/plugins/tpm/bin/install_plugins"
+test -e "$HOME/.tmux/plugins/tpm/bin/clean_plugins" && alias tpm-clean="$HOME/.tmux/plugins/tpm/bin/clean_plugins"
 
 # Additional setups
 autoload -U compinit && compinit
-
-# Manage tmux
-export ZSH_TMUX_AUTOSTART=true
-export ZSH_TMUX_AUTOSTART_ONCE=true
-export ZSH_TMUX_AUTOCONNECT=true
 
 # Cleanup
 typeset -U PATH
