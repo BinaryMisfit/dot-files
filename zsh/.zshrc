@@ -42,6 +42,7 @@ test -e "/usr/bin/vi" && alias sudoedit="sudo /usr/bin/vi "
 test -e "/usr/local/bin/tmux" && alias tmux="/usr/local/bin/tmux attach || /usr/local/bin/tmux new "
 test -e "/usr/local/bin/ccat" && alias cat="ccat "
 test -e "/usr/local/bin/grc" && alias tail="grc tail "
+test -e "/usr/local/bin/code-insiders" && alias code="code-insiders "
 test -e "$HOME/.tmux/plugins/tpm/bin/install_plugins" && alias tpm-install="$HOME/.tmux/plugins/tpm/bin/install_plugins"
 test -e "$HOME/.tmux/plugins/tpm/bin/clean_plugins" && alias tpm-clean="$HOME/.tmux/plugins/tpm/bin/clean_plugins"
 
