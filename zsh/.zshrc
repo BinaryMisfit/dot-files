@@ -1,4 +1,4 @@
-
+export ZSH="$HOME/.oh-my-zsh"
 SOLARIZED_THEME="light"
 ZSH_THEME=agnoster
 DEFAULT_USER=$USER
