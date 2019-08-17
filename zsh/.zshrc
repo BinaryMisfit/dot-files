@@ -1,4 +1,4 @@
-export ZSH="$HOME/.oh-my-zsh"
+
 SOLARIZED_THEME="light"
 ZSH_THEME=agnoster
 DEFAULT_USER=$USER
@@ -39,7 +39,9 @@ test -e "/usr/local/bin/brew" && export HOMEBREW_GITHUB_API_TOKEN="37b2481840fba
 test -e "/usr/local/bin/brew" && alias brew-update="/usr/local/bin/brew update; brew upgrade; brew cleanup; brew doctor"
 test -e "/usr/local/bin/brew" && alias brew-bundle="/usr/local/bin/brew bundle --global "
 test -e "/usr/bin/vi" && alias sudoedit="sudo /usr/bin/vi "
-test -e "/usr/local/bin/tmux" && alias tmux="/usr/local/bin/tmux attach || /usr/local/bin/tmux new"
+test -e "/usr/local/bin/tmux" && alias tmux="/usr/local/bin/tmux attach || /usr/local/bin/tmux new "
+test -e "/usr/local/bin/grc" && alias cat="grc cat "
+test -e "/usr/local/bin/grc" && alias tail="grc tail "
 test -e "$HOME/.tmux/plugins/tpm/bin/install_plugins" && alias tpm-install="$HOME/.tmux/plugins/tpm/bin/install_plugins"
 test -e "$HOME/.tmux/plugins/tpm/bin/clean_plugins" && alias tpm-clean="$HOME/.tmux/plugins/tpm/bin/clean_plugins"
 
