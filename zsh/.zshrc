@@ -43,6 +43,7 @@ test -e "/usr/local/bin/tmux" && alias tmux="/usr/local/bin/tmux attach || /usr/
 test -e "/usr/local/bin/ccat" && alias cat="ccat "
 test -e "/usr/local/bin/grc" && alias tail="grc tail "
 test -e "/usr/local/bin/code-insiders" && alias code="code-insiders "
+test -e "/usr/local/bin/pip" && alias pip-update="pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 sudo pip install -U"
 test -e "$HOME/.tmux/plugins/tpm/bin/install_plugins" && alias tpm-install="$HOME/.tmux/plugins/tpm/bin/install_plugins"
 test -e "$HOME/.tmux/plugins/tpm/bin/clean_plugins" && alias tpm-clean="$HOME/.tmux/plugins/tpm/bin/clean_plugins"
 
