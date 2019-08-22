@@ -140,7 +140,7 @@ if (has("termguicolors"))
   set termguicolors
 endif
 
-set background=light
+set background=dark
 colorscheme solarized
 
 " Customize Status
