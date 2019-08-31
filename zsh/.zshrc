@@ -1,5 +1,4 @@
 export ZSH="$HOME/.oh-my-zsh"
-SOLARIZED_THEME="dark"
 ZSH_THEME=agnoster
 DEFAULT_USER=$USER
 ZSH_DISABLE_COMPFIX=true
@@ -21,10 +20,8 @@ source $ZSH/oh-my-zsh.sh
 # Exports
 export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
-export SOLARIZED_THEME=light
 export CLICOLOR=1
 export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-export GREP_OPTIONS='--color=auto'
 
 # Build PATH
 test -e "/usr/local/bin/python3" && export PATH="/Users/wirob/Library/Python/3.7/bin:$PATH"
