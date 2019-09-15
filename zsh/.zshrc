@@ -4,7 +4,6 @@ DEFAULT_USER=$USER
 ZSH_DISABLE_COMPFIX=true
 plugins=(
   command-not-found
-  systemadmin
   vundle
   xcode
   zsh-completions
