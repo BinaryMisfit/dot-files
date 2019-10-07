@@ -14,6 +14,7 @@ plugins=(
 
 # Source oh my ZSH
 source $ZSH/oh-my-zsh.sh
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 # Exports
 export LANG=en_US.UTF-8
@@ -30,3 +31,5 @@ autoload -U compinit && compinit
 # Cleanup
 typeset -U PATH
 export PATH
+
+
