@@ -29,5 +29,3 @@
     s = "status -s"
     clr = "rm -r --cached ."
     ac = "!f(){ git add . && git commit -m \"$@\"; };f"
-[submodule]
-	recurse = true
