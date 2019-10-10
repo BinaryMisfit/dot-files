@@ -1,8 +1,13 @@
+# Variables
 export ZSH="$HOME/.oh-my-zsh"
-SOLARIZED_THEME=light
-ZSH_THEME=agnoster
-DEFAULT_USER=$USER
-ZSH_DISABLE_COMPFIX=true
+export LC_CTYPE=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export ZSH_THEME=afowler
+export DEFAULT_USER=$USER
+export ZSH_DISABLE_COMPFIX=true
+
+# Plugins
 plugins=(
   command-not-found
   vundle
@@ -17,20 +22,12 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-# Exports
-export LANG=en_US.UTF-8
-export LC_CTYPE=en_US.UTF-8
-export CLICOLOR=1
-export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+# Additional setups
+autoload -U compinit && compinit
 
 # Export aliases
 test -e "/usr/bin/vi" && alias sudoedit="sudo /usr/bin/vi "
 
-# Additional setups
-autoload -U compinit && compinit
-
 # Cleanup
 typeset -U PATH
 export PATH
-
-
