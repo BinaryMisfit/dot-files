@@ -2,17 +2,14 @@
 	name = Willie Roberts
 	email = diagoza@me.com
 [core]
-	excludesfile = /Users/wirob/.gitignore_global
 	editor = vi
 	autocrlf = input
 [filter "media"]
 	clean = git-media-clean %f
-	smudge = git-media-smudge %f
+	smudge = git-media-smudge %f    
 [push]
-	default = simple
+    default = simple
 	followTags = true
-[credential]
-	helper = osxkeychain
 [color]
 	ui = true
 [pull]
@@ -20,12 +17,16 @@
 [rerere]
 	enabled = true
 [filter "lfs"]
-	clean = git-lfs clean %f
-	smudge = git-lfs smudge %f
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
 	required = true
 [rebase]
-	autoStash = true
+	autostash = true
 [alias]
-    s = "status -s"
-    clr = "rm -r --cached ."
+	s = status -s
+	clr = rm -rf --cached .
     ac = "!f(){ git add . && git commit -m \"$@\"; };f"
+    sac = "!f(){ git submodule foreach --recursive git add . && git submodule foreach --recursive git commit -m \"$@\" && git add . && git commit -m \"$@\"; };f"
+    spull = "!f(){ git submodule foreach --recursive git pull && git pull; };f"
+    spush = "!f(){ git submodule foreach --recursive git push && git push; };f"
