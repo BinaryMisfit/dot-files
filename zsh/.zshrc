@@ -3,7 +3,7 @@ export ZSH="${HOME}/.oh-my-zsh"
 export LC_CTYPE=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
-export ZSH_THEME=wedisagree
+export ZSH_THEME=nanotech
 export DEFAULT_USER=${USER}
 export ZSH_DISABLE_COMPFIX=true
 
