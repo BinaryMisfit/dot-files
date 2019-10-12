@@ -27,6 +27,7 @@ autoload -U compinit && compinit
 
 # Export aliases
 test -e "/usr/bin/vi" && alias sudoedit="sudo /usr/bin/vi "
+test -e "/usr/local/bin/tmux" && alias tmux="tmux attach "
 
 # Cleanup
 typeset -U PATH
