@@ -12,6 +12,7 @@ plugins=(
   command-not-found
   vundle
   xcode
+  zsh-autosuggestions
   zsh-completions
   zsh-navigation-tools
   zsh_reload
