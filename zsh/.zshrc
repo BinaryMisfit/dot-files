@@ -7,6 +7,7 @@ export SOLARIZED_THEME=dark
 export ZSH_THEME=agnoster
 export DEFAULT_USER=${USER}
 export ZSH_DISABLE_COMPFIX=true
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#c0c0c0"
 
 # Plugins
 plugins=(
