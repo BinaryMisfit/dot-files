@@ -111,17 +111,11 @@ Plugin 'sheerun/vim-polyglot'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 
-" Syntastic
-" Plugin 'vim-syntastic/syntastic'
-
-" Terminus
-" Plugin 'wincent/terminus'
-
 " Theme
 Plugin 'altercation/vim-colors-solarized'
 
-" Tmux Line
-" Plugin 'edkolev/tmuxline.vim'
+" Tmux Focus
+Plugin 'tmux-plugins/vim-tmux-focus-events'
 
 call vundle#end()    
 
