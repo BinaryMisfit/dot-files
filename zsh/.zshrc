@@ -22,6 +22,9 @@ plugins=(
   zsh-syntax-highlighting
 )
 
+# Set PATH
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
 # Source oh my ZSH
 test -e "${ZSH}/oh-my-zsh.sh" && source ${ZSH}/oh-my-zsh.sh
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
@@ -36,3 +39,4 @@ test -e "/usr/local/bin/tmux" && alias tmux="tmux attach "
 # Cleanup
 typeset -U PATH
 export PATH
+

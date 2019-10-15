@@ -104,6 +104,9 @@ call vundle#begin()
 " Vundle Plugin Manager
 Plugin 'gmarik/Vundle.vim'
 
+" AutoFormat
+Plugin 'Chiel92/vim-autoformat'
+
 " Polyglot
 Plugin 'sheerun/vim-polyglot'
 
