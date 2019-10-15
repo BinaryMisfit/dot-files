@@ -105,7 +105,7 @@ call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 
 " Polyglot
-" Plugin 'sheerun/vim-polyglot'
+Plugin 'sheerun/vim-polyglot'
 
 " Statusline
 Plugin 'vim-airline/vim-airline'

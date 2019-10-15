@@ -3,6 +3,7 @@ export ZSH="${HOME}/.oh-my-zsh"
 export LC_CTYPE=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
+export COLORTERM=truecolor
 export SOLARIZED_THEME=light
 export ZSH_THEME=agnoster
 export DEFAULT_USER=${USER}
