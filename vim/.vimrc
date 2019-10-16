@@ -5,6 +5,7 @@ call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'Chiel92/vim-autoformat'
+Plugin 'conradirwin/vim-bracketed-paste'
 Plugin 'jreybert/vimagit'
 Plugin 'NLKNguyen/papercolor-theme'
 Plugin 'scrooloose/nerdcommenter'

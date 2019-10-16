@@ -4,3 +4,4 @@ ssh/.ssh/google*
 vim/.vim/*
 .DS_Store
 fishd*
+*/**/*.swp
