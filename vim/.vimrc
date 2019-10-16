@@ -71,7 +71,6 @@ nnoremap <left> <nop>
 nnoremap <right> <nop>
 autocmd Filetype gitcommit setlocal spell textwidth=72
 autocmd BufEnter * silent! lcd %:p:h
-autocmd BufWrite * :Autoformat
 colorscheme PaperColor
 syntax on
 if exists('$TMUX') && $LC_TERMINAL =~ "iTerm"
