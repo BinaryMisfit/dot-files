@@ -4,6 +4,7 @@ export LC_CTYPE=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
 export COLORTERM=truecolor
+export KEYTIMEOUT=1
 export DEFAULT_USER=${USER}
 export SOLARIZED_THEME=light
 export ZSH_THEME=powerlevel10k/powerlevel10k
