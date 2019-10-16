@@ -17,6 +17,7 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'kana/vim-fakeclip'
 Plugin 'vim-syntastic/syntastic'
+Plugin 'mrk21/yaml-vim'
 call vundle#end()
 filetype plugin indent on
 set autoread
