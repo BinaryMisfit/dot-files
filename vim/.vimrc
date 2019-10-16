@@ -3,13 +3,17 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'Chiel92/vim-autoformat'
+Plugin 'jreybert/vimagit'
+Plugin 'NLKNguyen/papercolor-theme'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'sheerun/vim-polyglot'
+Plugin 'tmux-plugins/vim-tmux-focus-events'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'Chiel92/vim-autoformat'
-Plugin 'NLKNguyen/papercolor-theme'
-Plugin 'sheerun/vim-polyglot'
+Plugin 'kana/vim-fakeclip'
 Plugin 'vim-syntastic/syntastic'
-Plugin 'tmux-plugins/vim-tmux-focus-events'
 call vundle#end()
 filetype plugin indent on
 set autoread
@@ -40,12 +44,17 @@ set viminfo='20,\"80
 set visualbell
 set wildmenu
 set wildmode=longest:full,full
+let mapleader=","
+let &t_SI="\<CSI>5 q"
+let &t_EI="\<CSI>1 q"
 let g:airline_powerline_fonts = 1
 let g:airline_theme = 'papercolor'
 let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'jsformatter'
 let g:airline#extensions#wordcount#enabled = 1
+let g:airline#extensions#hunks#enabled = 1
+let g:airline#extensions#vimagit#enabled = 1
 let g:netrw_liststyle = 1
 let g:netrw_banner = 0
 let g:netrw_browse_split = 0
