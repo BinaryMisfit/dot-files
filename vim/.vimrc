@@ -10,6 +10,7 @@ Plugin 'jreybert/vimagit'
 Plugin 'NLKNguyen/papercolor-theme'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'sheerun/vim-polyglot'
+Plugin 'mhinz/vim-startify'
 Plugin 'tmux-plugins/vim-tmux-focus-events'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -37,7 +38,9 @@ set ruler
 set showcmd
 set smartcase
 set tabstop=4
+set timeoutlen=100
 set title
+set ttimeoutlen=100
 set shiftwidth=4
 set undofile
 set undodir=~/.vum/undo,~/tmp,/tmp
