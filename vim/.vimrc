@@ -45,8 +45,6 @@ set visualbell
 set wildmenu
 set wildmode=longest:full,full
 let mapleader=","
-let &t_SI="\<CSI>5 q"
-let &t_EI="\<CSI>1 q"
 let g:airline_powerline_fonts = 1
 let g:airline_theme = 'papercolor'
 let g:airline#extensions#syntastic#enabled = 1
@@ -71,3 +69,13 @@ autocmd BufEnter * silent! lcd %:p:h
 autocmd BufWrite * :Autoformat
 colorscheme PaperColor
 syntax on
+if exists('$TMUX') && $TERM_PROGRAM =~ "iTerm"
+    let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+    let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+elseif $TERM_PROGRAM =~ "iTerm"
+    let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+    let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+else
+    let &t_SI="\<CSI>5 q"
+    let &t_EI="\<CSI>1 q"
+endif

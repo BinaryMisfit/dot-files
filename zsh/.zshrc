@@ -6,7 +6,7 @@ export LANG=en_US.UTF-8
 export COLORTERM=truecolor
 export DEFAULT_USER=${USER}
 export SOLARIZED_THEME=light
-export ZSH_THEME=agnoster
+export ZSH_THEME=powerlevel10k/powerlevel10k
 export ZSH_DISABLE_COMPFIX=true
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#c0c0c0"
 
@@ -40,3 +40,6 @@ test -e "/usr/local/bin/tmux" && alias tmux="tmux attach "
 typeset -U PATH
 export PATH
 
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
