@@ -69,10 +69,10 @@ autocmd BufEnter * silent! lcd %:p:h
 autocmd BufWrite * :Autoformat
 colorscheme PaperColor
 syntax on
-if exists('$TMUX') && $TERM_PROGRAM =~ "iTerm"
+if exists('$TMUX') && $LC_TERMINAL =~ "iTerm"
     let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
     let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
-elseif $TERM_PROGRAM =~ "iTerm"
+elseif $LC_TERMINAL =~ "iTerm"
     let &t_SI = "\<Esc>]50;CursorShape=1\x7"
     let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 else
