@@ -1,168 +1,64 @@
-" Not compatible with legacy vi
-set nocompatible		
-
-" Set Shell
-set shell=/bin/zsh
-
-" Switch of filetype handling
+set nocompatible
 filetype off
-
-" Use UTF8 encoding
-set encoding=utf8		
-
-" Display incomplete command
-set showcmd				
-
-" Highlight search matches 
-set hlsearch 
-
-" Incremental searching
-set incsearch
-
-" Searches are case insensitive
-set ignorecase
-
-" Searches are not case sensitive if they contain a single uppercase
-set smartcase
-
-" Tab Width
-set tabstop=4			
-
-" SoftTab Width
-set softtabstop=2
-
-" Shift Width
-set shiftwidth=2
-
-" Expand tabs to spaces
-set expandtab			
-
-" Automatically ident
-set autoindent			
-
-" Smart ident
-set smartindent			
-
-" Enable Ruler
-set ruler				
-
-" Don't create backup files
-set nobackup			
-
-" Disable write backup files
-set nowritebackup
-
-" Disable swap files
-set noswapfile
-
-" Disable undo files
-set noundofile
-
-" Remove Toolbar
-set go-=T				
-
-" Set Error Files
-set cf					
-
-" Yanks go to Clipboard
-set clipboard+=unnamed	
-
-" Remember history for number of items
-set history=256			
-
-" Auto read file changes
-set autoread
-
-set nu
-
-" Don't wrap lines
-set nowrap				
-
-" Specify timeout
-set timeoutlen=250
-
-" Set statusline
-" set laststatus=2
-
-" Switch off error bells
-set noerrorbells
-
-" Set nohl search
-set nohlsearch
-
-" Backspace through everything in insert mode
-set backspace=indent,eol,start	
-
-" Configure netwr
-let g:netrw_browse_split = 4
-let g:netrw_altv = 1
-
-" Set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-
-" Vundle Plugin Manager
 Plugin 'gmarik/Vundle.vim'
-
-" AutoFormat
-Plugin 'Chiel92/vim-autoformat'
-
-" Polyglot
-Plugin 'sheerun/vim-polyglot'
-
-" Statusline
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-
-" Theme
-Plugin 'altercation/vim-colors-solarized'
-
-" Tmux Focus
+Plugin 'Chiel92/vim-autoformat'
+Plugin 'NLKNguyen/papercolor-theme'
+Plugin 'sheerun/vim-polyglot'
+Plugin 'vim-syntastic/syntastic'
 Plugin 'tmux-plugins/vim-tmux-focus-events'
-
-call vundle#end()    
-
-" Enable Indent Plugin
+call vundle#end()
 filetype plugin indent on
-
-" Enable syntax highlighting
-syntax enable
-
-" Customize Theme
-if (has("termguicolors"))
-  set termguicolors
-endif
-
+set autoread
 set background=dark
-colorscheme solarized
-
-" Customize Status
+set backspace=indent,eol,start
+set encoding=utf-8
+set expandtab
+set fileencoding=utf-8
+set fileencodings=utf-8
+set history=80
+set ignorecase
+set incsearch
+set nobackup
+set nohlsearch
 set noshowmode
-let g:airline_powerline_fonts=1 
-
-" Syntastic
-" let g:syntastic_always_populate_loc_list=1
-" let g:syntastic_auto_loc_list = 1
-" let g:syntastic_check_on_open = 1
-" let g:syntastic_check_on_wq = 0
-
-" Remove Up/Down/Left/Right
+set number
+set nowrap
+set nowritebackup
+set ruler
+set showcmd
+set smartcase
+set tabstop=4
+set title
+set shiftwidth=4
+set undofile
+set undodir=~/.vum/undo,~/tmp,/tmp
+set viminfo='20,\"80
+set visualbell
+set wildmenu
+set wildmode=longest:full,full
+let g:airline_powerline_fonts = 1
+let g:airline_theme = 'papercolor'
+let g:airline#extensions#syntastic#enabled = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'jsformatter'
+let g:airline#extensions#wordcount#enabled = 1
+let g:netrw_liststyle = 1
+let g:netrw_banner = 0
+let g:netrw_browse_split = 0
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
 nnoremap <up> <nop>
 nnoremap <down> <nop>
 nnoremap <left> <nop>
 nnoremap <right> <nop>
-
-" Set cursor shapes
-if exists('$TMUX')
-  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
-  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
-else
-  let &t_SI = "\<Esc>]50;CursorShape=1\x7" 
-  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-endif
-
-" Set git message info
 autocmd Filetype gitcommit setlocal spell textwidth=72
-
-" Auto Change Directory
 autocmd BufEnter * silent! lcd %:p:h
+autocmd BufWrite * :Autoformat
+colorscheme PaperColor
+syntax on

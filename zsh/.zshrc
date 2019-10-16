@@ -4,22 +4,22 @@ export LC_CTYPE=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
 export COLORTERM=truecolor
+export DEFAULT_USER=${USER}
 export SOLARIZED_THEME=light
 export ZSH_THEME=agnoster
-export DEFAULT_USER=${USER}
 export ZSH_DISABLE_COMPFIX=true
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#c0c0c0"
 
 # Plugins
 plugins=(
-  command-not-found
-  vundle
-  xcode
-  zsh-autosuggestions
-  zsh-completions
-  zsh-navigation-tools
-  zsh_reload
-  zsh-syntax-highlighting
+    command-not-found
+    vundle
+    xcode
+    zsh-autosuggestions
+    zsh-completions
+    zsh-navigation-tools
+    zsh_reload
+    zsh-syntax-highlighting
 )
 
 # Set PATH
