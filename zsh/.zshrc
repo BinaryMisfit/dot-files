@@ -22,9 +22,6 @@ plugins=(
     history-substring-search
 )
 
-# Set PATH
-PATH=${HOME}/.yarn/bin:${HOME}/.config/yarn/global/node_modules/.bin:${PATH}
-
 # Source config files
 test -e ${ZSH}/oh-my-zsh.sh && source ${ZSH}/oh-my-zsh.sh
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
