@@ -19,7 +19,6 @@ plugins=(
     zsh-navigation-tools
     zsh_reload
     zsh-syntax-highlighting
-    history-substring-search
 )
 
 # Source config files
