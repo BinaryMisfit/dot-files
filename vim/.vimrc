@@ -9,13 +9,14 @@ Plugin 'NLKNguyen/papercolor-theme'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'mhinz/vim-startify'
 Plugin 'chrisbra/sudoedit.vim'
+Plugin 'edkolev/tmuxline.vim'
 Plugin 'tmux-plugins/vim-tmux-focus-events'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 call vundle#end()
 filetype plugin indent on
 set autoread
-set background=dark
+set background=light
 set backspace=indent,eol,start
 set encoding=utf-8
 set expandtab
