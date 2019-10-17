@@ -14,28 +14,24 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 # Plugins
 plugins=(
     vundle
-    history-substring-search
     zsh-completions
     zsh-autosuggestions
     zsh-navigation-tools
     zsh_reload
     zsh-syntax-highlighting
+    history-substring-search
 )
 
-# Configure Keys
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-
 # Set PATH
-export PATH=$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH
+PATH=${HOME}/.yarn/bin:${HOME}/.config/yarn/global/node_modules/.bin:${PATH}
 
 # Source config files
 test -e ${ZSH}/oh-my-zsh.sh && source ${ZSH}/oh-my-zsh.sh
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
-#test -e ${HOME}/.p10k.zsh && source ~/.p10k.zsh
 
 # Additional setups
 autoload -U compinit && compinit
+unsetopt BEEP
 
 # Export aliases
 test -e /usr/bin/vi && alias sudoedit="sudo /usr/bin/vi "
