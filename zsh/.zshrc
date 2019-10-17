@@ -1,6 +1,7 @@
 # Variables
 export DEFAULT_USER=${USER}
 export COLORTERM=truecolor
+export ITERM2_SQUELCH_MARK=1
 export KEYTIMEOUT=1
 export LC_CTYPE=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
