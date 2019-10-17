@@ -4,19 +4,14 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'Chiel92/vim-autoformat'
 Plugin 'conradirwin/vim-bracketed-paste'
-Plugin 'jreybert/vimagit'
 Plugin 'NLKNguyen/papercolor-theme'
 Plugin 'scrooloose/nerdcommenter'
-Plugin 'sheerun/vim-polyglot'
 Plugin 'mhinz/vim-startify'
 Plugin 'chrisbra/sudoedit.vim'
 Plugin 'tmux-plugins/vim-tmux-focus-events'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'kana/vim-fakeclip'
-Plugin 'vim-syntastic/syntastic'
 call vundle#end()
 filetype plugin indent on
 set autoread
@@ -55,16 +50,10 @@ let g:airline_theme = 'papercolor'
 let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'jsformatter'
-let g:airline#extensions#wordcount#enabled = 1
 let g:airline#extensions#hunks#enabled = 1
-let g:airline#extensions#vimagit#enabled = 1
 let g:netrw_liststyle = 1
 let g:netrw_banner = 0
 let g:netrw_browse_split = 0
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
 nnoremap <up> <nop>
 nnoremap <down> <nop>
 nnoremap <left> <nop>
