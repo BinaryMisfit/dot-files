@@ -14,13 +14,13 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 
 # Plugins
 plugins=(
+    vi-mode
     vundle
     zsh-completions
     zsh-autosuggestions
     zsh-navigation-tools
     zsh_reload
     zsh-syntax-highlighting
-    history-substring-search
 )
 
 # Source config files
