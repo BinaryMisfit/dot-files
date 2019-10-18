@@ -1,8 +1,5 @@
 # Variables
-export DEFAULT_USER=${USER}
-export ITERM2_SQUELCH_MARK=1
-export COLORTERM=truecolor
-export KEYTIMEOUT=1
+test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
 export LC_CTYPE=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
