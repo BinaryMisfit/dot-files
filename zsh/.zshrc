@@ -33,6 +33,9 @@ unsetopt BEEP
 test -e /usr/bin/vi && alias sudoedit="sudo /usr/bin/vi "
 test -e /usr/local/bin/tmux && alias tmux="tmux attach "
 
+# iTerm2
+[[ ${LC_TERMINAL} == "iTerm2" ]] && test -e /usr/local/bin/tmux && alias tmux="tmux -CC attach "
+
 # Cleanup
 typeset -U PATH
 export PATH
