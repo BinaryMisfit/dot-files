@@ -27,3 +27,4 @@ vim +PluginInstall +qall
 git clone https://github.com/tmux-plugins/tpm ${HOME}/.tmux/plugins/tpm
 ssh-keygen -t rsa -b 4096 -f ${HOME}/.ssh/id_rsa -C "$(hostname -s)@misfits.best" -q -N ""
 sudo chsh -s `which zsh` ${USER}
+sudo chown ${USER}:staff -R .*
