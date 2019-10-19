@@ -22,7 +22,6 @@ plugins=(
 
 # Source config files
 test -e ${ZSH}/oh-my-zsh.sh && source ${ZSH}/oh-my-zsh.sh
-test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 test -e ${HOME}/.powerlevel9k.conf && source ${HOME}/.powerlevel9k.conf
 
 # Additional setups
