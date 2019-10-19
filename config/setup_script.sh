@@ -17,7 +17,6 @@ git clone https://github.com/bhilburn/powerlevel9k.git ${HOME}/.oh-my-zsh/custom
 git clone https://04e3f744fdc5092319cf0fc84807c305994daa3c@github.com/BinaryMisfit/dot-osx.git ${HOME}/.dotfiles
 sudo rm -rf ${HOME}/.bash* ${HOME}/.gitconfig ${HOME}/.iterm* ${HOME}/.ssh ${HOME}/.tmux* ${HOME}/.paper* ${HOME}/.profile* ${HOME}/.power* ${HOME}/.vim* ${HOME}/.z*
 stow --dir=${HOME}/.dotfiles/ --target=${HOME}/ git
-stow --dir=${HOME}/.dotfiles/ --target=${HOME}/ iterm
 stow --dir=${HOME}/.dotfiles/ --target=${HOME}/ ssh
 stow --dir=${HOME}/.dotfiles/ --target=${HOME}/ tmux
 stow --dir=${HOME}/.dotfiles/ --target=${HOME}/ vim
