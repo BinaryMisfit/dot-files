@@ -13,6 +13,7 @@ Plugin 'edkolev/tmuxline.vim'
 Plugin 'tmux-plugins/vim-tmux-focus-events'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'elzr/vim-json'
 call vundle#end()
 filetype plugin indent on
 set autoread

@@ -11,6 +11,7 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 
 # Plugins
 plugins=(
+    docker
     vi-mode
     vundle
     zsh-completions
