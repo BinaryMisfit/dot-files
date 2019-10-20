@@ -33,6 +33,9 @@ unsetopt BEEP
 test -e /usr/bin/vi && alias sudoedit="sudo /usr/bin/vi "
 test -e /usr/local/bin/tmux && alias tmux="tmux attach "
 
+# Update PATH
+PATH=${HOME}/.bin:${PATH}
+
 # Cleanup
 typeset -U PATH
 export PATH

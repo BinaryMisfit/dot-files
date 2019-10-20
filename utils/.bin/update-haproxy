@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+echo "Updating Mini"
+STOP_HAPROXY="docker stop haproxy && docker rm haproxy"
+PULL_HAPROXY="docker pull binarymisfit/haproxy:latest"
+START_HAPROXY="start-haproxy.sh"
+CONTAINER_PATH=/Volumes/Scratch/apps/containers/mini/
+ssh -T mini << EOF
+    ${STOP_HAPROXY}
+    ${PULL_HAPROXY}
+    ${CONTAINER_PATH}${START_HAPROXY}
+EOF
+
+echo "Updating Scratch"
+CONTAINER_PATH=/home/willie/.source/repos/docker/containers/scratch/
+ssh -T scratch << EOF
+    ${STOP_HAPROXY}
+    ${PULL_HAPROXY}
+    ${CONTAINER_PATH}${START_HAPROXY}
+EOF
+
+echo "Updating Staging"
+CONTAINER_PATH=/mnt/datastore/source/containers/staging/
+ssh -T staging << EOF
+    ${STOP_HAPROXY}
+    ${PULL_HAPROXY}
+    ${CONTAINER_PATH}${START_HAPROXY}
+EOF
+
+echo "Updating Hosting"
+CONTAINER_PATH=/mnt/datastore/source/containers/hosting/
+ssh -T staging << EOF
+    ${STOP_HAPROXY}
+    ${PULL_HAPROXY}
+    ${CONTAINER_PATH}${START_HAPROXY}
+EOF
