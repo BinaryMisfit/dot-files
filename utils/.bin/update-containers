@@ -26,7 +26,7 @@ EOF
 
 echo "Updating Hosting"
 CONTAINER_PATH=/mnt/datastore/source/containers/
-ssh -T staging << EOF
+ssh -T hosting << EOF
     cd ${CONTAINER_PATH}
     ${GIT_PULL}
     cd

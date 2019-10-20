@@ -28,7 +28,7 @@ EOF
 
 echo "Updating Hosting"
 CONTAINER_PATH=/mnt/datastore/source/containers/hosting/
-ssh -T staging << EOF
+ssh -T hosting << EOF
     ${STOP_WATCHTOWER}
     ${PULL_WATCHTOWER}
     ${CONTAINER_PATH}${START_WATCHTOWER}
