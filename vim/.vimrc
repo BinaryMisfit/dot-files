@@ -36,7 +36,7 @@ set ruler
 set showcmd
 set smartcase
 set tabstop=4
-set timeoutlen=100
+set timeoutlen=1000
 set title
 set ttimeoutlen=100
 set shiftwidth=4
