@@ -30,33 +30,37 @@ set incsearch
 set nobackup
 set nohlsearch
 set noshowmode
-set number
 set nowrap
 set nowritebackup
+set number
 set ruler
+set shiftwidth=4
 set showcmd
 set smartcase
 set tabstop=4
 set timeoutlen=2000
 set title
 set ttimeoutlen=100
-set shiftwidth=4
-set undofile
 set undodir=~/.vum/undo,~/tmp,/tmp
+set undofile
 set viminfo='20,\"80
 set visualbell
 set wildmenu
 set wildmode=longest:full,full
-let mapleader=","
-let g:airline_powerline_fonts = 1
-let g:airline_theme = 'papercolor'
+let g:airline#extensions#hunks#enabled = 1
 let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'jsformatter'
-let g:airline#extensions#hunks#enabled = 1
-let g:netrw_liststyle = 1
+let g:airline_powerline_fonts = 1
+let g:airline_theme = 'papercolor'
 let g:netrw_banner = 0
 let g:netrw_browse_split = 0
+let g:netrw_liststyle = 1
+let g:ycm_max_num_candidates = 20
+let g:ycm_max_num_identifier_candidates = 5
+let g:ycm_min_num_identifier_candidate_chars = 3
+let g:ycm_min_num_of_chars_for_completion = 3
+let mapleader=","
 nnoremap <up> <nop>
 nnoremap <down> <nop>
 nnoremap <left> <nop>
