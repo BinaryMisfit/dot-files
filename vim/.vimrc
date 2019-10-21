@@ -14,6 +14,7 @@ Plugin 'tmux-plugins/vim-tmux-focus-events'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'elzr/vim-json'
+Plugin 'ycm-core/YouCompleteMe'
 call vundle#end()
 filetype plugin indent on
 set autoread
@@ -62,7 +63,7 @@ nnoremap <left> <nop>
 nnoremap <right> <nop>
 autocmd Filetype gitcommit setlocal spell textwidth=72
 autocmd BufEnter * silent! lcd %:p:h
-colorscheme PaperColor
+silent! colorscheme PaperColor
 syntax on
 if exists('$TMUX') && $LC_TERMINAL =~ "iTerm"
     let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"

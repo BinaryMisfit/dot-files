@@ -32,6 +32,10 @@ unsetopt BEEP
 # Export aliases
 test -e /usr/bin/vi && alias sudoedit="sudo /usr/bin/vi "
 test -e /usr/local/bin/tmux && alias tmux="tmux attach "
+test -e /usr/local/bin/mvim && alias mvim="/usr/local/bin/mvim -v "
+test -e /usr/local/bin/mvim && alias vi="/usr/local/bin/mvim -v "
+test -e /usr/local/bin/mvim && alias vim="/usr/local/bin/mvim -v "
+test -e /usr/local/bin/mvim && alias sudoedit="sudo /usr/local/bin/mvim -v "
 
 # Update PATH
 PATH=${HOME}/.bin:${PATH}
