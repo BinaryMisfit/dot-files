@@ -12,7 +12,6 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 # Plugins
 plugins=(
     docker
-    vi-mode
     vundle
     zsh-completions
     zsh-autosuggestions
@@ -31,7 +30,8 @@ unsetopt BEEP
 
 # Export aliases
 test -e /usr/bin/vi && alias sudoedit="sudo /usr/bin/vi "
-test -e /usr/local/bin/tmux && alias tmux="tmux attach "
+test -e /usr/local/bin/tmux && alias tmux="/usr/local/bin/tmux attach "
+test -e /usr/local/bin/tmux && alias tmux-kill="/usr/local/bin/tmux kill-server"
 test -e /usr/local/bin/mvim && alias mvim="/usr/local/bin/mvim -v "
 test -e /usr/local/bin/mvim && alias vi="/usr/local/bin/mvim -v "
 test -e /usr/local/bin/mvim && alias vim="/usr/local/bin/mvim -v "
