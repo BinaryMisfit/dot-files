@@ -4,6 +4,9 @@ test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
 # P9K
 export POWERLEVEL9K_DIR_SHOW_WRITABLE=true
 export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon user vcs dir status)
+export POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=
+export POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX='%{%F{145}%} '
+export POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(history command_execution_time load ram disk_usage ssh)
 export POWERLEVEL9K_SHORTEN_DELIMITER=""
 export POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
