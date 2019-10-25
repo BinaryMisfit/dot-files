@@ -5,7 +5,7 @@ call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'conradirwin/vim-bracketed-paste'
-Plugin 'NLKNguyen/papercolor-theme'
+Plugin 'joshdick/onedark.vim'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'mhinz/vim-startify'
 Plugin 'chrisbra/sudoedit.vim'
@@ -18,7 +18,7 @@ Plugin 'ycm-core/YouCompleteMe'
 call vundle#end()
 filetype plugin indent on
 set autoread
-set background=light
+set background=dark
 set backspace=indent,eol,start
 set encoding=utf-8
 set expandtab
@@ -52,7 +52,7 @@ let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'jsformatter'
 let g:airline_powerline_fonts = 1
-let g:airline_theme = 'papercolor'
+let g:airline_theme = 'onedark'
 let g:netrw_banner = 0
 let g:netrw_browse_split = 0
 let g:netrw_liststyle = 1
@@ -67,7 +67,7 @@ nnoremap <left> <nop>
 nnoremap <right> <nop>
 autocmd Filetype gitcommit setlocal spell textwidth=72
 autocmd BufEnter * silent! lcd %:p:h
-silent! colorscheme PaperColor
+silent! colorscheme onedark
 syntax on
 if exists('$TMUX') && $LC_TERMINAL =~ "iTerm"
     let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
