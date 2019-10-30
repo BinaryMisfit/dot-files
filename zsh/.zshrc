@@ -11,8 +11,6 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 export ZSH_DISABLE_COMPFIX=true
 export ZSH_THEME=powerlevel9k/powerlevel9k
 
-
-
 # Plugins
 plugins=(
     docker
@@ -107,6 +105,8 @@ test -e /usr/local/bin/mvim && alias sudoedit="sudo /usr/local/bin/mvim -v "
 
 # Update PATH
 PATH=${HOME}/.bin:${PATH}
+PATH=/usr/local/sbin:${PATH}
+PATH=/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}
 
 # Cleanup
 typeset -U PATH
