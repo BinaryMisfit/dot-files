@@ -2,17 +2,20 @@ set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-Plugin 'gmarik/Vundle.vim'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'conradirwin/vim-bracketed-paste'
-Plugin 'joshdick/onedark.vim'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'mhinz/vim-startify'
+Plugin 'bkad/CamelCaseMotion'
 Plugin 'chrisbra/sudoedit.vim'
+Plugin 'conradirwin/vim-bracketed-paste'
+Plugin 'easymotion/vim-easymotion'
+Plugin 'elzr/vim-json'
+Plugin 'gmarik/Vundle.vim'
+Plugin 'joshdick/onedark.vim'
+Plugin 'mhinz/vim-startify'
+Plugin 'scrooloose/nerdcommenter'
 Plugin 'tmux-plugins/vim-tmux-focus-events'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'elzr/vim-json'
+Plugin 'vim-scripts/ReplaceWithRegister'
 Plugin 'ycm-core/YouCompleteMe'
 call vundle#end()
 filetype plugin indent on
