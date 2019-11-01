@@ -2,6 +2,7 @@ ssh/.ssh/id_*
 ssh/.ssh/known_hosts
 ssh/.ssh/google*
 vim/.vim/*
+!vim/.vim/spell
 .DS_Store
 fishd*
 */**/*.swp

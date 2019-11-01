@@ -2,6 +2,7 @@ set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
+Plugin 'Rykka/riv.vim'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'bkad/CamelCaseMotion'
 Plugin 'chrisbra/sudoedit.vim'
@@ -29,6 +30,8 @@ set fileencodings=utf-8
 set history=80
 set ignorecase
 set incsearch
+set list
+set listchars=eol:$,nbsp:_,tab:>-,trail:~,extends:>,precedes:<
 set nobackup
 set nohlsearch
 set noshowmode
@@ -36,10 +39,12 @@ set nowrap
 set nowritebackup
 set number
 set ruler
+set spell spelllang=en_gb
 set shiftwidth=4
 set showcmd
 set smartcase
 set tabstop=4
+set textwidth=80
 set timeoutlen=2000
 set title
 set ttimeoutlen=100
@@ -47,6 +52,8 @@ set undodir=~/.vum/undo,~/tmp,/tmp
 set undofile
 set viminfo='20,\"80
 set visualbell
+set wrap
+set wrapmargin=80
 set wildmenu
 set wildmode=longest:full,full
 let g:airline#extensions#hunks#enabled = 1
