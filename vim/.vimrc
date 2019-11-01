@@ -27,6 +27,7 @@ set encoding=utf-8
 set expandtab
 set fileencoding=utf-8
 set fileencodings=utf-8
+set guifont=FiraCode\ NF:h12
 set history=80
 set ignorecase
 set incsearch
