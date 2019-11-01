@@ -14,6 +14,7 @@ export ZSH_THEME=powerlevel9k/powerlevel9k
 # Plugins
 plugins=(
     docker
+    git
     vundle
     zsh-completions
     zsh-autosuggestions
