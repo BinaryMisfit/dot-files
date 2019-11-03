@@ -2,7 +2,6 @@ set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-Plugin 'Rykka/riv.vim'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'bkad/CamelCaseMotion'
 Plugin 'chrisbra/sudoedit.vim'
@@ -17,7 +16,6 @@ Plugin 'tmux-plugins/vim-tmux-focus-events'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'vim-scripts/ReplaceWithRegister'
-Plugin 'ycm-core/YouCompleteMe'
 call vundle#end()
 filetype plugin indent on
 set autoread
@@ -66,10 +64,6 @@ let g:airline_theme = 'onedark'
 let g:netrw_banner = 0
 let g:netrw_browse_split = 0
 let g:netrw_liststyle = 1
-let g:ycm_max_num_candidates = 20
-let g:ycm_max_num_identifier_candidates = 5
-let g:ycm_min_num_identifier_candidate_chars = 3
-let g:ycm_min_num_of_chars_for_completion = 3
 let mapleader=","
 nnoremap <up> <nop>
 nnoremap <down> <nop>
