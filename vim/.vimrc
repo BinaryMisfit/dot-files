@@ -31,20 +31,20 @@ Plug 'bkad/CamelCaseMotion'
 Plug 'chrisbra/sudoedit.vim'
 Plug 'conradirwin/vim-bracketed-paste'
 Plug 'easymotion/vim-easymotion'
-Plug 'elzr/vim-json'
 Plug 'joshdick/onedark.vim'
 Plug 'mhinz/vim-startify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'scrooloose/nerdcommenter'
 Plug 'tmux-plugins/vim-tmux-focus-events'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline', {'branch': 'master'}
+Plug 'vim-airline/vim-airline-themes', {'branch': 'master'}
 Plug 'vim-scripts/ReplaceWithRegister'
 call plug#end()
 
 autocmd BufEnter * silent! lcd %:p:h
 autocmd CursorHold * silent call CocActionAsync('highlight')
 autocmd Filetype gitcommit setlocal spell textwidth=72
+autocmd FileType json syntax match Comment +\/\/.\+$+
 
 set autoread
 set background=dark
