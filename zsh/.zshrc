@@ -13,9 +13,6 @@ export ZSH_THEME=powerlevel10k/powerlevel10k
 
 # Plugins
 plugins=(
-    docker
-    git
-    vundle
     zsh-completions
     zsh-autosuggestions
     zsh-navigation-tools
@@ -105,9 +102,10 @@ test -e /usr/local/bin/mvim && alias vim="/usr/local/bin/mvim -v "
 test -e /usr/local/bin/mvim && alias sudoedit="sudo /usr/local/bin/mvim -v "
 
 # Update PATH
-PATH=${HOME}/.bin:${PATH}
 PATH=/usr/local/sbin:${PATH}
 PATH=/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}
+PATH=/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}
+PATH=${HOME}/.bin:${PATH}
 
 # Cleanup
 typeset -U PATH
