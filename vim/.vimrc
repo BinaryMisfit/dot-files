@@ -33,6 +33,12 @@ Plug 'easymotion/vim-easymotion', {'branch': 'master'}
 Plug 'joshdick/onedark.vim', {'branch': 'master'}
 Plug 'mhinz/vim-startify', {'branch': 'master'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc-css', {'branch': 'master'}
+Plug 'neoclide/coc-emmet', {'branch': 'master'}
+Plug 'neoclide/coc-html', {'branch': 'master'}
+Plug 'neoclide/coc-json', {'branch': 'master'}
+Plug 'neoclide/coc-python', {'branch': 'master'}
+Plug 'neoclide/coc-yaml', {'branch': 'master'}
 Plug 'scrooloose/nerdcommenter', {'branch': 'master'}
 Plug 'tmux-plugins/vim-tmux-focus-events', {'branch': 'master'}
 Plug 'vim-airline/vim-airline', {'branch': 'master'}
