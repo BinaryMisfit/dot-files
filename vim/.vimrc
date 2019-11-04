@@ -1,24 +1,5 @@
 set nocompatible
 
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-function! s:show_documentation()
-    if (index(['vim','help'], &filetype) >= 0)
-        execute 'h '.expand('<cword>')
-    else
-        call CocAction('doHover')
-    endif
-endfunction
-
-augroup mygroup
-    autocmd!
-    autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
 if empty(glob('~/.vim/autoload/plug.vim'))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
                 \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
