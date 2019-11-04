@@ -1,5 +1,5 @@
 let g:python_host_prog  = '/Library/Frameworks/Python.framework/Versions/2.7/bin/python2'
-let g:python3_host_prog = '/Library/Frameworks/Python.framework/Versions/3.7/bin/python3'
+let g:python3_host_prog = '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
 
 let plug_install = 0
 let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
