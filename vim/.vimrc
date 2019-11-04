@@ -66,6 +66,7 @@ set ignorecase
 set incsearch
 set list
 set listchars=eol:$,nbsp:_,tab:>-,trail:~,extends:>,precedes:<
+set macligatures
 set nobackup
 set nohlsearch
 set noshowmode
