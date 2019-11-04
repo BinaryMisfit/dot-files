@@ -12,17 +12,10 @@ endif
 unlet autoload_plug_path
 
 call plug#begin()
+Plug 'airblade/vim-gitgutter'
 Plug 'joshdick/onedark.vim'
 Plug 'lambdalisue/suda.vim'
-Plug 'mhinz/vim-signify'
 Plug 'mhinz/vim-startify'
-Plug 'neoclide/coc-css'
-Plug 'neoclide/coc-emmet'
-Plug 'neoclide/coc-html'
-Plug 'neoclide/coc-json'
-Plug 'neoclide/coc-python'
-Plug 'neoclide/coc-yaml'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
@@ -86,14 +79,9 @@ nnoremap <down> <nop>
 nnoremap <left> <nop>
 nnoremap <right> <nop>
 
-command! -nargs=0 Format :call CocAction('format')
-command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
-command! -nargs=? Fold :call CocAction('fold', <f-args>)
-
 autocmd! BufEnter * silent! lcd %:p:h
 autocmd! BufWritePost $MYVIMRC call ReloadConfig()
 autocmd! BufWritePre * %s/\s\+$//e
-autocmd! CursorHold * silent call CocActionAsync('highlight')
 autocmd! FileType json syntax match Comment +\/\/.\+$+
 autocmd! Filetype gitcommit setlocal spell textwidth=72
 
