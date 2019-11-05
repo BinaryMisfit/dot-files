@@ -1,5 +1,5 @@
 {
-    "coc.preferences.colorSupport": true,
+    "coc.preferences.colorSupport": false,
     "coc.preferences.formatOnType": true,
     "coc.preferences.extensionUpdateCheck": "daily",
     "coc.preferences.formatOnSaveFiletypes": [
