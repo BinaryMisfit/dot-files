@@ -41,7 +41,7 @@ let g:airline_detect_spelllang=0
 let g:airline_powerline_fonts=1
 let g:startify_update_oldfiles=1
 let g:startify_fortune_use_unicode=0
-let mapleader=","
+let mapleader=','
 
 set autoread
 set cmdheight=2
