@@ -12,6 +12,7 @@ endif
 unlet autoload_plug_path
 
 call plug#begin()
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'airblade/vim-gitgutter'
 Plug 'dense-analysis/ale'
 Plug 'lambdalisue/suda.vim'
@@ -26,8 +27,6 @@ if plug_install
 endif
 unlet plug_install
 
-set background=dark
-
 let g:airline#extensions#ale#enabled=1
 let g:airline#extensions#branch#enabled=1
 let g:airline#extensions#branch#format=1
@@ -39,35 +38,29 @@ let g:airline#extensions#tabline#formatter='unique_tail'
 let g:airline#extensions#tabline#show_tabs=1
 let g:airline_detect_spelllang=0
 let g:airline_powerline_fonts=1
+let g:deoplete#enable_at_startup=1
 let g:startify_update_oldfiles=1
 let g:startify_fortune_use_unicode=0
 let mapleader=','
 
-set autoread
 set cmdheight=2
+set clipboard+=unnamed
 set expandtab
 set hidden
-set history=80
 set ignorecase
-set incsearch
 set list
-set listchars=eol:$,nbsp:_,tab:>-,trail:~,extends:>,precedes:<
 set nobackup
 set nohlsearch
 set noshowmode
 set nowrap
 set nowritebackup
 set number
-set ruler
 set shiftwidth=4
-set shortmess+=c
-set showcmd
 set smartcase
 set spell spelllang=en_gb
 set tabstop=4
 set textwidth=80
 set title
-set undodir=~/.vum/undo,~/tmp,/tmp
 set undofile
 set updatetime=100
 set viminfo='20,\"80
