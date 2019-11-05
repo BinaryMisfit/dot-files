@@ -1,31 +1,11 @@
 let g:python_host_prog  = '/Library/Frameworks/Python.framework/Versions/2.7/bin/python2'
 let g:python3_host_prog = '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
 
-let plug_install = 0
-let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
-if !filereadable(autoload_plug_path)
-    silent exe '!curl -fL --create-dirs -o ' . autoload_plug_path .
-        \ ' https://raw.github.com/junegunn/vim-plug/master/plug.vim'
-    execute 'source ' . fnameescape(autoload_plug_path)
-    let plug_install = 1
-endif
-unlet autoload_plug_path
+for f in split(glob(stdpath('config') . '/config.d/*.vim'), '\n')
+    exe 'source' f
+endfor
 
-call plug#begin()
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'airblade/vim-gitgutter'
-Plug 'dense-analysis/ale'
-Plug 'lambdalisue/suda.vim'
-Plug 'mhinz/vim-startify'
-Plug 'scrooloose/nerdcommenter'
-Plug 'tpope/vim-fugitive'
-Plug 'vim-airline/vim-airline'
-call plug#end()
-
-if plug_install
-    PlugInstall --sync
-endif
-unlet plug_install
+call deoplete#custom#option('ignore_sources', {'_': ['around', 'buffer']})
 
 let g:airline#extensions#ale#enabled=1
 let g:airline#extensions#branch#enabled=1
@@ -86,4 +66,3 @@ if !exists('*ReloadConfig')
         call setpos('.', save_cursor)
     endfun
 endif
-
