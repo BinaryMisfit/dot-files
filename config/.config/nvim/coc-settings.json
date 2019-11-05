@@ -1,0 +1,11 @@
+{
+    "coc.preferences.colorSupport": true,
+    "coc.preferences.formatOnType": true,
+    "coc.preferences.extensionUpdateCheck": "daily",
+    "coc.preferences.formatOnSaveFiletypes": [
+        "json",
+        "jsonc"
+    ],
+    "codeLens.enable": true,
+    "diagnostic.displayByAle": true
+}

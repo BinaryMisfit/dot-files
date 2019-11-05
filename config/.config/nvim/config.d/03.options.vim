@@ -1,5 +1,5 @@
-set cmdheight=2
 set clipboard+=unnamed
+set cmdheight=2
 set expandtab
 set hidden
 set ignorecase
@@ -11,6 +11,8 @@ set nowrap
 set nowritebackup
 set number
 set shiftwidth=4
+set shortmess+=c
+set signcolumn=yes
 set smartcase
 set spell spelllang=en_gb
 set tabstop=4

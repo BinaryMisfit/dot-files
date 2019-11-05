@@ -9,9 +9,7 @@ endif
 unlet autoload_plug_path
 
 call plug#begin()
-Plug 'Shougo/denite.nvim'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Shougo/neco-syntax'
+Plug 'neoclide/coc.nvim', {'tag': '*',  'branch': 'release', 'do': { -> coc#util#install()}}
 Plug 'airblade/vim-gitgutter'
 Plug 'dense-analysis/ale'
 Plug 'lambdalisue/suda.vim'
@@ -22,6 +20,6 @@ Plug 'vim-airline/vim-airline'
 call plug#end()
 
 if plug_install
-    PlugInstall --sync
+    PlugInstall --sync | q
 endif
 unlet plug_install
