@@ -1,5 +1,6 @@
 set clipboard+=unnamed
 set cmdheight=2
+set colorcolumn=100
 set cursorline
 set expandtab
 set hidden
@@ -10,23 +11,23 @@ set nohlsearch
 set noshowmode
 set nowritebackup
 set number
-set shiftwidth=4
-set shortmess+=c
+set shada=%0,'20,/1000,s100,:1000,<1000,@1000
+set shiftwidth=2
+set shortmess=aoOstTWAcqF
 set showmatch
 set signcolumn=yes
 set smartcase
+set softtabstop=2
 set splitbelow
 set splitright
-set tabstop=4
-set textwidth=80
-set title
+set tabstop=2
+set textwidth=100
 set undofile
 set undolevels=500
 set undoreload=1000
 set updatetime=100
-set viminfo='20,\"80
 set visualbell
 set wrap
-set wrapmargin=80
+set wrapmargin=100
 
 let mapleader=','

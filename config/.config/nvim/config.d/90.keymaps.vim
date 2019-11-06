@@ -8,4 +8,4 @@ nnoremap <silent> <down> <nop>
 nnoremap <silent> <left> <nop>
 nnoremap <silent> <right> <nop>
 
-xmap ga <Plug>(EasyAlign)
+map ga <Plug>(EasyAlign)

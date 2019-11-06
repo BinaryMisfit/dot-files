@@ -10,8 +10,30 @@ let g:airline#extensions#tabline#show_tabs=1
 let g:airline_detect_spelllang=0
 let g:airline_powerline_fonts=1
 let g:ale_fix_on_save=1
-let g:startify_fortune_use_unicode=0
+let g:buffeline_echo=0
+let g:startify_bookmarks= [
+  \ '~/.config/nvim/init.vim', 
+  \ '~/.config/nvim/config.d/01.plugins.vim',
+  \ '~/.zshrc',
+  \ ]
+let g:startify_commands = [
+  \ [ 'Help', ':help reference' ],
+  \ [ 'Reload', ':source $MYVIMRC' ],
+  \ [ 'Update', 'call dein#update()' ] 
+  \ ]
+let g:startify_files_number=5
+let g:startify_fortune_use_unicode=1
+let g:startify_lists = [
+  \ { 'type': 'sessions',   'header': ['  Last Session '] },
+  \ { 'type': 'dir',        'header': ['  Current Directory: ' . getcwd()] },
+  \ { 'type': 'files',      'header': ['  Recent Files'] },
+  \ { 'type': 'commands',   'header': ['  Commands'] },
+  \ { 'type': 'bookmarks',  'header': ['  Quick List'] }
+  \ ]
+let g:startify_session_autoload=1
+let g:startify_session_delete_buffers=1
+let g:startify_session_dir=stdpath('config') . '/nvim/session'
+let g:startify_session_persistence=1
 let g:startify_update_oldfiles=1
 let g:undotree_SetFocusWhenToggle=1
 let g:undotree_WindowLayout=3
-let g:sessionman_save_on_exit=1

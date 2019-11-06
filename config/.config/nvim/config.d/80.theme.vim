@@ -2,7 +2,7 @@ silent! colorscheme papercolor
 
 let g:PaperColor_Theme_Options = {
   \   'theme': {
-  \     'default.dark': {
+  \     'default': {
   \       'transparent_background': 1,
   \       'allow_bold': 1,
   \       'allow_italic': 1
