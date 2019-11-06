@@ -12,9 +12,9 @@ let g:airline_powerline_fonts=1
 let g:ale_fix_on_save=1
 let g:buffeline_echo=0
 let g:startify_bookmarks= [
-  \ '~/.config/nvim/init.vim', 
-  \ '~/.config/nvim/config.d/01.plugins.vim',
-  \ '~/.zshrc',
+  \ stdpath('config') . '/nvim/init.vim', 
+  \ stdpath('config') . '/nvim/config.d/01.plugins.vim',
+  \ expand('~') . '/.zshrc',
   \ ]
 let g:startify_commands = [
   \ [ 'Help', ':help reference' ],
@@ -33,7 +33,9 @@ let g:startify_lists = [
 let g:startify_session_autoload=1
 let g:startify_session_delete_buffers=1
 let g:startify_session_dir=stdpath('config') . '/nvim/session'
+let g:startify_session_number=5
 let g:startify_session_persistence=1
+let g:startify_session_sort=1
 let g:startify_update_oldfiles=1
 let g:undotree_SetFocusWhenToggle=1
 let g:undotree_WindowLayout=3
