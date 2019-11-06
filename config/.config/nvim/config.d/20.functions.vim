@@ -1,15 +1,15 @@
 if !exists('*OverrideTheme')
-  fun! OverrideTheme()
+  function! OverrideTheme()
     highlight clear SignColumn
-  endfun
+  endfunction
 endif
 
 if !exists('*ConfFileType')
-  fun! ConfFileType(filetype) abort
+  function! ConfFileType(filetype) abort
     if a:filetype == "markdown"
       setlocal spell spelllang=en_gb
     elseif a:filetype == "gitcommit"
       setlocal spell spelllang=en_gb
     endif
-  endfun
+  endfunction
 endif

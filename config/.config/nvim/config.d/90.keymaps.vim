@@ -1,4 +1,4 @@
-cmap w!! w !sudo tee % > /dev/null
+cmap <silent> w!! w !sudo tee % > /dev/null
 
 nmap <silent> <Leader>/ :let @/=""<CR>
 nmap ga <Plug>(EasyAlign)

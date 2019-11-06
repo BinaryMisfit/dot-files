@@ -10,15 +10,15 @@ augroup END
 
 augroup enableSpell
   autocmd!
-  autocmd FileType * call ConfFileType(&filetype)
+  autocmd FileType * silent! call ConfFileType(&filetype)
 augroup END
 
 augroup fixTheme
   autocmd!
-  autocmd VimEnter * call OverrideTheme()
+  autocmd VimEnter * silent! call OverrideTheme()
 augroup END
 
 augroup helpWindow
   autocmd!
-  autocmd FileType help wincmd L
+  autocmd FileType help silent! wincmd L
 augroup END
