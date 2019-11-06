@@ -1,5 +1,6 @@
 set clipboard+=unnamed
 set cmdheight=2
+set cursorline
 set expandtab
 set hidden
 set ignorecase
@@ -11,11 +12,17 @@ set nowritebackup
 set number
 set shiftwidth=4
 set shortmess+=c
+set showmatch
+set signcolumn=yes
 set smartcase
+set splitbelow
+set splitright
 set tabstop=4
 set textwidth=80
 set title
 set undofile
+set undolevels=500
+set undoreload=1000
 set updatetime=100
 set viminfo='20,\"80
 set visualbell

@@ -28,4 +28,15 @@ augroup reloadVIMRC
     autocmd!
     autocmd BufWritePost stdpath('config') . '/config.d/*.vim' call ReloadConfig()
     autocmd BufWritePost $MYVIMRC call ReloadConfig()
+    autocmd BufWritePost stdpath('config') . '/config.d/01.plugins.vim' call dein#update()
+augroup END
+
+augroup helpWindow
+    autocmd!
+    autocmd FileType help wincmd L
+augroup END
+
+augroup autoFormat
+    autocmd!
+    autocmd BufWrite * :Autoformat
 augroup END
