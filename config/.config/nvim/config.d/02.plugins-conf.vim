@@ -4,7 +4,6 @@ let g:airline#extensions#branch#enabled=1                   " Show GIT branch
 let g:airline#extensions#branch#format=1                    " Set GIT branch display format
 let g:airline#extensions#bufferline#enabled=1               " Enable BufferLine plugin
 let g:airline#extensions#bufferline#overwrite_variables=0   " Bufferline can't overwrite variables
-let g:airline#extensions#coc#enabled=1                      " Enable COC plugin
 let g:airline#extensions#cursormode#enabled=1               " Display cursor in different colors
 let g:airline#extensions#fugitiveline#enabled=1             " Enable Fugitive plugin
 let g:airline#extensions#hunks#enabled=1                    " Enable gitgutter plugin
@@ -16,7 +15,10 @@ let g:airline_powerline_fonts=1                             " Enable powerline f
 let g:airline_theme='papercolor'                            " Set theme to match global theme
 
 " ALE
+let g:ale_close_preview_on_insert=1                         " Close error preview on insert
+let g:ale_cursor_detail=1                                   " Automatically open error preview
 let g:ale_fix_on_save=1                                     " Fix errors on saving
+let g:ale_sign_column_always=1                              " Always show the sign gutter
 
 " Bufferline
 let g:bufferline_echo=0                                     " Hide commands in commandline

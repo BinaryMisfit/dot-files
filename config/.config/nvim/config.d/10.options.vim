@@ -1,4 +1,4 @@
-set clipboard+=unnamed                                  " Use OS global clipboard
+set clipboard+=unnamed,unnamedplus                      " Use OS global clipboard
 set cmdheight=2                                         " Better display messages
 set colorcolumn=100                                     " Set the position of the color column
 set cursorline                                          " Highlight line with cursor focus
