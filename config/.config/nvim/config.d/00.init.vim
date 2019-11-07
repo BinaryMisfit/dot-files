@@ -17,7 +17,7 @@ endif
 " Download vim-plug if not found
 if host_os==#'osx'
   if empty(glob(plugin_loader))
-    execute '!curl -fLso ' . plugin_loader . ' --create-dirs '
+    silent! execute '!curl -fLso ' . plugin_loader . ' --create-dirs '
           \ 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
     augroup syncPlugins
       autocmd VimEnter * PlugInstall --sync | execute 'source ' . stdpath('config')
