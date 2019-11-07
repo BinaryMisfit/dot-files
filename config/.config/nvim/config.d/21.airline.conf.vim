@@ -3,6 +3,7 @@ let g:airline#extensions#branch#enabled=1                   " Show GIT branch
 let g:airline#extensions#branch#format=1                    " Set GIT branch display format
 let g:airline#extensions#bufferline#enabled=1               " Enable BufferLine plugin
 let g:airline#extensions#bufferline#overwrite_variables=0   " Bufferline can't overwrite variables
+let g:airline#extensions#coc#enable=1                       " Enable coc support
 let g:airline#extensions#cursormode#enabled=1               " Display cursor in different colors
 let g:airline#extensions#fugitiveline#enabled=1             " Enable Fugitive plugin
 let g:airline#extensions#hunks#enabled=1                    " Enable gitgutter plugin

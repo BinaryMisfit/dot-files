@@ -4,6 +4,13 @@ let mapleader=' '
 " Use w!! to sudowrite
 cmap w!! w !sudo tee % > /dev/null<CR>
 
+" Stage files
+nmap <silent><Leader>gw :Gwrite<CR>
+" Git status
+nmap <silent><Leader>gs :Gstatus<CR>
+" Commit staged changes
+nmap <silent><Leader>gc :Gcommit<CR>
+
 " Disable the <up> key
 nnoremap <silent> <up> <nop>
 " Disable the down key
