@@ -20,7 +20,8 @@ if host_os==#'osx'
     execute '!curl -fLso ' . plugin_loader . ' --create-dirs '
           \ 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
     augroup syncPlugins
-      autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+      autocmd VimEnter * PlugInstall --sync | execute 'source ' . stdpath('config')
+            \ . '/config.d/10.plugins.vim'
     augroup END
   endif
 endif
