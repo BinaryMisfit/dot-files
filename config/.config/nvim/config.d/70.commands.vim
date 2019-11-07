@@ -1,7 +1,7 @@
 " Enable autoformat
 augroup autoFormat
   autocmd!
-  "autocmd BufWrite * :Autoformat
+  autocmd BufWrite * silent! :Autoformat
 augroup END
 
 " Change to the open file directory

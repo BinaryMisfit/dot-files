@@ -27,6 +27,6 @@ set undofile                                            " Create file specific u
 set undolevels=500                                      " Remember last 500 changes
 set undoreload=1000                                     " Reload last 1000 changes
 set updatetime=100                                      " Update quicker
-set visualbell                                          " Use visual bell 
+set visualbell                                          " Use visual bell
 set wrap                                                " Enable wordwrapping
 set wrapmargin=100                                      " Wrap line at 100 characters

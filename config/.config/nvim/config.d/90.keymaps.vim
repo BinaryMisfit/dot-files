@@ -20,6 +20,8 @@ nnoremap <silent> <F2> :Startify<CR>
 nnoremap <silent> <F3> :UndotreeToggle<CR>
 " Use F5 to reload the configuration
 nnoremap <silent> <F5> :source $MYVIMRC<CR>
+" Use F6 to format the current document
+nnoremap <silent> <F6> :Autoformat<CR>
 " Use F7 to delete the current session file
 nnoremap <silent> <F7> :SDelete! Last-Session<CR>
 " Use F8 to load the last session file
