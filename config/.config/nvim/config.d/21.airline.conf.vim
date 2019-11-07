@@ -1,0 +1,14 @@
+let g:airline#extensions#ale#enabled=1                      " Enable ALE plugin
+let g:airline#extensions#branch#enabled=1                   " Show GIT branch
+let g:airline#extensions#branch#format=1                    " Set GIT branch display format
+let g:airline#extensions#bufferline#enabled=1               " Enable BufferLine plugin
+let g:airline#extensions#bufferline#overwrite_variables=0   " Bufferline can't overwrite variables
+let g:airline#extensions#cursormode#enabled=1               " Display cursor in different colors
+let g:airline#extensions#fugitiveline#enabled=1             " Enable Fugitive plugin
+let g:airline#extensions#hunks#enabled=1                    " Enable gitgutter plugin
+let g:airline#extensions#tabline#enabled=1                  " Display tabline
+let g:airline#extensions#tabline#formatter='unique_tail'    " Only show filename
+let g:airline#extensions#tabline#show_buffers=0             " Don't show buggers with single tab
+let g:airline_detect_spelllang=0                            " Hide spelling language
+let g:airline_powerline_fonts=1                             " Enable powerline fonts
+let g:airline_theme='papercolor'                            " Set theme to match global theme
