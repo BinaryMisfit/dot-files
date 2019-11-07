@@ -10,6 +10,10 @@ nmap <silent><Leader>gw :Gwrite<CR>
 nmap <silent><Leader>gs :Gstatus<CR>
 " Commit staged changes
 nmap <silent><Leader>gc :Gcommit<CR>
+" Push changes to origin
+nmap <silent><Leader>gp :Gpush<CR>
+" Pull changes from origin
+nmap <silent><Leader>gu :Gpull<CR>
 
 " Disable the <up> key
 nnoremap <silent> <up> <nop>

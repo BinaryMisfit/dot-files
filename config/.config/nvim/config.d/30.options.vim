@@ -9,6 +9,7 @@ set list                                                " Show hidden characters
 set nobackup                                            " Don't create backup files
 set nohlsearch                                          " Don't highlight searches
 set noshowmode                                          " Don't show the current mode
+set nostartofline                                       " Don't move cursor to start of line
 set nowritebackup                                       " Don't write back files
 set number                                              " Show line numbers
 set shada=%0,'20,/1000,s100,:1000,<1000,@1000           " Save undo history and persist
