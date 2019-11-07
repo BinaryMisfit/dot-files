@@ -1,49 +1,54 @@
-let g:airline#extensions#ale#enabled=1
-let g:airline#extensions#branch#enabled=1
-let g:airline#extensions#branch#format=1
-let g:airline#extensions#bufferline#enabled=1
-let g:airline#extensions#bufferline#overwrite_variables=0
-let g:airline#extensions#coc#enabled=1
-let g:airline#extensions#cursormode#enabled=1
-let g:airline#extensions#fugitiveline#enabled=1
-let g:airline#extensions#hunks#enabled=1
-let g:airline#extensions#tabline#enabled=1
-let g:airline#extensions#tabline#formatter='unique_tail'
-let g:airline#extensions#tabline#show_tabs=1
-let g:airline_detect_spelllang=0
-let g:airline_powerline_fonts=1
-let g:airline_theme='papercolor'
-let g:ale_fix_on_save=1
-let g:buffeline_echo=0
-let g:startify_bookmarks= [
+" Airline
+let g:airline#extensions#ale#enabled=1                      " Enable ALE plugin
+let g:airline#extensions#branch#enabled=1                   " Show GIT branch
+let g:airline#extensions#branch#format=1                    " Set GIT branch display format
+let g:airline#extensions#bufferline#enabled=1               " Enable BufferLine plugin
+let g:airline#extensions#bufferline#overwrite_variables=0   " Bufferline can't overwrite variables
+let g:airline#extensions#coc#enabled=1                      " Enable COC plugin
+let g:airline#extensions#cursormode#enabled=1               " Display cursor in different colors
+let g:airline#extensions#fugitiveline#enabled=1             " Enable Fugitive plugin
+let g:airline#extensions#hunks#enabled=1                    " Enable gitgutter plugin
+let g:airline#extensions#tabline#enabled=1                  " Display tabline
+let g:airline#extensions#tabline#formatter='unique_tail'    " Only show filename
+let g:airline#extensions#tabline#show_buffers=0             " Don't show buggers with single tab
+let g:airline_detect_spelllang=0                            " Hide spelling language
+let g:airline_powerline_fonts=1                             " Enable powerline fonts
+let g:airline_theme='papercolor'                            " Set theme to match global theme
+
+" ALE
+let g:ale_fix_on_save=1                                     " Fix errors on saving
+
+" Bufferline
+let g:bufferline_echo=0                                     " Hide commands in commandline
+
+" Startify
+let g:startify_bookmarks= [                                 
   \ stdpath('config') . '/nvim/init.vim', 
   \ stdpath('config') . '/nvim/config.d/01.plugins.vim',
   \ expand('~') . '/.zshrc',
-  \ ]
+  \ ]                                                       " Specify fixed bookmark list
 let g:startify_commands = [
   \ [ 'Help', ':help reference' ],
   \ [ 'Reload', ':source $MYVIMRC' ],
-  \ [ 'Update', 'call dein#update()' ] 
-  \ ]
-let g:startify_files_number=5
-let g:startify_fortune_use_unicode=1
+  \ [ 'Update', 'call dein#update()' ]
+  \ ]                                                       " Specify common commands
+let g:startify_files_number=5                               " Limit to 5 files
+let g:startify_fortune_use_unicode=1                        " Use unicode image
 let g:startify_lists = [
   \ { 'type': 'sessions',   'header': [''] },
   \ { 'type': 'dir',        'header': ['  Current Directory: ' . getcwd()] },
   \ { 'type': 'files',      'header': ['  Recent Files'] },
   \ { 'type': 'commands',   'header': ['  Commands'] },
   \ { 'type': 'bookmarks',  'header': ['  Quick List'] }
-  \ ]
-let g:startify_session_autoload=1
-let g:startify_session_delete_buffers=1
-let g:startify_session_dir=stdpath('config') . '/session'
-let g:startify_session_number=5
-let g:startify_session_persistence=1
-let g:startify_session_sort=1
-let g:startify_update_oldfiles=1
-let g:undotree_DiffpanelHeight=20
-let g:undotree_HelpLine=0
-let g:undotree_SetFocusWhenToggle=1
-let g:undotree_ShortIndicators=1
-let g:undotree_SplitWidth=45
-let g:undotree_WindowLayout=3
+  \ ]                                                       " Order and specify lists
+let g:startify_session_dir=stdpath('config') . '/session'   " Directory to store sessions
+let g:startify_session_number=1                             " Only save 1 session
+let g:startify_session_sort=1                               " Sort session by last modified
+let g:startify_update_oldfiles=1                            " Update old files immediatly
+
+" UndoTree
+let g:undotree_DiffpanelHeight=20                           " Set the height of the diff panel
+let g:undotree_HelpLine=0                                   " Hide the helpline
+let g:undotree_SetFocusWhenToggle=1                         " Switch to tree when opened
+let g:undotree_SplitWidth=45                                " Set the width of the panel
+let g:undotree_WindowLayout=3                               " Set the preferred layout
