@@ -28,7 +28,7 @@ let g:startify_commands = [
 let g:startify_files_number=5
 let g:startify_fortune_use_unicode=1
 let g:startify_lists = [
-  \ { 'type': 'sessions',   'header': ['  Last Session '] },
+  \ { 'type': 'sessions',   'header': [''] },
   \ { 'type': 'dir',        'header': ['  Current Directory: ' . getcwd()] },
   \ { 'type': 'files',      'header': ['  Recent Files'] },
   \ { 'type': 'commands',   'header': ['  Commands'] },
@@ -41,5 +41,9 @@ let g:startify_session_number=5
 let g:startify_session_persistence=1
 let g:startify_session_sort=1
 let g:startify_update_oldfiles=1
+let g:undotree_DiffpanelHeight=20
+let g:undotree_HelpLine=0
 let g:undotree_SetFocusWhenToggle=1
+let g:undotree_ShortIndicators=1
+let g:undotree_SplitWidth=45
 let g:undotree_WindowLayout=3

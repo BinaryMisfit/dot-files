@@ -21,6 +21,7 @@ set softtabstop=2
 set splitbelow
 set splitright
 set tabstop=2
+set termguicolors
 set textwidth=100
 set undofile
 set undolevels=500
@@ -29,5 +30,3 @@ set updatetime=100
 set visualbell
 set wrap
 set wrapmargin=100
-
-let mapleader=','
