@@ -1,6 +1,5 @@
 {
   "coc.preferences.formatOnType": true,
   "codeLens.enable": true,
-  "diagnostic.displayByAle": true,
-  "suggest.minTriggerInputLength": 3
+  "diagnostic.displayByAle": true
 }

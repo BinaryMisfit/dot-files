@@ -52,17 +52,6 @@ nnoremap <silent><leader>gh :CocList<CR>
 " Show documentation
 nnoremap <silent> K :call <SID>show_doc()<CR>
 
-" Use <TAB> to next
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#rpc#request('doKeymap', ['snippets-expand', "\<TAB>"])
-" Use <TAB> to previous
-inoremap <silent><expr><S-Tab>
-    \ pumvisible() ? "\<C-p>" :
-    \<SID>check_back_space() ? "\<S-Tab>" :
-    \ coc#rpc#request('doKeymap', ['snippets-expand', "\<S-Tab>"])
-" Use <Ctrl> <SPACE> for trigger completion
 imap <expr><c-space> coc#refresh()
 " Prevent <ENTER> moving to newline
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
