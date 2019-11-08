@@ -3,4 +3,8 @@ let g:ale_sign_column_always=1                              " Always show the si
 let g:ale_fixers={
       \ '*': ['remove_trailing_lines', 'trim_whitespace' ],
       \ 'json': ['fixjson']
-      \ }                                                   " Specify fixers to user
+      \ }                                                   " Specify fixers to use
+let g:ale_linters={
+      \ 'vim': ['vint'],
+      \ 'json': ['jsonlint'],
+      \ }                                                   " Specify linters to use
