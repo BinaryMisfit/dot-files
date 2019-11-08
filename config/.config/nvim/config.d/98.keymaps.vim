@@ -5,15 +5,15 @@ let mapleader=' '
 cmap w!! w !sudo tee % > /dev/null<CR>
 
 " Stage files
-nmap <silent><Leader>gw :Gwrite<CR>
+nnoremap <silent><Leader>gw :Gwrite<CR>
 " Git status
-nmap <silent><Leader>gs :Gstatus<CR>
+nnoremap <silent><Leader>gs :Gstatus<CR>
 " Commit staged changes
-nmap <silent><Leader>gc :Gcommit<CR>
+nnoremap <silent><Leader>gc :Gcommit<CR>
 " Push changes to origin
-nmap <silent><Leader>gp :Gpush<CR>
+nnoremap <silent><Leader>gp :Gpush<CR>
 " Pull changes from origin
-nmap <silent><Leader>gu :Gpull<CR>
+nnoremap <silent><Leader>gu :Gpull<CR>
 
 " Disable the <up> key
 nnoremap <silent> <up> <nop>
@@ -36,3 +36,37 @@ nnoremap <silent> <F7> :SDelete! Last-Session<CR>
 nnoremap <silent> <F8> :SLoad Last-Session<CR>
 " Use F9 to save the last session file
 nnoremap <silent> <F9> :SSave! Last-Session<CR>
+
+" GoTos
+nnoremap <silent><leader>gd :call CocAction('jumpDefinition')<CR>
+nnoremap <silent><leader>gl :call CocAction('jumpDeclaration')<CR>
+nnoremap <silent><leader>gi :call CocAction('jumpImplementation')<CR>
+nnoremap <silent><leader>ge :call CocAction('diagnosticList')<CR>
+
+" Other helpful stuff
+nnoremap <silent><leader>ga :call CocAction('codeAction')<CR>
+nnoremap <silent><leader>gr :call CocAction('rename')<CR>
+nnoremap <silent><leader>gq :call CocAction('quickfixes')<CR>
+nnoremap <silent><leader>gh :CocList<CR>
+
+" Show documentation
+nnoremap <silent> K :call <SID>show_doc()<CR>
+
+" Use <TAB> to next
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#rpc#request('doKeymap', ['snippets-expand', "\<TAB>"])
+" Use <TAB> to previous
+inoremap <silent><expr><S-Tab>
+    \ pumvisible() ? "\<C-p>" :
+    \<SID>check_back_space() ? "\<S-Tab>" :
+    \ coc#rpc#request('doKeymap', ['snippets-expand', "\<S-Tab>"])
+" Use <Ctrl> <SPACE> for trigger completion
+imap <expr><c-space> coc#refresh()
+" Prevent <ENTER> moving to newline
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" Use <Ctrl> <l> to trigger snippets
+imap <C-l> <Plug>(coc-snippets-expand)
+" Use <Ctrl> <j> to select text for visual text of snippet.
+vmap <C-j> <Plug>(coc-snippets-select)
