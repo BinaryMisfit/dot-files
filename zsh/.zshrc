@@ -22,7 +22,7 @@ plugins=(
 
 # Source config files
 test -e ${ZSH}/oh-my-zsh.sh && source ${ZSH}/oh-my-zsh.sh
-test -e .p9k.zsh && source .p9k.zsh
+test -e ${HOME}/.p9k.zsh && source ${HOME}/.p9k.zsh
 
 # Additional setups
 autoload -U compinit && compinit
