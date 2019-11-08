@@ -12,7 +12,6 @@ Plug 'mbbill/undotree'                          " Visual undo tree
 Plug 'scrooloose/nerdcommenter'                 " Easy line comment functionality
 Plug 'dense-analysis/ale'                       " Asynchronous lint engine
 Plug 'neoclide/coc.nvim', {'branch': 'release'} " Code completion
-Plug 'bling/vim-bufferline'
 Plug 'vim-airline/vim-airline'                  " Advanced tab and statusbar
 Plug 'vim-airline/vim-airline-themes'           " Themes for airline
 Plug 'zeekay/vimtips'                           " Usefull VIM tips and tricks
