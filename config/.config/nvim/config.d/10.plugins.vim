@@ -9,6 +9,7 @@ Plug 'mhinz/vim-startify'                       " Improved start page
 Plug 'tpope/vim-fugitive'                       " Advanced GIT functionality
 Plug 'airblade/vim-gitgutter'                   " Show GIT changes in gutter
 Plug 'mbbill/undotree'                          " Visual undo tree
+Plug 'scrooloose/nerdtree'                      " NERDTree file navigator
 Plug 'scrooloose/nerdcommenter'                 " Easy line comment functionality
 Plug 'dense-analysis/ale'                       " Asynchronous lint engine
 Plug 'neoclide/coc.nvim', {'branch': 'release'} " Code completion

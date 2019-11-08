@@ -24,10 +24,10 @@ nnoremap <silent> <left> <nop>
 " Disable the right key
 nnoremap <silent> <right> <nop>
 
-" Use F2 to open startify
-nnoremap <silent> <F2> :Startify<CR>
-" Use F3 to open Undotree
-nnoremap <silent> <F3> :UndotreeToggle<CR>
+" Use F2 to open NERDTree
+nnoremap <silent> <F2> :NERDTreeToggle<CR>
+" Use F4 to open Undotree
+nnoremap <silent> <F4> :UndotreeToggle<CR>
 " Use F5 to reload the configuration
 nnoremap <silent> <F5> :source $MYVIMRC<CR>
 " Use F7 to delete the current session file

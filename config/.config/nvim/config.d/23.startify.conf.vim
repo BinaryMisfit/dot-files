@@ -1,6 +1,7 @@
 let g:startify_bookmarks= [
       \ stdpath('config') . '/config.d/00.init.vim',
       \ stdpath('config') . '/config.d/10.plugins.vim',
+      \ stdpath('config') . '/config.d/98.keymaps.vim',
       \ expand('~') . '/.zshrc',
       \ ]                                                   " Specify fixed bookmark list
 let g:startify_commands = [
