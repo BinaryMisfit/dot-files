@@ -7,14 +7,34 @@
 - clean: ["~"]
 
 - link:
-    ~/.config/nvim: config/nvim
-    ~/.gitconfig: git/.gitconfig
-    ~/.oh-my-zsh: zsh/oh-my-zsh
-    ~/.p9k.zsh: zsh/.p9k.zsh
-    ~/.tmux.conf: tmux/.tmux.conf
-    ~/.tmux/plugins/tmux-prefix-highlight: tmux/tmux-prefix-highlight
-    ~/.tmux/plugins/tpm: tmux/tpm
-    ~/.zshrc: zsh/.zshrc
+    ~/.gitconfig:
+      path: git/.gitconfig
+    ~/.oh-my-zsh:
+      path: zsh/oh-my-zsh
+    ~/.oh-my-zsh/custom/themes/powerlevel9k:
+      path: zsh/powerlevel9k
+    ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions:
+      path: zsh/zsh-autosuggestions
+    ~/.oh-my-zsh/custom/plugins/zsh-completions:
+      path: zsh/zsh-completions
+    ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting:
+      path: zsh/zsh-syntax-highlighting
+    ~/.zshrc:
+      path: zsh/.zshrc
+    ~/.p9k.zsh:
+      path: zsh/.p9k.zsh
+    ~/.config/nvim:
+      path: config/nvim
+    ~/.tmux.conf:
+      path: tmux/.tmux.conf
+    ~/.tmux/plugins/tmux-prefix-highlight:
+      path: tmux/tmux-prefix-highlight
+    ~/.tmux/plugins/tpm:
+      path: tmux/tpm
+    ~/.ssh/authorized_keys:
+      path: ssh/authorized_keys
+    ~/.ssh/config:
+      path: ssh/config
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
