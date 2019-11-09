@@ -11,6 +11,7 @@
       path: git/.gitconfig
     ~/.oh-my-zsh:
       path: zsh/oh-my-zsh
+      force: true
     ~/.oh-my-zsh/custom/themes/powerlevel9k:
       path: zsh/powerlevel9k
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions:
