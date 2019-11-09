@@ -1,0 +1,14 @@
+---
+- defaults:
+    link:
+      create: true
+      relink: true
+
+- clean: ["~"]
+
+- link:
+    ~/.config/nvim: config/nvim
+    ~/.gitconfig: git/.gitconfig
+    ~/.p9k.zsh: zsh/.p9k.zsh
+    ~/.tmux.conf: tmux/.tmux.conf
+    ~/.zshrc: zsh/.zshrc

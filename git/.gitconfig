@@ -1,32 +1,31 @@
 [user]
-	name = Willie Roberts
-	email = diagoza@me.com
+  name = Willie Roberts
+  email = diagoza@me.com
 [core]
-	editor = vi
-	autocrlf = input
+  editor = nvim
+  autocrlf = input
 [filter "media"]
-	clean = git-media-clean %f
-	smudge = git-media-smudge %f    
+  clean = git-media-clean %f
+  smudge = git-media-smudge %f
 [push]
-    default = simple
-	followTags = true
+  default = simple
+  followTags = true
 [color]
-	ui = true
+  ui = true
 [pull]
-	rebase = true
+  rebase = true
 [rerere]
-	enabled = true
+  enabled = true
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+  clean = git-lfs clean -- %f
+  process = git-lfs filter-process
+  required = true
+  smudge = git-lfs smudge -- %f
 [rebase]
-	autostash = true
+  autostash = true
 [alias]
-	s = status -s
-	clr = rm -rf --cached .
-    ac = "!f(){ git add . && git commit -m \"$@\"; };f"
-    sac = "!f(){ git submodule foreach --recursive git add . && git submodule foreach --recursive git commit -m \"$@\" && git add . && git commit -m \"$@\"; };f"
-    spull = "!f(){ git submodule foreach --recursive git pull && git pull; };f"
-    spush = "!f(){ git submodule foreach --recursive git push && git push; };f"
+  ac = "!f(){ git add . && git commit -m \"$@\"; };f"
+  clr = rm -rf --cached .
+  s = status -s
+  sinit = submodule update --init --recursive
+  supdate = submodule update --init --remote
