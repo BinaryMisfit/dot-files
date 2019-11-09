@@ -1,39 +1,24 @@
 Host *
-SendEnv LC_*
+  SendEnv LC_*
+  PermitLocalCommand yes
+  LocalCommand ssh -o PermitLocalCommand=no %n "which git > /dev/null && ([[ -d "~/.dotfiles" ]] && (echo "Updating dotfiles on %h" && cd ~/.dotfiles && git pull -q && git submodule update -q --init --remote && ./install > /dev/null) || (echo "Installing dotfiles on %h" && git clone -q https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles && git submodule update -q --init --recursive && ./dotfiles/install > /dev/null))"
 
 Host scratch
-HostName scratch.senselesslyfoolish.com
-User willie
-
-Host hosting
-HostName hosting.senselesslyfoolish.com
-User willie
-
-Host staging
-HostName staging.senselesslyfoolish.com
-User willie
+  HostName scratch.senselesslyfoolish.com
+  User willie
 
 Host sensehost
-HostName sensehost.senselesslyfoolish.com
-User willie
-
-Host senseweb
-HostName senseweb.senselesslyfoolish.com
-User server
-
-Host minissh
-HostName mini.senselesslyfoolish.com
-User server
-
-Host binary
-HostName binary.local
-User wirob
-
-Host willie
-HostName willie.local
-User wirob
+  HostName sensehost.senselesslyfoolish.com
+  User willie
 
 Host mini
-HostName mini.local
-User server
+  HostName mini.misfits.best
+  User server
 
+Host binary
+  HostName binary.local
+  User wirob
+
+Host willie
+  HostName willie.local
+  User wirob
