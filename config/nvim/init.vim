@@ -1,5 +1,5 @@
-let g:python_host_prog  = '/Library/Frameworks/Python.framework/Versions/2.7/bin/python2'
-let g:python3_host_prog = '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
+let g:python_host_prog  = substitute(system('which python2'), '\n', '', 'g')
+let g:python3_host_prog  = substitute(system('which python3'), '\n', '', 'g')
 
 for f in split(glob(stdpath('config') . '/config.d/*.vim'), '\n')
     exe 'source' f
