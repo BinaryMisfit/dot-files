@@ -36,9 +36,12 @@ test -e /usr/local/bin/nvim && alias vim="/usr/local/bin/nvim "
 # Update PATH
 PATH=/usr/local/sbin:${PATH}
 PATH=$HOME/.yarn/bin:$PATH
-PATH=/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}
-PATH=/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}
-PATH=${HOME}/.bin:${PATH}
+
+# OS Specific
+if [[ "${OSTYPE}" == "darwin"* ]]; then
+  PATH=/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}
+  PATH=/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}
+fi
 
 # Cleanup
 typeset -U PATH
