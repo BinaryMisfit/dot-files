@@ -1,0 +1,31 @@
+---
+- defaults:
+    link:
+      create: true
+      relink: true
+
+- clean: ["~"]
+
+- link:
+    ~/.gitconfig:
+      path: git/.gitconfig
+    ~/.oh-my-zsh:
+      path: zsh/oh-my-zsh
+    ~/.zshrc:
+      path: zsh/.zshrc
+    ~/.p9k.zsh:
+      path: zsh/.p9k.zsh
+    ~/.config/nvim:
+      path: config/nvim
+    ~/.tmux.conf:
+      path: tmux/.tmux.conf
+    ~/.papercolor.tmux.conf:
+      path: tmux/.papercolor.tmux.conf
+    ~/.ssh/authorized_keys:
+      path: ssh/authorized_keys
+    ~/.ssh/config:
+      path: ssh/config
+
+- shell:
+    - [git submodule update --init --recursive, Installing submodules]
+    - [git submodule update --init --remote, Upgrading submodules]

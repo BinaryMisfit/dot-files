@@ -7,11 +7,6 @@
 - clean: ["~"]
 
 - link:
-    ~/.gitconfig:
-      path: git/.gitconfig
-    ~/.oh-my-zsh:
-      path: zsh/oh-my-zsh
-      force: true
     ~/.oh-my-zsh/custom/themes/powerlevel9k:
       path: zsh/powerlevel9k
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions:
@@ -20,25 +15,7 @@
       path: zsh/zsh-completions
     ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting:
       path: zsh/zsh-syntax-highlighting
-    ~/.zshrc:
-      path: zsh/.zshrc
-    ~/.p9k.zsh:
-      path: zsh/.p9k.zsh
-    ~/.config/nvim:
-      path: config/nvim
-    ~/.tmux.conf:
-      path: tmux/.tmux.conf
     ~/.tmux/plugins/tmux-prefix-highlight:
       path: tmux/tmux-prefix-highlight
     ~/.tmux/plugins/tpm:
       path: tmux/tpm
-    ~/.papercolor.tmux.conf:
-      path: tmux/.papercolor.tmux.conf
-    ~/.ssh/authorized_keys:
-      path: ssh/authorized_keys
-    ~/.ssh/config:
-      path: ssh/config
-
-- shell:
-    - [git submodule update --init --recursive, Installing submodules]
-    - [git submodule update --init --remote, Upgrading submodules]
