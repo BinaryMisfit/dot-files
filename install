@@ -14,7 +14,7 @@ echo ${OSTYPE}
 if [[ "${OSTYPE}" == "darwin"* ]]; then
     USE_OS="osx"
 elif [[ "${OSTYPE}" == "linux-gnu" ]]; then
-    USE_OS="ubuntu"
+    USE_OS=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
 fi
 echo ${USE_OS}
 
