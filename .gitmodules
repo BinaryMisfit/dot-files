@@ -7,9 +7,6 @@
 [submodule "tmux/tmux-prefix-highlight"]
 	path = tmux/tmux-prefix-highlight
 	url = https://github.com/tmux-plugins/tmux-prefix-highlight.git
-[submodule "zsh/powerlevel9k"]
-	path = zsh/powerlevel9k
-	url = https://github.com/Powerlevel9k/powerlevel9k.git
 [submodule "zsh/zsh-completions"]
 	path = zsh/zsh-completions
 	url = https://github.com/zsh-users/zsh-completions.git
