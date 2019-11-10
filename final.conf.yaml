@@ -5,4 +5,4 @@
       relink: true
 
 - shell:
-  - [ "src" ]
+  - [source ~/.zshrc,Sourcing ZSH config]
