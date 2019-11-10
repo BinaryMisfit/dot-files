@@ -8,7 +8,7 @@
 
 - link:
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions:
-      path: zsh/zsh-autosuggestions
+      path: external/zsh-autosuggestions
     ~/.oh-my-zsh/custom/plugins/zsh-completions:
       path: zsh/zsh-completions
     ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting:
