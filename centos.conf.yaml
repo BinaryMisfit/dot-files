@@ -5,7 +5,5 @@
       relink: true
 
 - link:
-    ~/.p9k.zsh:
-      path: platform/centos/zsh/.p9k.zsh
     ~/.zshrc:
       path: platform/centos/zsh/.zshrc
