@@ -17,3 +17,5 @@
       path: platform/osx/tmux/.papercolor.tmux.conf
     ~/.tmux.conf:
       path: platform/osx/tmux/.tmux.conf
+    ~/.ssh/config:
+      path: platform/osx/ssh/config

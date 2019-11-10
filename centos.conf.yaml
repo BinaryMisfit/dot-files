@@ -13,3 +13,5 @@
       path: platform/centos/tmux/.papercolor.tmux.conf
     ~/.tmux.conf:
       path: platform/centos/tmux/.tmux.conf
+    ~/.ssh/config:
+      path: platform/centos/ssh/config

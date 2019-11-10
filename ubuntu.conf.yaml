@@ -17,3 +17,5 @@
       path: platform/ubuntu/tmux/.papercolor.tmux.conf
     ~/.tmux.conf:
       path: platform/ubuntu/tmux/.tmux.conf
+    ~/.ssh/config:
+      path: platform/ubuntu/ssh/config

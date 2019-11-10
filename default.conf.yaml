@@ -19,5 +19,3 @@
       path: config/nvim
     ~/.ssh/authorized_keys:
       path: ssh/authorized_keys
-    ~/.ssh/config:
-      path: ssh/config

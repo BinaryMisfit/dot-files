@@ -1,0 +1,8 @@
+Host *
+  SendEnv LC_*
+  PermitLocalCommand yes
+  LocalCommand ssh -o PermitLocalCommand=no %n "which git > /dev/null && ([[ -d "~/.dotfiles" ]] && (echo "Updating dotfiles on %h" && cd ~/.dotfiles && git pull -q && git submodule update -q --init --remote && ./install > /dev/null) || (echo "Installing dotfiles on %h" && git clone -q https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles && git submodule update -q --init --recursive && ./dotfiles/install > /dev/null))"
+
+Host scratch
+  HostName scratch.senselesslyfoolish.com
+  User willie
