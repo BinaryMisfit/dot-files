@@ -12,7 +12,7 @@
 
 - link:
     ~/.gitconfig:
-      path: git/.gitconfig
+      path: default/git/.gitconfig
     ~/.oh-my-zsh:
       path: external/oh-my-zsh
     ~/.config/nvim:
