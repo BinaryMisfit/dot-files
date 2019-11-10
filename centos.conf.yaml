@@ -3,3 +3,7 @@
     link:
       create: true
       relink: true
+
+- link:
+    ~/.zshrc:
+      path: platform/centos/zsh/.zshrc
