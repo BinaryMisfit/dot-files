@@ -6,6 +6,10 @@
 
 - clean: ["~"]
 
+- shell:
+    - [git submodule update --init --recursive, Installing submodules]
+    - [git submodule update --init --remote, Upgrading submodules]
+
 - link:
     ~/.gitconfig:
       path: git/.gitconfig
@@ -21,7 +25,3 @@
       path: ssh/authorized_keys
     ~/.ssh/config:
       path: ssh/config
-
-- shell:
-    - [git submodule update --init --recursive, Installing submodules]
-    - [git submodule update --init --remote, Upgrading submodules]
