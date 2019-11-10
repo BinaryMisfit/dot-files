@@ -16,6 +16,6 @@
     ~/.oh-my-zsh:
       path: external/oh-my-zsh
     ~/.config/nvim:
-      path: config/nvim
+      path: default/nvim
     ~/.ssh/authorized_keys:
       path: default/ssh/authorized_keys
