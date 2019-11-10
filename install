@@ -9,12 +9,19 @@ DOTBOT_DIR="dotbot"
 DOTBOT_BIN="bin/dotbot"
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-OS=
+USE_OS=
 echo ${OSTYPE}
 if [[ "${OSTYPE}" == "darwin"* ]]; then
-    OS="osx"
+    USE_OS="osx"
+elif [[ "${OSTYPE}" == "linux-gnu" ]]; then
+    USE_OS="ubuntu"
 fi
-echo ${OS}
+echo ${USE_OS}
+
+if [[ -z ${USE_OS} ]]; then
+    echo "Unknown OS: ${OSTYPE}"
+    exit 1
+fi
 
 cd "${BASEDIR}"
 git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
