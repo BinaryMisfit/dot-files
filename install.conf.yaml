@@ -12,7 +12,7 @@
     ~/.oh-my-zsh/custom/plugins/zsh-completions:
       path: external/zsh-completions
     ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting:
-      path: zsh/zsh-syntax-highlighting
+      path: external/zsh-syntax-highlighting
     ~/.tmux/plugins/tmux-prefix-highlight:
       path: tmux/tmux-prefix-highlight
     ~/.tmux/plugins/tpm:
