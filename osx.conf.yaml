@@ -5,5 +5,7 @@
       relink: true
 
 - link:
+    ~/.p9k.zsh:
+      path: platform/osx/zsh/.p9k.zsh
     ~/.zshrc:
       path: platform/osx/zsh/.zshrc

@@ -11,8 +11,6 @@
       path: git/.gitconfig
     ~/.oh-my-zsh:
       path: zsh/oh-my-zsh
-    ~/.p9k.zsh:
-      path: zsh/.p9k.zsh
     ~/.config/nvim:
       path: config/nvim
     ~/.tmux.conf:
