@@ -32,6 +32,8 @@
       path: tmux/tmux-prefix-highlight
     ~/.tmux/plugins/tpm:
       path: tmux/tpm
+    ~/.tmux/.papercolor.tmux.conf:
+      path: tmux/.papercolor.tmux.conf
     ~/.ssh/authorized_keys:
       path: ssh/authorized_keys
     ~/.ssh/config:
