@@ -5,11 +5,10 @@ test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
-export POWERLEVEL9K_MODE=nerdfont-complete
 export ZSH=${HOME}/.oh-my-zsh
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 export ZSH_DISABLE_COMPFIX=true
-export ZSH_THEME=powerlevel9k/powerlevel9k
+export ZSH_THEME=agnoster
 
 # Plugins
 plugins=(
@@ -22,7 +21,6 @@ plugins=(
 
 # Source config files
 test -e ${ZSH}/oh-my-zsh.sh && source ${ZSH}/oh-my-zsh.sh
-test -e ${HOME}/.p9k.zsh && source ${HOME}/.p9k.zsh
 
 # Additional setups
 autoload -U compinit && compinit
