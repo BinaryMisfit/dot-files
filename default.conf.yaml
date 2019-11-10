@@ -17,10 +17,6 @@
       path: external/oh-my-zsh
     ~/.config/nvim:
       path: config/nvim
-    ~/.tmux.conf:
-      path: tmux/.tmux.conf
-    ~/.papercolor.tmux.conf:
-      path: tmux/.papercolor.tmux.conf
     ~/.ssh/authorized_keys:
       path: ssh/authorized_keys
     ~/.ssh/config:

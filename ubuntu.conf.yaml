@@ -13,3 +13,7 @@
       path: platform/ubuntu/zsh/.p9k.zsh
     ~/.zshrc:
       path: platform/ubuntu/zsh/.zshrc
+    ~/.papercolor.tmux.conf:
+      path: platform/ubuntu/tmux/.papercolor.tmux.conf
+    ~/.tmux.conf:
+      path: platform/ubuntu/tmux/.tmux.conf

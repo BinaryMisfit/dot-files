@@ -9,3 +9,7 @@
 - link:
     ~/.zshrc:
       path: platform/centos/zsh/.zshrc
+    ~/.papercolor.tmux.conf:
+      path: platform/centos/tmux/.papercolor.tmux.conf
+    ~/.tmux.conf:
+      path: platform/centos/tmux/.tmux.conf
