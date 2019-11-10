@@ -10,7 +10,7 @@
     ~/.gitconfig:
       path: git/.gitconfig
     ~/.oh-my-zsh:
-      path: zsh/oh-my-zsh
+      path: external/oh-my-zsh
     ~/.config/nvim:
       path: config/nvim
     ~/.tmux.conf:
