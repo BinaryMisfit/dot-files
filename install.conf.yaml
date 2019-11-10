@@ -10,7 +10,7 @@
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions:
       path: external/zsh-autosuggestions
     ~/.oh-my-zsh/custom/plugins/zsh-completions:
-      path: zsh/zsh-completions
+      path: external/zsh-completions
     ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting:
       path: zsh/zsh-syntax-highlighting
     ~/.tmux/plugins/tmux-prefix-highlight:
