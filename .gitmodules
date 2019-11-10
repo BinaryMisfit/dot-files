@@ -1,12 +1,6 @@
 [submodule "dotbot"]
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
-[submodule "tmux/tpm"]
-	path = tmux/tpm
-	url = https://github.com/tmux-plugins/tpm.git
-[submodule "tmux/tmux-prefix-highlight"]
-	path = tmux/tmux-prefix-highlight
-	url = https://github.com/tmux-plugins/tmux-prefix-highlight.git
 [submodule "external/oh-my-zsh"]
 	path = external/oh-my-zsh
 	url = https://github.com/robbyrussell/oh-my-zsh.git
