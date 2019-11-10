@@ -19,3 +19,6 @@
 [submodule "external/oh-my-zsh"]
 	path = external/oh-my-zsh
 	url = https://github.com/robbyrussell/oh-my-zsh.git
+[submodule "external/powerlevel9k"]
+	path = external/powerlevel9k
+	url = https://github.com/Powerlevel9k/powerlevel9k.git

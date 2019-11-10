@@ -5,6 +5,8 @@
       relink: true
 
 - link:
+    ~/.oh-my-zsh/custom/themes/powerlevel9k:
+      path: external/powerlevel9k
     ~/.p9k.zsh:
       path: platform/osx/zsh/.p9k.zsh
     ~/.zshrc:
