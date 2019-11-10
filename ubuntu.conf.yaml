@@ -4,6 +4,8 @@
       create: true
       relink: true
 
+- clean: ["~"]
+
 - link:
     ~/.oh-my-zsh/custom/themes/powerlevel9k:
       path: external/powerlevel9k

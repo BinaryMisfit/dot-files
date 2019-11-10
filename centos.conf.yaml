@@ -4,6 +4,8 @@
       create: true
       relink: true
 
+- clean: ["~"]
+
 - link:
     ~/.zshrc:
       path: platform/centos/zsh/.zshrc
