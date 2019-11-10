@@ -16,3 +16,9 @@
 [submodule "external/zsh-syntax-highlighting"]
 	path = external/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
+[submodule "external/tpm"]
+	path = external/tpm
+	url = https://github.com/tmux-plugins/tpm.git
+[submodule "external/tmux-prefix-highlight"]
+	path = external/tmux-prefix-highlight
+	url = https://github.com/tmux-plugins/tmux-prefix-highlight.git
