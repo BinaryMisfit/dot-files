@@ -13,11 +13,11 @@ export ZSH_THEME=powerlevel9k/powerlevel9k
 
 # Plugins
 plugins=(
-    zsh-completions
-    zsh-autosuggestions
-    zsh-navigation-tools
-    zsh_reload
-    zsh-syntax-highlighting
+  zsh-completions
+  zsh-autosuggestions
+  zsh-navigation-tools
+  zsh_reload
+  zsh-syntax-highlighting
 )
 
 # Source config files

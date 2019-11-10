@@ -4,3 +4,10 @@ config/nvim/autoload
 config/nvim/.netrwhist
 ssh/.ssh/id_*
 ssh/.ssh/known_hosts
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
