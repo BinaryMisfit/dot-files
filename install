@@ -10,13 +10,11 @@ DOTBOT_BIN="bin/dotbot"
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 USE_OS=
-echo ${OSTYPE}
 if [[ "${OSTYPE}" == "darwin"* ]]; then
     USE_OS="osx"
 elif [[ "${OSTYPE}" == "linux-gnu" ]]; then
     USE_OS=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
 fi
-echo ${USE_OS}
 
 if [[ -z ${USE_OS} ]]; then
     echo "Unknown OS: ${OSTYPE}"
@@ -27,4 +25,6 @@ cd "${BASEDIR}"
 git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
 git submodule update --init --recursive "${DOTBOT_DIR}"
 
-# "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+for conf in ${DEFAULT_CONFIG_PREFIX} ${@}; do
+    "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${conf}${CONFIG_SUFFIX}"
+done
