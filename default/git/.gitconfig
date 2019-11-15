@@ -1,6 +1,6 @@
 [user]
-  name = Willie Roberts
-  email = diagoza@me.com
+	name = Willie Roberts
+	email = diagoza@me.com
 [core]
   editor = nvim
   autocrlf = input

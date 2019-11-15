@@ -13,6 +13,7 @@ Plug 'scrooloose/nerdtree'                      " NERDTree file navigator
 Plug 'scrooloose/nerdcommenter'                 " Easy line comment functionality
 Plug 'dense-analysis/ale'                       " Asynchronous lint engine
 Plug 'neoclide/coc.nvim', {'branch': 'release'} " Code completion
+Plug 'neoclide/jsonc.vim'                       " JSON with comments support
 Plug 'vim-airline/vim-airline'                  " Advanced tab and statusbar
 Plug 'vim-airline/vim-airline-themes'           " Themes for airline
 Plug 'zeekay/vimtips'                           " Usefull VIM tips and tricks

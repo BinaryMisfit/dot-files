@@ -6,6 +6,7 @@ let g:ale_fixers={
       \ 'yaml': ['prettier']
       \ }                                                   " Specify fixers to use
 let g:ale_linters={
+      \ 'cs': ['csc'],
       \ 'json': ['jsonlint'],
       \ 'yaml': ['yamllint'],
       \ 'vim': ['vint'],
