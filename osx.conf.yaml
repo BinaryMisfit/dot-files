@@ -19,3 +19,5 @@
       path: platform/osx/tmux/.tmux.conf
     ~/.ssh/config:
       path: platform/osx/ssh/config
+    ~/.config_env:
+      path: platform/osx/configure_env.sh
