@@ -36,8 +36,6 @@ test -e /usr/local/bin/nvim && alias vim="/usr/local/bin/nvim "
 # Update PATH
 PATH=/usr/local/sbin:${PATH}
 PATH=/usr/local/microsoft/powershell/7-preview:${PATH}
-PATH=/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}
-PATH=/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}
 PATH=$HOME/.yarn/bin:$PATH
 
 # Cleanup
