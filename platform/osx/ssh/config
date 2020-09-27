@@ -8,13 +8,5 @@ Host sensehost
   User willie
 
 Host mini
-  HostName mini.misfits.best
+  HostName mini.digitalmisfit.net
   User server
-
-Host binary
-  HostName binary.local
-  User wirob
-
-Host willie
-  HostName willie.local
-  User wirob
