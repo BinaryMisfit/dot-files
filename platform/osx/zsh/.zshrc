@@ -34,8 +34,7 @@ test -e /usr/local/bin/nvim && alias vi="/usr/local/bin/nvim "
 test -e /usr/local/bin/nvim && alias vim="/usr/local/bin/nvim "
 
 # Update PATH
-PATH=/usr/local/sbin:${PATH}
-PATH=/usr/local/microsoft/powershell/7-preview:${PATH}
+PATH=/Library/Frameworks/Mono.framework/Versions/Current:$PATH
 PATH=$HOME/.yarn/bin:$PATH
 
 # Cleanup
