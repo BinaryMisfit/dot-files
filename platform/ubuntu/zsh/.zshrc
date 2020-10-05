@@ -29,9 +29,9 @@ autoload -U compinit && compinit
 unsetopt BEEP
 
 # Export aliases
-test -e /usr/local/bin/nvim && alias sudoedit="sudo /usr/local/bin/nvim "
-test -e /usr/local/bin/nvim && alias vi="/usr/local/bin/nvim "
-test -e /usr/local/bin/nvim && alias vim="/usr/local/bin/nvim "
+test -e /usr/bin/nvim && alias sudoedit="sudo /usr/bin/nvim "
+test -e /usr/bin/nvim && alias vi="/usr/bin/nvim "
+test -e /usr/bin/nvim && alias vim="/usr/bin/nvim "
 
 # Update PATH
 PATH=/usr/local/sbin:${PATH}
