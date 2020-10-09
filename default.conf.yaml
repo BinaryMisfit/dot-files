@@ -11,8 +11,6 @@
     - [git submodule update --init --remote, Upgrading submodules]
 
 - link:
-    ~/.gitconfig:
-      path: default/git/.gitconfig
     ~/.oh-my-zsh:
       path: external/oh-my-zsh
     ~/.config/nvim:
