@@ -3,6 +3,20 @@ echo "Update environment"
 UPDATE_DOT_FILES=true
 DOT_FILES=~/.dotfiles
 GIT=$(which git)
+OS_PREFIX=
+if [[ "${OSTYPE}" == "darwin"* ]]; then
+  OS_PREFIX="osx"
+elif [[ "${OSTYPE}" == "linux-gnu" ]]; then
+  OS_PREFIX=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed
+  's/["]//g' | awk '{print tolower($1)}')
+fi
+
+if [[ -z ${OS_PREFIX} ]]; then
+  echo "Unknown OS: ${OSTYPE}"
+  exit 1
+fi
+
+echo ${OS_PREFIX}
 if [ ! -d "$DOT_FILES" ]; then
   UPDATE_DOT_FILES=false
   echo "Shell configuration scripts not installed"
