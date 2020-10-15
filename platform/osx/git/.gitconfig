@@ -31,3 +31,5 @@
   supdate = submodule update --init --remote
 [credential]
 	helper = osxkeychain
+[submodule]
+	recurse = true
