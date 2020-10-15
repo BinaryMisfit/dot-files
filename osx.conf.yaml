@@ -9,6 +9,8 @@
 - link:
     ~/.oh-my-zsh/custom/themes/powerlevel9k:
       path: external/powerlevel9k
+    ~/.iterm2:
+      path: platform/osx/iterm2
     ~/.gitconfig:
       path: platform/osx/git/.gitconfig
     ~/.p9k.zsh:
