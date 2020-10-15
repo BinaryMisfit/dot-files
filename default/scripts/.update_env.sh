@@ -2,6 +2,7 @@
 echo "Update environment"
 INSTALL_DOT_FILES=false
 UPDATE_DOT_FILES=true
+CONFIGURE_DOT_FILES=false
 DOT_FILES=~/.dotfiles
 GIT=$(which git)
 OS_PREFIX=
@@ -29,13 +30,18 @@ if [ -z "$GIT" ]; then
 fi
 
 if [ "$INSTALL_DOT_FILES" == true ]; then
-  git clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules
+  git clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet
+  CONFIGURE_DOT_FILES=true
 fi
 
 if [ "$UPDATE_DOT_FILES" == true ]; then
   pushd $DOT_FILES &>/dev/null
   git remote update --prune &>/dev/null
   popd &>/dev/null
+fi
+
+if [ "$CONFIGURE_DOT_FILES" == true ]; then
+  ~/.dotfiles/install
 fi
 
 if [ "$OS_PREFIX" == "osx" ]; then
