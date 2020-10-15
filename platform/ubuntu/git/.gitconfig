@@ -31,3 +31,5 @@
   supdate = submodule update --init --remote
 [credential]
 	helper = store
+[submodule]
+	recurse = true
