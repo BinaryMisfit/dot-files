@@ -7,8 +7,7 @@ OS_PREFIX=
 if [[ "${OSTYPE}" == "darwin"* ]]; then
   OS_PREFIX="osx"
 elif [[ "${OSTYPE}" == "linux-gnu" ]]; then
-  OS_PREFIX=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed
-  's/["]//g' | awk '{print tolower($1)}')
+  OS_PREFIX=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
 fi
 
 if [[ -z ${OS_PREFIX} ]]; then
