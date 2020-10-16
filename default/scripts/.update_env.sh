@@ -1,5 +1,6 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+
+set -o pipefail
 
 INSTALL_DOT_FILES=false
 UPDATE_DOT_FILES=true
