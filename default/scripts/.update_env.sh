@@ -2,6 +2,7 @@
 
 set -o pipefail
 
+FAILED_EXIT=0
 INSTALL_DOT_FILES=false
 UPDATE_DOT_FILES=true
 CONFIGURE_DOT_FILES=false
@@ -34,6 +35,7 @@ fi
 if [ "$INSTALL_DOT_FILES" == true ]; then
   echo ":: Configuring environment"
   git clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet
+  FAILED_EXIT=$(( $FAILED_EXIT + $? ))
   CONFIGURE_DOT_FILES=true
 fi
 
@@ -41,6 +43,7 @@ if [ "$UPDATE_DOT_FILES" == true ]; then
   echo ":: Reconfiguring environment"
   pushd $DOT_FILES &>/dev/null
   git remote update --prune &>/dev/null
+  FAILED_EXIT=$(( $FAILED_EXIT + $? ))
   popd &>/dev/null
 fi
 
@@ -51,14 +54,19 @@ fi
 if [ "$OS_PREFIX" == "osx" ]; then
   if [ -z $BREW ]; then
     echo ":: Installing ``brew``"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    FAILED_EXIT=$(( $FAILED_EXIT + $? ))
   else
     brew outdated
+    FAILED_EXIT=$(( $FAILED_EXIT + $? ))
   fi
 fi
 
 if [ "$OS_PREFIX" == "ubuntu" ]; then
   sudo apt -qq update -y
+  FAILED_EXIT=$(( $FAILED_EXIT + $? ))
 fi
 
-echo ":: Environment updated"
+if [ $FAILED_EXIT == 0 ]; then
+  echo ":: Environment updated"
+fi
