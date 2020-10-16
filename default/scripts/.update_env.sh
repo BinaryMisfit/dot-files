@@ -17,8 +17,8 @@ elif [ "$OSTYPE" == "linux-gnu" ]; then
 fi
 
 if [ -z $OS_PREFIX ]; then
-  echo "Unknown OS: $OSTYPE"
-  exit 1
+  echo ":: ERROR: Unknown OS $OSTYPE"
+  exit 255
 fi
 
 if [ ! -d "$DOT_FILES" ]; then
@@ -34,7 +34,7 @@ fi
 
 if [ "$INSTALL_DOT_FILES" == true ]; then
   echo ":: Configuring environment"
-  git clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet
+  git clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null
   if [ $? != 0 ]; then
     echo ":: ERROR: Git failed for ``.dotfiles``"
     exit 255
@@ -47,27 +47,24 @@ if [ "$UPDATE_DOT_FILES" == true ]; then
   pushd $DOT_FILES &>/dev/null
   #  git remote update --prune &>/dev/null
   CURRENT_BRANCH=$(git branch --show-current)
-  echo $CURRENT_BRANCH
   CURRENT_HEAD=$(git log --pretty=%H ...refs/heads/$CURRENT_BRANCH^)
   if [ $? != 0 ]; then
     echo ":: ERROR: Git failed for ``.dotfiles``"
     exit 255
   fi
-  echo $CURRENT_HEAD
   REMOTE_HEAD=$(git ls-remote origin -h refs/heads/$CURRENT_BRANCH | cut -f1)
   if [ $? != 0 ]; then
     echo ":: ERROR: Git failed for ``.dotfiles``"
     exit 255
   fi
-  echo $REMOTE_HEAD
   if [ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]; then
     CONFIGURE_DOT_FILES=true
-    git pull --quiet
+    git pull --quiet &>/dev/null
     if [ $? != 0 ]; then
       echo ":: ERROR: Git failed for ``.dotfiles``"
       exit 255
     fi
-    git submodule --quiet foreach 'git checkout master --quiet && git pull --quiet'
+    git submodule --quiet foreach 'git checkout master --quiet && git pull --quiet' &>/dev/null
     if [ $? != 0 ]; then
       echo ":: ERROR: Git failed for ``.dotfiles``"
       exit 255
@@ -83,7 +80,18 @@ if [ "$UPDATE_DOT_FILES" == true ]; then
 fi
 
 if [ "$CONFIGURE_DOT_FILES" == true ]; then
-  ~/.dotfiles/install
+  pushd $DOT_FILES &>/dev/null
+  ~/install &>/dev/null
+  if [ $? != 0 ]; then
+    echo ":: ERROR: ``dotfiles/install`` failed"
+    exit 255
+  fi
+  popd &>/dev/null
+  DOT_FILES_PUSH=$(git status -s)
+  if [ $? != 0 ]; then
+    echo ":: ERROR: Git failed for ``.dotfiles``"
+    exit 255
+  fi
 fi
 
 if [ "$OS_PREFIX" == "osx" ]; then
@@ -108,7 +116,6 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
     echo ":: ERROR: ``apt-get`` command failed"
     exit 255
   fi
-  echo $APT_UPDATE
   if [ ! -z "$APT_UPDATE" ]; then
     echo ":: Updating packages"
     APT_UPGRADE=$(sudo apt-get -qq upgrade -y)
