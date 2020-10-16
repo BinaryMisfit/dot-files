@@ -41,6 +41,7 @@ if [ ! -f "$ENVIRONMENT" ]; then
   touch "$ENVIRONMENT"
 fi
 
+echo ":: Verifying environment"
 unset COLORTERM
 unset DEFAULT_USER
 unset ITERM2_SQUELCH_MARK
@@ -60,51 +61,54 @@ if [ -z $KEYTIMEOUT ]; then
   echo "export KEYTIMEOUT=1" >> $ENVIRONMENT
 fi
 
+echo ":: Verifying ``.dotfiles``"
 if [ "$INSTALL_DOT_FILES" == true ]; then
-  echo ":: Configuring environment"
+  echo " :: Installing ``.dotfiles``"
   git clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git clone failed for ``.dotfiles``"
+    echo " :: ERROR: Git clone failed for ``.dotfiles``"
     exit 255
   fi
   CONFIGURE_DOT_FILES=true
 fi
 
 if [ "$UPDATE_DOT_FILES" == true ]; then
-  echo ":: Reconfiguring environment"
+  echo " :: Checking for latest ``.dotfiles``"
   pushd $DOT_FILES &>/dev/null
   #  git remote update --prune &>/dev/null
   CURRENT_BRANCH=$(git branch --show-current)
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git branch failed for ``.dotfiles``"
+    echo " :: ERROR: Git branch failed for ``.dotfiles``"
     exit 255
   fi
   CURRENT_HEAD=$(git log --pretty=%H ...refs/heads/$CURRENT_BRANCH^)
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git log failed for ``.dotfiles``"
+    echo " :: ERROR: Git log failed for ``.dotfiles``"
     exit 255
   fi
   REMOTE_HEAD=$(git ls-remote origin -h refs/heads/$CURRENT_BRANCH | cut -f1)
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git remote failed for ``.dotfiles``"
+    echo " :: ERROR: Git remote failed for ``.dotfiles``"
     exit 255
   fi
   if [ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]; then
+    echo " :: Updating ``.dotfiles``"
     CONFIGURE_DOT_FILES=true
     git pull --quiet &>/dev/null
     if [ $? != 0 ]; then
-      echo ":: ERROR: Git pull failed for ``.dotfiles``"
+      echo " :: ERROR: Git pull failed for ``.dotfiles``"
       exit 255
     fi
+    echo " :: Updating ``.dotfiles`` submodules"
     git submodule --quiet foreach 'git checkout master --quiet && git pull --quiet' &>/dev/null
     if [ $? != 0 ]; then
-      echo ":: ERROR: Git submodule failed for ``.dotfiles``"
+      echo " :: ERROR: Git submodule failed for ``.dotfiles``"
       exit 255
     fi
   fi
   DOT_FILES_PUSH=$(git status -s)
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git status failed for ``.dotfiles``"
+    echo " :: ERROR: Git status failed for ``.dotfiles``"
     exit 255
   fi
   if [ ! -z "$DOT_FILES_PUSH" ]; then
@@ -114,80 +118,92 @@ if [ "$UPDATE_DOT_FILES" == true ]; then
 fi
 
 if [ "$CONFIGURE_DOT_FILES" == true ]; then
+  echo ":: Running ``.dotfiles`` install"
   ~/.dotfiles/install &>/dev/null
   if [ $? != 0 ]; then
-    echo ":: ERROR: ``dotfiles/install`` failed"
+    echo " :: ERROR: ``dotfiles/install`` failed"
     exit 255
   fi
   pushd $DOT_FILES &>/dev/null
   DOT_FILES_PUSH=$(git status -s)
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git status failed for ``.dotfiles``"
+    echo " :: ERROR: Git status failed for ``.dotfiles``"
     exit 255
   fi
   popd &>/dev/null
 fi
 
 if [ "$OS_PREFIX" == "osx" ]; then
+  echo ":: Verifying ``brew``"
   if [ -z $BREW ]; then
+    echo " :: Installing ``brew``"
     CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
     if [ $? != 0 ]; then
-      echo ":: ERROR: ``brew`` installation failed"
+      echo " :: ERROR: ``brew`` installation failed"
       exit 255
     fi
   else
+    echo " :: Updating ``brew``"
     brew update &>/dev/null
     if [ $? != 0 ]; then
-      echo ":: ERROR: ``brew`` update failed"
+      echo " :: ERROR: ``brew`` update failed"
       exit 255
     fi
-    if [ -f ~/.brew_apps ]; then
-      MD5_HASH=$(md5 -r ~/.brew_apps | cut -d ' ' -f 1)
-      if [ "$MD5_HASH" != "$MD5_BREW_APPS" ]; then
-        if [ -z $MD5_BREW_APPS ]; then
-          echo "export=MD5_BREW_APPS=$MD5_HASH" >> $ENVIRONMENT
-        fi
-        while read app; do
-          BREW_APP=$(brew ls --versions $app)
-          if [ -z "$BREW_APP" ]; then
-            brew install $app &>/dev/null
-          fi
-          unset BREW_APP
-        done < ~/.brew_apps
-      fi
-      unset MD5_HASH
-    fi
     BREW_UPDATES=$(brew outdated)
+    echo " :: Verifying ``brew`` packages"
     if [ $? != 0 ]; then
-      echo ":: ERROR: ``brew`` outdated failed"
+      echo " :: ERROR: ``brew`` outdated failed"
       exit 255
     fi
     if [ ! -z "$BREW_UPDATES" ]; then
+      echo " :: Upgrading ``brew`` packages"
       brew upgrade &>/dev/null
       if [ $? != 0 ]; then
-        echo ":: ERROR: ``brew`` upgrade failed"
+        echo " :: ERROR: ``brew`` upgrade failed"
         exit 255
       fi
     fi
   fi
+  if [ -f ~/.brew_apps ]; then
+    echo " :: Verifying ``brew`` required packages"
+    MD5_HASH=$(md5 -r ~/.brew_apps | cut -d ' ' -f 1)
+    if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
+      echo " :: Installing ``brew`` required packages"
+      if [ -z "$MD5_BREW_APPS" ]; then
+        echo "export MD5_BREW_APPS=$MD5_HASH" >> $ENVIRONMENT
+      else
+        sed -i '' "s/$MD5_BREW_APPS/$MD5_HASH/" $ENVIRONMENT
+      fi
+      while read app; do
+        BREW_APP=$(brew ls --versions $app)
+        if [ -z "$BREW_APP" ]; then
+          brew install $app &>/dev/null
+        fi
+        unset BREW_APP
+      done < ~/.brew_apps
+    fi
+    unset MD5_HASH
+  fi
 fi
 
 if [ "$OS_PREFIX" == "ubuntu" ]; then
+    echo ":: Verifying ``apt-get``"
   APT_UPDATE=$(sudo apt-get -qq upgrade --dry-run)
   if [ $? != 0 ]; then
-    echo ":: ERROR: ``apt-get`` upgrade failed"
+    echo " :: ERROR: ``apt-get`` upgrade failed"
     exit 255
   fi
   if [ ! -z "$APT_UPDATE" ]; then
-    echo ":: Updating packages"
+    echo " :: Updating ``apt-get`` packages"
     APT_UPGRADE=$(sudo apt-get -qq upgrade -y)
     if [ $? != 0 ]; then
-      echo ":: ERROR: ``apt-get`` upgrade failed"
+      echo " :: ERROR: ``apt-get`` upgrade failed"
       exit 255
     fi
   fi
 fi
 
+echo ":: Verifying user shell"
 USER_SHELL=$(basename $SHELL)
 if [ "$USER_SHELL" != "zsh" ]; then
   ZSH=$(which zsh)
@@ -218,8 +234,9 @@ if [ "$USER_SHELL" != "zsh" ]; then
 fi
 
 
+echo ":: Verifying ``.dotfiles`` updates"
 if [ ! -z "$DOT_FILES_PUSH" ]; then
-  echo ":: ``.dotfiles`` needs to be pushed"
+  echo " :: ``.dotfiles`` needs to be pushed"
 fi
 
 unset BREW
@@ -236,4 +253,4 @@ unset USER_SHELL
 unset ZSH
 
 rm ~/.update_in_progress
-echo ":: Environment updated"
+echo ":: Verified environment"
