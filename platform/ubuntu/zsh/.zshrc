@@ -1,5 +1,6 @@
 # Load environment
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
+test -e ${HOME}/.scripts/.update_env.sh && /bin/bash ${HOME}/.scripts/.update_env.sh
 
 # Variables
 export LANG=en_US.UTF-8
