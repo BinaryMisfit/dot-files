@@ -197,8 +197,6 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
   fi
   if [ -f ~/.apt_sources ]; then
     MD5_HASH=$(md5sum ~/.apt_sources | cut -d ' ' -f 1)
-    echo $MD5_HASH
-    echo $MD5_APT_SOURCES
     if [[ "$MD5_HASH" != "$MD5_APT_SOURCES" ]]; then
       echo " :: Installing ``apt-get`` sources"
       if [ -z "$MD5_APT_SOURCES" ]; then
@@ -224,6 +222,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
         sed -i '' "s/$MD5_APT_APPS/$MD5_HASH/" $ENVIRONMENT
       fi
       while read app; do
+        echo $(which $app)
         sudo apt-get -qq install $app
       done < ~/.apt_apps
     fi
