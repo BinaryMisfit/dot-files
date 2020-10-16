@@ -45,20 +45,22 @@ if [ "$UPDATE_DOT_FILES" == true ]; then
   echo ":: Reconfiguring environment"
   pushd $DOT_FILES &>/dev/null
 #  git remote update --prune &>/dev/null
-  CURRENT_HEAD=$(git log --pretty=%H ...refs/heads/latest^)
+  CURRENT_BRANCH=$(git branch --show-current)
+  echo $CURRENT_BRANCH
+  CURRENT_HEAD=$(git log --pretty=%H ...refs/heads/$CURRENT_BRANCH^)
   if [ $? != 0 ]; then
     echo ":: ERROR: Git failed for ``.dotfiles``"
     exit 255
   fi
   echo $CURRENT_HEAD
-  REMOTE_HEAD=$(git ls-remote origin -h refs/heads/latest |cut -f1)
+  REMOTE_HEAD=$(git ls-remote origin -h refs/heads/$CURRENT_BRANCH | cut -f1)
   if [ $? != 0 ]; then
     echo ":: ERROR: Git failed for ``.dotfiles``"
     exit 255
   fi
   echo $REMOTE_HEAD
   if [ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]; then
-    echo "Git pull"
+    git pull --quiet
   fi
 
   popd &>/dev/null
@@ -91,7 +93,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
     exit 255
   fi
   echo $APT_UPDATE
-  if [ -z $APT_UPDATE ]; then
+  if [ -z "$APT_UPDATE" ]; then
     echo ":: Updating packages"
     APT_UPGRADE=$(sudo apt-get -qq upgrade -y)
     if [ $? != 0 ]; then
