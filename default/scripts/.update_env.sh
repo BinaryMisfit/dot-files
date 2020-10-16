@@ -212,8 +212,6 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
   fi
   if [ -f ~/.apt_apps ]; then
     MD5_HASH=$(md5sum ~/.apt_apps | cut -d ' ' -f 1)
-    echo $MD5_HASH
-    echo $MD5_APT_APPS
     if [[ "$MD5_HASH" != "$MD5_APT_APPS" ]]; then
       echo " :: Installing ``apt-get`` required apps"
       if [ -z "$MD5_APT_APPS" ]; then
