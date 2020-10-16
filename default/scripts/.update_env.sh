@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -o pipefail
-
 INSTALL_DOT_FILES=false
 UPDATE_DOT_FILES=true
 CONFIGURE_DOT_FILES=false
@@ -79,18 +77,19 @@ if [ "$UPDATE_DOT_FILES" == true ]; then
     echo ":: ERROR: Git status failed for ``.dotfiles``"
     exit 255
   fi
+  if [ ! -z "$DOT_FILES_PUSH" ]; then
+    CONFIGURE_DOT_FILES=true
+  fi
   popd &>/dev/null
 fi
 
 if [ "$CONFIGURE_DOT_FILES" == true ]; then
-  pushd $DOT_FILES &>/dev/null
-  ./install
-  echo $?
+  ~/.dotfiles/install &>/dev/null
   if [ $? != 0 ]; then
     echo ":: ERROR: ``dotfiles/install`` failed"
     exit 255
   fi
-  pwd
+  pushd $DOT_FILES &>/dev/null
   DOT_FILES_PUSH=$(git status -s)
   if [ $? != 0 ]; then
     echo ":: ERROR: Git status failed for ``.dotfiles``"
