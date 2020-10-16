@@ -23,6 +23,8 @@
       path: platform/osx/tmux/.tmux.conf
     ~/.ssh/config:
       path: platform/osx/ssh/config
+    ~/.brew_apps:
+      path: platform/osx/.brew_apps
 
 - shell:
   - [~/.iterm2/update_config.sh,Configuring iTerm2]

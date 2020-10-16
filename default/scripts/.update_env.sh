@@ -38,7 +38,7 @@ if [ -z "$GIT" ]; then
 fi
 
 if [ ! -f "$ENVIRONMENT" ]; then
-    touch "$ENVIRONMENT"
+  touch "$ENVIRONMENT"
 fi
 
 unset COLORTERM
@@ -135,10 +135,22 @@ if [ "$OS_PREFIX" == "osx" ]; then
       exit 255
     fi
   else
-    brew outdated
+    brew update &>/dev/null
     if [ $? != 0 ]; then
-      echo ":: ERROR: ``brew`` command failed"
+      echo ":: ERROR: ``brew`` update failed"
       exit 255
+    fi
+    BREW_UPDATES=$(brew outdated)
+    if [ $? != 0 ]; then
+      echo ":: ERROR: ``brew`` outdated failed"
+      exit 255
+    fi
+    if [ ! -z "$BREW_UPDATES" ]; then
+      brew upgrade &>/dev/null
+      if [ $? != 0 ]; then
+        echo ":: ERROR: ``brew`` upgrade failed"
+        exit 255
+      fi
     fi
   fi
 fi
@@ -162,7 +174,29 @@ fi
 USER_SHELL=$(basename $SHELL)
 if [ "$USER_SHELL" != "zsh" ]; then
   ZSH=$(which zsh)
-  echo $ZSH
+  if [ -z $ZSH ]; then
+    if [ "OS_PREFIX" == "osx" ]; then
+      brew install zsh &>/dev/null
+      if [ $? != 0 ]; then
+        echo ":: ERROR: ``zsh`` install failed"
+        exit 255
+      fi
+    elif [ "OS_PREFIX" == "ubuntu" ]; then
+      sudo apt-get -qq install zsh -y
+      if [ $? != 0 ]; then
+        echo ":: ERROR: ``zsh`` install failed"
+        exit 255
+      fi
+    fi
+  fi
+  ZSH=$(which zsh)
+  if [ ! -z $ZSH ]; then
+    chsh $ZSH  &>/dev/null
+    if [ $? != 0 ]; then
+      echo ":: ERROR: ``zsh`` cannot be set as shell"
+      exit 255
+    fi
+  fi
 fi
 
 
@@ -170,10 +204,11 @@ if [ ! -z "$DOT_FILES_PUSH" ]; then
   echo ":: ``.dotfiles`` needs to be pushed"
 fi
 
-unset DOT_FILES_PUSH
 unset BREW
+unset BREW_UPDATES
 unset CONFIGURE_DOT_FILES
 unset DOT_FILES
+unset DOT_FILES_PUSH
 unset ENVIRONMENT
 unset GIT
 unset INSTALL_DOT_FILES
