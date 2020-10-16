@@ -78,6 +78,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
     echo ":: ERROR: ``apt-get`` command failed"
     exit 255
   fi
+  echo $APT_UPDATE
   if [ -z $APT_UPDATE ]; then
     echo ":: Updating packages"
     APT_UPGRADE=$(sudo apt-get -qq upgrade -y)
