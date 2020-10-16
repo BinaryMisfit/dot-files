@@ -81,7 +81,7 @@ fi
 
 if [ "$CONFIGURE_DOT_FILES" == true ]; then
   pushd $DOT_FILES &>/dev/null
-  ./install &>/dev/null
+  /bin/bash ./install &>/dev/null
   if [ $? != 0 ]; then
     echo ":: ERROR: ``dotfiles/install`` failed"
     exit 255
