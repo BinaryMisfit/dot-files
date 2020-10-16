@@ -2,7 +2,6 @@
 
 set -o pipefail
 
-FAILED_EXIT=0
 INSTALL_DOT_FILES=false
 UPDATE_DOT_FILES=true
 CONFIGURE_DOT_FILES=false
@@ -35,7 +34,10 @@ fi
 if [ "$INSTALL_DOT_FILES" == true ]; then
   echo ":: Configuring environment"
   git clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet
-  FAILED_EXIT=$(( $FAILED_EXIT + $? ))
+  if [ $? != 0 ]; then
+    echo ":: ERROR: Git failed for ``.dotfiles``"
+    exit 255
+  fi
   CONFIGURE_DOT_FILES=true
 fi
 
@@ -43,7 +45,10 @@ if [ "$UPDATE_DOT_FILES" == true ]; then
   echo ":: Reconfiguring environment"
   pushd $DOT_FILES &>/dev/null
   git remote update --prune &>/dev/null
-  FAILED_EXIT=$(( $FAILED_EXIT + $? ))
+  if [ $? != 0 ]; then
+    echo ":: ERROR: Git failed for ``.dotfiles``"
+    exit 255
+  fi
   popd &>/dev/null
 fi
 
@@ -53,24 +58,34 @@ fi
 
 if [ "$OS_PREFIX" == "osx" ]; then
   if [ -z $BREW ]; then
-    echo ":: Installing ``brew``"
     CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
-    FAILED_EXIT=$(( $FAILED_EXIT + $? ))
+    if [ $? != 0 ]; then
+      echo ":: ERROR: ``brew`` installation failed"
+      exit 255
+    fi
   else
     brew outdated
-    FAILED_EXIT=$(( $FAILED_EXIT + $? ))
+    if [ $? != 0 ]; then
+      echo ":: ERROR: ``brew`` command failed"
+      exit 255
+    fi
   fi
 fi
 
 if [ "$OS_PREFIX" == "ubuntu" ]; then
   APT_UPDATE=$(sudo apt-get -qq upgrade --dry-run)
-  FAILED_EXIT=$(( $FAILED_EXIT + $? ))
-  if [ -z $APT_UPDATE ] && [ $FAILED_EXIT == 0 ]; then
+  if [ $? != 0 ]; then
+    echo ":: ERROR: ``apt-get`` command failed"
+    exit 255
+  fi
+  if [ -z $APT_UPDATE ]; then
     echo ":: Updating packages"
     APT_UPGRADE=$(sudo apt-get -qq upgrade -y)
+    if [ $? != 0 ]; then
+      echo ":: ERROR: ``apt-get`` upgrade failed"
+      exit 255
+    fi
   fi
 fi
 
-if [ $FAILED_EXIT == 0 ]; then
-  echo ":: Environment updated"
-fi
+echo ":: Environment updated"
