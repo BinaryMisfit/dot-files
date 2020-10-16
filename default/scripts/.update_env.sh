@@ -143,9 +143,9 @@ if [ "$OS_PREFIX" == "osx" ]; then
     fi
     if [ -f ~/.brew_apps ]; then
       MD5_HASH=$(md5 -r ~/.brew_apps | cut -d ' ' -f 1)
-      if [ "$MD5_HATCH" != "$MD5_BREW_APPS" ]; then
+      if [ "$MD5_HASH" != "$MD5_BREW_APPS" ]; then
         if [ -z $MD5_BREW_APPS ]; then
-          echo "export=MD5_BREW_APPS=$MD5_HASH" > $ENVIRONMENT
+          echo "export=MD5_BREW_APPS=$MD5_HASH" >> $ENVIRONMENT
         fi
         while read app; do
           BREW_APP=$(brew ls --versions $app)
@@ -155,6 +155,7 @@ if [ "$OS_PREFIX" == "osx" ]; then
           unset BREW_APP
         done < ~/.brew_apps
       fi
+      unset MD5_HASH
     fi
     BREW_UPDATES=$(brew outdated)
     if [ $? != 0 ]; then
@@ -191,7 +192,6 @@ USER_SHELL=$(basename $SHELL)
 if [ "$USER_SHELL" != "zsh" ]; then
   ZSH=$(which zsh)
   if [ -z $ZSH ]; then
-    echo "Install ZSH"
     if [ "$OS_PREFIX" == "osx" ]; then
       brew install zsh &>/dev/null
       if [ $? != 0 ]; then
@@ -209,8 +209,7 @@ if [ "$USER_SHELL" != "zsh" ]; then
   fi
   ZSH=$(which zsh)
   if [ ! -z $ZSH ]; then
-    echo "Set ZSH"
-    sudo chsh -s $ZSH  &>/dev/null
+    sudo chsh -s "$ZSH"  &>/dev/null
     if [ $? != 0 ]; then
       echo ":: ERROR: ``zsh`` cannot be set as shell"
       exit 255
