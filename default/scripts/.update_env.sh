@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 INSTALL_DOT_FILES=false
 UPDATE_DOT_FILES=true
 CONFIGURE_DOT_FILES=false
@@ -48,7 +50,7 @@ fi
 if [ "$OS_PREFIX" == "osx" ]; then
   if [ -z $BREW ]; then
     echo ":: Installing ``brew``"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   else
     brew outdated
   fi
@@ -58,4 +60,4 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
   sudo apt update -y
 fi
 
-echo "Update completed"
+echo ":: Environment updated"
