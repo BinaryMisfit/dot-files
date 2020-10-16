@@ -201,6 +201,21 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
       exit 255
     fi
   fi
+  if [ -f ~/.apt_sources ]; then
+    MD5_HASH=$(md5 -r ~/.brew_apps | cut -d ' ' -f 1)
+    if [[ "$MD5_HASH" != "$MD5_APT_SOURCES" ]]; then
+      echo " :: Installing ``apt-get`` sources"
+      if [ -z "$MD5_APT_SOURCES" ]; then
+        echo "export MD5_APT_SOURCES=$MD5_HASH" >> $ENVIRONMENT
+      else
+        sed -i '' "s/$MD5_APT_SOURCES/$MD5_HASH/" $ENVIRONMENT
+      fi
+      while read src; do
+        echo "$src"
+      done < ~/.apt_sources
+    fi
+    unset MD5_HASH
+  fi
 fi
 
 echo ":: Verifying user shell"

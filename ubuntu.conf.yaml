@@ -23,3 +23,5 @@
       path: platform/ubuntu/ssh/config
     ~/.hushlogin:
       path: platform/ubuntu/.hushlogin
+    ~/.apt_sources:
+      path: platform/ubuntu/.apt_sources
