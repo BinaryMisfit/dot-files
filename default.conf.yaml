@@ -17,5 +17,5 @@
       path: default/nvim
     ~/.ssh/authorized_keys:
       path: default/ssh/authorized_keys
-    ~/scripts:
+    ~/.scripts:
       path: default/scripts
