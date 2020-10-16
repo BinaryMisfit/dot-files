@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "Update environment"
 INSTALL_DOT_FILES=false
 UPDATE_DOT_FILES=true
 CONFIGURE_DOT_FILES=false
@@ -21,21 +20,22 @@ fi
 if [ ! -d "$DOT_FILES" ]; then
   UPDATE_DOT_FILES=false
   INSTALL_DOT_FILES=true
-  echo "Shell configuration scripts not installed"
 fi
 
 if [ -z "$GIT" ]; then
   UPDATE_DOT_FILES=false
   INSTALL_DOT_FILES=false
-  echo "Skipping dotfiles (Git not found)"
+  echo ":: ERROR: Skipping dotfiles (\`git\` not found)"
 fi
 
 if [ "$INSTALL_DOT_FILES" == true ]; then
+  echo ":: Configuring environment"
   git clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet
   CONFIGURE_DOT_FILES=true
 fi
 
 if [ "$UPDATE_DOT_FILES" == true ]; then
+  echo ":: Reconfiguring environment"
   pushd $DOT_FILES &>/dev/null
   git remote update --prune &>/dev/null
   popd &>/dev/null
@@ -46,17 +46,16 @@ if [ "$CONFIGURE_DOT_FILES" == true ]; then
 fi
 
 if [ "$OS_PREFIX" == "osx" ]; then
-  echo "Checking brew"
   if [ -z $BREW ]; then
-    echo "Install brew"
+    echo ":: Installing ``brew``"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   else
-    echo "Update brew"
+    brew outdated
   fi
 fi
 
 if [ "$OS_PREFIX" == "ubuntu" ]; then
-  echo "Checking apt"
-  apt update -y
+  sudo apt update -y
 fi
 
 echo "Update completed"
