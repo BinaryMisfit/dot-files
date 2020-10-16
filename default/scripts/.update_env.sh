@@ -216,7 +216,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
     echo $MD5_APT_APPS
     if [[ "$MD5_HASH" != "$MD5_APT_APPS" ]]; then
       echo " :: Installing ``apt-get`` required apps"
-      if [ -z "$MD5_APT_SOURCES" ]; then
+      if [ -z "$MD5_APT_APPS" ]; then
         echo "export MD5_APT_APPS=$MD5_HASH" >> $ENVIRONMENT
       else
         sed -i "s/$MD5_APT_APPS/$MD5_HASH/" "$ENVIRONMENT"
