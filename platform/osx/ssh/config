@@ -1,7 +1,5 @@
 Host *
   SendEnv LC_*
-  PermitLocalCommand yes
-  LocalCommand ssh -l %r -o PermitLocalCommand=no %n "which git > /dev/null && ([[ -d "~/.dotfiles" ]] && (echo "Updating dotfiles on %h" && cd ~/.dotfiles && git pull -q > /dev/null && git submodule update -q --init --remote > /dev/null && git submodule update -q --init --recursive > /dev/null && ./install > /dev/null) || (echo "Installing dotfiles on %h" && git clone -q https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles > /dev/null && git submodule update -q --init --recursive > /dev/null && ./dotfiles/install > /dev/null))"
 
 Host sensehost
   HostName sensehost.senselesslyfoolish.com
