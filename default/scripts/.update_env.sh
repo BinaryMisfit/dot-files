@@ -5,14 +5,15 @@ UPDATE_DOT_FILES=true
 CONFIGURE_DOT_FILES=false
 DOT_FILES=~/.dotfiles
 GIT=$(which git)
+BREW=$(which brew)
 OS_PREFIX=
 if [[ "$OSTYPE" == "darwin"* ]]; then
   OS_PREFIX="osx"
-elif [[ "$OSTYPE" == "linux-gnu" ]]; then
+elif [ "$OSTYPE" == "linux-gnu" ]; then
   OS_PREFIX=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
 fi
 
-if [[ -z $OS_PREFIX ]]; then
+if [ -z $OS_PREFIX ]; then
   echo "Unknown OS: $OSTYPE"
   exit 1
 fi
@@ -46,10 +47,16 @@ fi
 
 if [ "$OS_PREFIX" == "osx" ]; then
   echo "Checking brew"
+  if [ -z $BREW ]; then
+    echo "Install brew"
+  else
+    echo "Update brew"
+  fi
 fi
 
 if [ "$OS_PREFIX" == "ubuntu" ]; then
   echo "Checking apt"
+  apt update -y
 fi
 
 echo "Update completed"
