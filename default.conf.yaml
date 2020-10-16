@@ -17,3 +17,5 @@
       path: default/nvim
     ~/.ssh/authorized_keys:
       path: default/ssh/authorized_keys
+    ~/.update_env.sh:
+      path: default/scripts/.update_env.sh
