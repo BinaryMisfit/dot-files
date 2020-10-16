@@ -159,6 +159,12 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
   fi
 fi
 
+USER_SHELL=$(basename $SHELL)
+if [ "$USER_SHELL" != "zsh" ]; then
+  ZSH=$(which zsh)
+  echo $ZSH
+fi
+
 
 if [ ! -z "$DOT_FILES_PUSH" ]; then
   echo ":: ``.dotfiles`` needs to be pushed"
@@ -173,6 +179,8 @@ unset GIT
 unset INSTALL_DOT_FILES
 unset UPDATE_DOT_FILES
 unset OS_PREFIX
-rm ~/.update_in_progress
+unset USER_SHELL
+unset ZSH
 
+rm ~/.update_in_progress
 echo ":: Environment updated"
