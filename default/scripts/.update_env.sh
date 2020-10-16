@@ -65,7 +65,7 @@ fi
 if [ "$OS_PREFIX" == "ubuntu" ]; then
   APT_UPDATE=$(sudo apt-get -qq upgrade --dry-run)
   FAILED_EXIT=$(( $FAILED_EXIT + $? ))
-  if [ -z $AP_UPDATE ] && [ $FAILED_EXIT == 0 ]; then
+  if [ -z $APT_UPDATE ] && [ $FAILED_EXIT == 0 ]; then
     sudo apt-get -qq upgrade -y --dry-run
   fi
 fi
