@@ -36,7 +36,7 @@ if [ "$INSTALL_DOT_FILES" == true ]; then
   echo ":: Configuring environment"
   git clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git failed for ``.dotfiles``"
+    echo ":: ERROR: Git clone failed for ``.dotfiles``"
     exit 255
   fi
   CONFIGURE_DOT_FILES=true
@@ -47,33 +47,36 @@ if [ "$UPDATE_DOT_FILES" == true ]; then
   pushd $DOT_FILES &>/dev/null
   #  git remote update --prune &>/dev/null
   CURRENT_BRANCH=$(git branch --show-current)
+  if [ $? != 0 ]; then
+    echo ":: ERROR: Git branch failed for ``.dotfiles``"
+    exit 255
+  fi
   CURRENT_HEAD=$(git log --pretty=%H ...refs/heads/$CURRENT_BRANCH^)
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git failed for ``.dotfiles``"
+    echo ":: ERROR: Git log failed for ``.dotfiles``"
     exit 255
   fi
   REMOTE_HEAD=$(git ls-remote origin -h refs/heads/$CURRENT_BRANCH | cut -f1)
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git failed for ``.dotfiles``"
+    echo ":: ERROR: Git remote failed for ``.dotfiles``"
     exit 255
   fi
   if [ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]; then
     CONFIGURE_DOT_FILES=true
     git pull --quiet &>/dev/null
     if [ $? != 0 ]; then
-      echo ":: ERROR: Git failed for ``.dotfiles``"
+      echo ":: ERROR: Git pull failed for ``.dotfiles``"
       exit 255
     fi
     git submodule --quiet foreach 'git checkout master --quiet && git pull --quiet' &>/dev/null
     if [ $? != 0 ]; then
-      echo ":: ERROR: Git failed for ``.dotfiles``"
+      echo ":: ERROR: Git submodule failed for ``.dotfiles``"
       exit 255
     fi
   fi
-
   DOT_FILES_PUSH=$(git status -s)
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git failed for ``.dotfiles``"
+    echo ":: ERROR: Git status failed for ``.dotfiles``"
     exit 255
   fi
   popd &>/dev/null
@@ -81,17 +84,17 @@ fi
 
 if [ "$CONFIGURE_DOT_FILES" == true ]; then
   pushd $DOT_FILES &>/dev/null
-  /bin/bash ./install
+  ./install
   if [ $? != 0 ]; then
     echo ":: ERROR: ``dotfiles/install`` failed"
     exit 255
   fi
-  popd &>/dev/null
   DOT_FILES_PUSH=$(git status -s)
   if [ $? != 0 ]; then
-    echo ":: ERROR: Git failed for ``.dotfiles``"
+    echo ":: ERROR: Git status failed for ``.dotfiles``"
     exit 255
   fi
+  popd &>/dev/null
 fi
 
 if [ "$OS_PREFIX" == "osx" ]; then
