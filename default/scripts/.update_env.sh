@@ -51,14 +51,14 @@ fi
 if [ "$OS_PREFIX" == "osx" ]; then
   if [ -z $BREW ]; then
     echo ":: Installing ``brew``"
-    sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
   else
     brew outdated
   fi
 fi
 
 if [ "$OS_PREFIX" == "ubuntu" ]; then
-  sudo apt update -y
+  sudo apt -qq update -y
 fi
 
 echo ":: Environment updated"
