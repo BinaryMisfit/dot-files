@@ -99,12 +99,6 @@ if [ "$UPDATE_DOT_FILES" == true ]; then
       echo " :: ERROR: Git pull failed for ``.dotfiles``"
       exit 255
     fi
-    echo " :: Updating ``.dotfiles`` submodules"
-    git submodule --quiet foreach 'git checkout master --quiet && git pull --quiet' &>/dev/null
-    if [ $? != 0 ]; then
-      echo " :: ERROR: Git submodule failed for ``.dotfiles``"
-      exit 255
-    fi
   fi
   DOT_FILES_PUSH=$(git status -s)
   if [ $? != 0 ]; then
@@ -202,7 +196,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
     fi
   fi
   if [ -f ~/.apt_sources ]; then
-    MD5_HASH=$(md5 -r ~/.apt_sources | cut -d ' ' -f 1)
+    MD5_HASH=$(md5sum ~/.apt_sources | cut -d ' ' -f 1)
     echo $MD5_HASH
     if [[ "$MD5_HASH" != "$MD5_APT_SOURCES" ]]; then
       echo " :: Installing ``apt-get`` sources"
