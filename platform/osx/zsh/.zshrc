@@ -1,5 +1,8 @@
 # Load environment
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
+if [ ! -z $FIRST_TIME ] || [ "$FIRST_TIME" = false ]; then
+  test -e ${HOME}/.scripts/.update_env.sh && /bin/bash ${HOME}/.scripts/.update_env.sh
+fi
 
 # Variables
 export LANG=en_US.UTF-8
