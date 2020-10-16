@@ -44,11 +44,23 @@ fi
 if [ "$UPDATE_DOT_FILES" == true ]; then
   echo ":: Reconfiguring environment"
   pushd $DOT_FILES &>/dev/null
-  git remote update --prune &>/dev/null
+#  git remote update --prune &>/dev/null
+  CURRENT_HEAD=$(git log --pretty=%H ...refs/heads/latest^)
   if [ $? != 0 ]; then
     echo ":: ERROR: Git failed for ``.dotfiles``"
     exit 255
   fi
+  echo $CURRENT_HEAD
+  REMOTE_HEAD=$(git ls-remote origin -h refs/heads/latest |cut -f1)
+  if [ $? != 0 ]; then
+    echo ":: ERROR: Git failed for ``.dotfiles``"
+    exit 255
+  fi
+  echo $REMOTE_HEAD
+  if [ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]; then
+    echo "Git pull"
+  fi
+
   popd &>/dev/null
 fi
 
