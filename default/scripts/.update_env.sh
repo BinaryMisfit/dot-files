@@ -45,6 +45,7 @@ unset COLORTERM
 unset DEFAULT_USER
 unset ITERM2_SQUELCH_MARK
 unset KEYTIMEOUT
+unset MD5_BREW_APPS
 source "$ENVIRONMENT"
 if [ -z $COLORTERM ]; then
   echo "export COLORTERM=truecolor" >> $ENVIRONMENT
@@ -141,13 +142,19 @@ if [ "$OS_PREFIX" == "osx" ]; then
       exit 255
     fi
     if [ -f ~/.brew_apps ]; then
-      while read app; do
-        BREW_APP=$(brew ls --versions $app)
-        if [ -z "$BREW_APP" ]; then
-          brew install $app &>/dev/null
+      MD5_HASH=$(md5 -r ~/.brew_apps | cut -d ' ' -f 1)
+      if [ "$MD5_HATCH" != "$MD5_BREW_APPS" ]; then
+        if [ -z $MD5_BREW_APPS ]; then
+          echo "export=MD5_BREW_APPS=$MD5_HASH" > $ENVIRONMENT
         fi
-        unset BREW_APP
-      done < ~/.brew_apps
+        while read app; do
+          BREW_APP=$(brew ls --versions $app)
+          if [ -z "$BREW_APP" ]; then
+            brew install $app &>/dev/null
+          fi
+          unset BREW_APP
+        done < ~/.brew_apps
+      fi
     fi
     BREW_UPDATES=$(brew outdated)
     if [ $? != 0 ]; then
@@ -203,7 +210,7 @@ if [ "$USER_SHELL" != "zsh" ]; then
   ZSH=$(which zsh)
   if [ ! -z $ZSH ]; then
     echo "Set ZSH"
-    chsh $ZSH  &>/dev/null
+    sudo chsh -s $ZSH  &>/dev/null
     if [ $? != 0 ]; then
       echo ":: ERROR: ``zsh`` cannot be set as shell"
       exit 255
