@@ -207,6 +207,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
       fi
       while read src; do
         echo "$src"
+        sudo add-apt-repository $src
       done < ~/.apt_sources
     fi
     unset MD5_HASH
