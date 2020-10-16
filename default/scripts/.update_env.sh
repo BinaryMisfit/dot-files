@@ -140,6 +140,15 @@ if [ "$OS_PREFIX" == "osx" ]; then
       echo ":: ERROR: ``brew`` update failed"
       exit 255
     fi
+    if [ -f ~/.brew_apps ]; then
+      while read app; do
+        BREW_APP=$(brew ls --versions $app)
+        if [ -z "$BREW_APP" ]; then
+          brew install $app &>/dev/null
+        fi
+        unset BREW_APP
+      done < ~/.brew_apps
+    fi
     BREW_UPDATES=$(brew outdated)
     if [ $? != 0 ]; then
       echo ":: ERROR: ``brew`` outdated failed"
@@ -176,13 +185,14 @@ if [ "$USER_SHELL" != "zsh" ]; then
   ZSH=$(which zsh)
   if [ -z $ZSH ]; then
     echo "Install ZSH"
-    if [ "OS_PREFIX" == "osx" ]; then
+    if [ "$OS_PREFIX" == "osx" ]; then
       brew install zsh &>/dev/null
       if [ $? != 0 ]; then
         echo ":: ERROR: ``zsh`` install failed"
         exit 255
       fi
-    elif [ "OS_PREFIX" == "ubuntu" ]; then
+    elif [ "$OS_PREFIX" == "ubuntu" ]; then
+      echo "Install on ubuntu"
       sudo apt-get -qq install zsh -y
       if [ $? != 0 ]; then
         echo ":: ERROR: ``zsh`` install failed"
