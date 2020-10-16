@@ -45,3 +45,4 @@ PATH=$HOME/.yarn/bin:$PATH
 # Cleanup
 typeset -U PATH
 export PATH
+cd
