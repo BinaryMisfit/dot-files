@@ -202,7 +202,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
       if [ -z "$MD5_APT_SOURCES" ]; then
         echo "export MD5_APT_SOURCES=$MD5_HASH" >> $ENVIRONMENT
       else
-        sed -i '' "s/$MD5_APT_SOURCES/$MD5_HASH/" $ENVIRONMENT
+        sed -i "s/$MD5_APT_SOURCES/$MD5_HASH/" $ENVIRONMENT
       fi
       while read src; do
         sudo add-apt-repository $src &>/dev/null
@@ -219,7 +219,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
       if [ -z "$MD5_APT_SOURCES" ]; then
         echo "export MD5_APT_APPS=$MD5_HASH" >> $ENVIRONMENT
       else
-        sed -i '' "s/$MD5_APT_APPS/$MD5_HASH/" $ENVIRONMENT
+        sed -i "s/$MD5_APT_APPS/$MD5_HASH/" $ENVIRONMENT
       fi
       while read app; do
         echo $(which $app)
