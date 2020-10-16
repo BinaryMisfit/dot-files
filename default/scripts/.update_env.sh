@@ -187,7 +187,7 @@ if [ "$OS_PREFIX" == "osx" ]; then
 fi
 
 if [ "$OS_PREFIX" == "ubuntu" ]; then
-    echo ":: Verifying ``apt-get``"
+  echo ":: Verifying ``apt-get``"
   APT_UPDATE=$(sudo apt-get -qq upgrade --dry-run)
   if [ $? != 0 ]; then
     echo " :: ERROR: ``apt-get`` upgrade failed"
@@ -202,7 +202,8 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
     fi
   fi
   if [ -f ~/.apt_sources ]; then
-    MD5_HASH=$(md5 -r ~/.brew_apps | cut -d ' ' -f 1)
+    MD5_HASH=$(md5 -r ~/.apt_sources | cut -d ' ' -f 1)
+    echo $MD5_HASH
     if [[ "$MD5_HASH" != "$MD5_APT_SOURCES" ]]; then
       echo " :: Installing ``apt-get`` sources"
       if [ -z "$MD5_APT_SOURCES" ]; then
