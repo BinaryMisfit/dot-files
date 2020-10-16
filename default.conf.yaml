@@ -19,3 +19,5 @@
       path: default/ssh/authorized_keys
     ~/.scripts:
       path: default/scripts
+    ~/.iterm2_shell_integration.zsh:
+      path: default/.iterm2_shell_integration.zsh

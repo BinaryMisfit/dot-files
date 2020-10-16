@@ -21,3 +21,5 @@
       path: platform/ubuntu/tmux/.tmux.conf
     ~/.ssh/config:
       path: platform/ubuntu/ssh/config
+    ~/.hushlogin:
+      path: platform/ubuntu/.hushlogin

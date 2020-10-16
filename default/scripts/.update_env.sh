@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 
+if [ -f ~/.update_in_progress ]; then
+  exit 0
+fi
+
+touch ~/.update_in_progress
+
 INSTALL_DOT_FILES=false
 UPDATE_DOT_FILES=true
 CONFIGURE_DOT_FILES=false
 DOT_FILES=~/.dotfiles
+ENVIRONMENT=~/.environment.zsh
 GIT=$(which git)
 BREW=$(which brew)
 OS_PREFIX=
@@ -28,6 +35,28 @@ if [ -z "$GIT" ]; then
   UPDATE_DOT_FILES=false
   INSTALL_DOT_FILES=false
   echo ":: ERROR: Skipping dotfiles (\`git\` not found)"
+fi
+
+if [ ! -f "$ENVIRONMENT" ]; then
+    touch "$ENVIRONMENT"
+fi
+
+unset COLORTERM
+unset DEFAULT_USER
+unset ITERM2_SQUELCH_MARK
+unset KEYTIMEOUT
+source "$ENVIRONMENT"
+if [ -z $COLORTERM ]; then
+  echo "export COLORTERM=truecolor" >> $ENVIRONMENT
+fi
+if [ -z $DEFAULT_USER ]; then
+  echo "export DEFAULT_USER=$(whoami)" >> $ENVIRONMENT
+fi
+if [ -z $ITERM2_SQUELCH_MARK ]; then
+  echo "export ITERM2_SQUELCH_MARK=1" >> $ENVIRONMENT
+fi
+if [ -z $KEYTIMEOUT ]; then
+  echo "export KEYTIMEOUT=1" >> $ENVIRONMENT
 fi
 
 if [ "$INSTALL_DOT_FILES" == true ]; then
@@ -134,5 +163,16 @@ fi
 if [ ! -z "$DOT_FILES_PUSH" ]; then
   echo ":: ``.dotfiles`` needs to be pushed"
 fi
+
+unset DOT_FILES_PUSH
+unset BREW
+unset CONFIGURE_DOT_FILES
+unset DOT_FILES
+unset ENVIRONMENT
+unset GIT
+unset INSTALL_DOT_FILES
+unset UPDATE_DOT_FILES
+unset OS_PREFIX
+rm ~/.update_in_progress
 
 echo ":: Environment updated"
