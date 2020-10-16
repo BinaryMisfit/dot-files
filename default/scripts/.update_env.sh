@@ -206,9 +206,23 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
         sed -i '' "s/$MD5_APT_SOURCES/$MD5_HASH/" $ENVIRONMENT
       fi
       while read src; do
-        echo "$src"
-        sudo add-apt-repository $src
+        sudo add-apt-repository $src -y &>/dev/null
       done < ~/.apt_sources
+    fi
+    unset MD5_HASH
+  fi
+  if [ -f ~/.apt_apps ]; then
+    MD5_HASH=$(md5sum ~/.apt_sources | cut -d ' ' -f 1)
+    if [[ "$MD5_HASH" != "$MD5_APT_APPS" ]]; then
+      echo " :: Installing ``apt-get`` sources"
+      if [ -z "$MD5_APT_SOURCES" ]; then
+        echo "export MD5_APT_APPS=$MD5_HASH" >> $ENVIRONMENT
+      else
+        sed -i '' "s/$MD5_APT_APPS/$MD5_HASH/" $ENVIRONMENT
+      fi
+      while read app; do
+        sudo apt-get -qq install $app
+      done < ~/.apt_apps
     fi
     unset MD5_HASH
   fi

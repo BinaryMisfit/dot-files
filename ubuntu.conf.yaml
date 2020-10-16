@@ -25,3 +25,5 @@
       path: platform/ubuntu/.hushlogin
     ~/.apt_sources:
       path: platform/ubuntu/.apt_sources
+    ~/.apt_apps:
+      path: platform/ubuntu/.apt_apps
