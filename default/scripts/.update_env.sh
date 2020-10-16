@@ -175,6 +175,7 @@ USER_SHELL=$(basename $SHELL)
 if [ "$USER_SHELL" != "zsh" ]; then
   ZSH=$(which zsh)
   if [ -z $ZSH ]; then
+    echo "Install ZSH"
     if [ "OS_PREFIX" == "osx" ]; then
       brew install zsh &>/dev/null
       if [ $? != 0 ]; then
@@ -191,6 +192,7 @@ if [ "$USER_SHELL" != "zsh" ]; then
   fi
   ZSH=$(which zsh)
   if [ ! -z $ZSH ]; then
+    echo "Set ZSH"
     chsh $ZSH  &>/dev/null
     if [ $? != 0 ]; then
       echo ":: ERROR: ``zsh`` cannot be set as shell"
