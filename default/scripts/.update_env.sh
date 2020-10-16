@@ -9,6 +9,7 @@ DOT_FILES=~/.dotfiles
 GIT=$(which git)
 BREW=$(which brew)
 OS_PREFIX=
+DOT_FILES_PUSH=
 if [[ "$OSTYPE" == "darwin"* ]]; then
   OS_PREFIX="osx"
 elif [ "$OSTYPE" == "linux-gnu" ]; then
@@ -44,7 +45,7 @@ fi
 if [ "$UPDATE_DOT_FILES" == true ]; then
   echo ":: Reconfiguring environment"
   pushd $DOT_FILES &>/dev/null
-#  git remote update --prune &>/dev/null
+  #  git remote update --prune &>/dev/null
   CURRENT_BRANCH=$(git branch --show-current)
   echo $CURRENT_BRANCH
   CURRENT_HEAD=$(git log --pretty=%H ...refs/heads/$CURRENT_BRANCH^)
@@ -60,9 +61,24 @@ if [ "$UPDATE_DOT_FILES" == true ]; then
   fi
   echo $REMOTE_HEAD
   if [ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]; then
+    CONFIGURE_DOT_FILES=true
     git pull --quiet
+    if [ $? != 0 ]; then
+      echo ":: ERROR: Git failed for ``.dotfiles``"
+      exit 255
+    fi
+    git submodule --quiet foreach 'git checkout master --quiet && git pull --quiet'
+    if [ $? != 0 ]; then
+      echo ":: ERROR: Git failed for ``.dotfiles``"
+      exit 255
+    fi
   fi
 
+  DOT_FILES_PUSH=$(git status -s)
+  if [ $? != 0 ]; then
+    echo ":: ERROR: Git failed for ``.dotfiles``"
+    exit 255
+  fi
   popd &>/dev/null
 fi
 
@@ -93,7 +109,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
     exit 255
   fi
   echo $APT_UPDATE
-  if [ -z "$APT_UPDATE" ]; then
+  if [ ! -z "$APT_UPDATE" ]; then
     echo ":: Updating packages"
     APT_UPGRADE=$(sudo apt-get -qq upgrade -y)
     if [ $? != 0 ]; then
@@ -101,6 +117,11 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
       exit 255
     fi
   fi
+fi
+
+
+if [ ! -z "$DOT_FILES_PUSH" ]; then
+  echo ":: ``.dotfiles`` needs to be pushed"
 fi
 
 echo ":: Environment updated"
