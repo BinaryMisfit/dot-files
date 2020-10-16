@@ -54,7 +54,7 @@ fi
 if [ "$OS_PREFIX" == "osx" ]; then
   if [ -z $BREW ]; then
     echo ":: Installing ``brew``"
-    CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
     FAILED_EXIT=$(( $FAILED_EXIT + $? ))
   else
     brew outdated
@@ -63,7 +63,8 @@ if [ "$OS_PREFIX" == "osx" ]; then
 fi
 
 if [ "$OS_PREFIX" == "ubuntu" ]; then
-  sudo apt -qq update -y
+  APT_UPDATE=(sudo apt -qq update -y)
+  echo $APT_UPDATE
   FAILED_EXIT=$(( $FAILED_EXIT + $? ))
 fi
 
