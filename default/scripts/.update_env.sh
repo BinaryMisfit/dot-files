@@ -207,7 +207,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
         sed -i '' "s/$MD5_APT_SOURCES/$MD5_HASH/" $ENVIRONMENT
       fi
       while read src; do
-        sudo add-apt-repository $src
+        sudo add-apt-repository $src &>/dev/null
       done < ~/.apt_sources
     fi
     unset MD5_HASH
