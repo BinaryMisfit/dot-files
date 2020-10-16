@@ -85,10 +85,12 @@ fi
 if [ "$CONFIGURE_DOT_FILES" == true ]; then
   pushd $DOT_FILES &>/dev/null
   ./install
+  echo $?
   if [ $? != 0 ]; then
     echo ":: ERROR: ``dotfiles/install`` failed"
     exit 255
   fi
+  pwd
   DOT_FILES_PUSH=$(git status -s)
   if [ $? != 0 ]; then
     echo ":: ERROR: Git status failed for ``.dotfiles``"
@@ -116,7 +118,7 @@ fi
 if [ "$OS_PREFIX" == "ubuntu" ]; then
   APT_UPDATE=$(sudo apt-get -qq upgrade --dry-run)
   if [ $? != 0 ]; then
-    echo ":: ERROR: ``apt-get`` command failed"
+    echo ":: ERROR: ``apt-get`` upgrade failed"
     exit 255
   fi
   if [ ! -z "$APT_UPDATE" ]; then
