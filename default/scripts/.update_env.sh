@@ -65,7 +65,7 @@ fi
 if [ -z $KEYTIMEOUT ]; then
   echo "export KEYTIMEOUT=1" >> $ENVIRONMENT
 fi
-printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "${OS_PREFIX^^}"
+printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "${OS_PREFIX}"
 
 STAGE=":: Verifying config files"
 printf "${NC}%s${NC}\n" "$STAGE"
