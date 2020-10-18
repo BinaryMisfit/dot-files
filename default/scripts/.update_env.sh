@@ -229,15 +229,12 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
 
     if [[ -f "$BREW_APPS" ]]; then
       MD5=$(which md5)
-      echo -e "$MD5\n"
       MD5_HASH=$($MD5 -r "$BREW_APPS" | cut -d ' ' -f 1)
-      echo -e "$MD5_HASH\n"
-      echo -e "$MD5_BREW_APPS\b"
       if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         while read app; do
           BREW_APP=$($BREW ls --versions $app)
-          if [ -z "$BREW_APP" ]; then
+          if [[ -z "$BREW_APP" ]]; then
             printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
             eval $BREW install $app &>/dev/null
           fi
@@ -245,7 +242,7 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
           unset BREW_APP
         done < "$BREW_APPS"
 
-        if [ -z "$MD5_BREW_APPS" ]; then
+        if [[ -z "$MD5_BREW_APPS" ]]; then
           echo "export MD5_BREW_APPS=$MD5_HASH" >> $ENVIRONMENT
         else
           sed -i '' "s/$MD5_BREW_APPS/$MD5_HASH/" $ENVIRONMENT
@@ -336,14 +333,16 @@ if [[ "$IS_SUDO" == true ]]; then
         MD5=$(which md5sum)
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         MD5_HASH=$($MD5 "$APT_APPS" | cut -d ' ' -f 1)
-        eval $MD5 "$APT_APPS" | cut -d ' ' -f 1
-        echo -e "$MD5\n"
-        echo -e "$MD5_HASH\n"
-        echo -e "$MD5_APT_APPS\b"
         if [[ "$MD5_HASH" != "$MD5_APT_APPS" ]]; then
           while read app; do
             APP_INSTALLED=$(which $app)
-            if [[ -z "$APP_INSTALLED" ]]; then
+            echo -e "$APP_INSTALLED\n"
+            if [[ -z "$APP_INSTALLED" ]] && [[ -x "$APP_INSTALLED" ]]; then
+              echo -e "$app ready\n"
+              echo -e "$APP_INSTALLED ready\n"
+            fi
+            if [[ ! -x "$(command -v $app)" ]]; then
+              exit
               printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
               eval $SUDO $APT_GET -qq install $app &>/dev/null
               if [[ $? != 0 ]]; then
@@ -399,7 +398,7 @@ fi
 NODE=$(which node)
 if [[ ! -z $"NODE" ]]; then
   NPM=$(which npm)
-  if [[ ! -z "$NPM" ]]; then
+  if [[ ! -x "$NPM" ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
     if [[ -f "$NODE_APPS" ]]; then
       if [[ "$OS_PREFIX" == "OSX" ]]; then
@@ -410,9 +409,6 @@ if [[ ! -z $"NODE" ]]; then
         MD5_HASH=$($MD5 "$NODE_APPS" | cut -d ' ' -f 1)
       fi
 
-      echo -e "$MD5\n"
-      echo -e "$MD5_HASH\n"
-      echo -e "$MD5_NODE_APPS\b"
       if [[ "$MD5_HASH" != "$MD5_NODE_APPS" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         while read app; do
