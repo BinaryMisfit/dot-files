@@ -200,7 +200,7 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
     fi
   fi
 
-  if [[ -z $BREW ]]; then
+  if [[ ! -z $BREW ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
     eval $BREW update &>/dev/null
     if [[ $? != 0 ]]; then
