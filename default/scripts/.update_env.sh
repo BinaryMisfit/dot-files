@@ -98,16 +98,16 @@ fi
 printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "${OS_PREFIX}"
 STAGE=":: Verifying config files"
 printf "${NC}%s${NC}\n" "$STAGE"
-if [ -z "$GIT" ]; then
+if [[ -z "$GIT" ]]; then
   UPDATE_DOT_FILES=false
   INSTALL_DOT_FILES=false
   printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "git mising"
 fi
 
-if [ "$INSTALL_DOT_FILES" == true ]; then
+if [[ "$INSTALL_DOT_FILES" == true ]]; then
   printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "INSTALLING"
   eval $GIT clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null
-  if [ $? != 0 ]; then
+  if [[ $? != 0 ]]; then
     printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git clone failed"
     exit 255
   fi
