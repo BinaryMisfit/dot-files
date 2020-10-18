@@ -181,17 +181,17 @@ fi
 STAGE=":: Verifying packages"
 printf "${NC}%s${NC}\n" "$STAGE"
 if [[ "$OS_PREFIX" == "OSX" ]]; then
-  printf "${REPLACE}${NC}${STAGE}\t\r${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
+  printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
   BREW=$(which brew)
   if [[ ! -z $BREW ]]; then
-    RUBY=(which ruby)
+    RUBY=$(which ruby)
     echo -e "$BREW\n\n"
     echo -e "$RUBY\n\n"
     if [[ ! -f "$RUBY" ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING" "brew"
       eval CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
       if [[ $? != 0 ]]; then
-        printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
+        printf "${REPLACE2}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
       fi
     else
       printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "ruby not found"
@@ -200,7 +200,7 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
     eval $BREW update &>/dev/null
     if [[ $? != 0 ]]; then
-      printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
+      printf "${REPLACE2}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
       exit 255
     fi
   fi
@@ -417,16 +417,16 @@ if [ "$USER_SHELL" != "zsh" ]; then
 
   ZSH=$(which zsh)
   if [[ ! -z $ZSH ]]; then
-    if [[ "$IS_SUDO" == false ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
-    else
-      eval chsh -s "$ZSH" $USER &>/dev/null
+    if [[ "$IS_SUDO" == true ]]; then
+      eval $SUDO chsh -s "$ZSH" $USER &>/dev/null
       if [ $? != 0 ]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "chsh failed"
         exit 255
       fi
 
       printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
+    else
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
     fi
   else
     printf "${REPLACE}${NC}${STAGE}\t\t${ERROR}%s${NC}\t%s${NC}\n" "MISSING" "zsh"
