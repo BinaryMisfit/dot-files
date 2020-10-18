@@ -259,8 +259,6 @@ if [ "$USER_SHELL" != "zsh" ]; then
       exit 255
     fi
   fi
-else
-  source ~/.zshrc
 fi
 
 
