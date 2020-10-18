@@ -101,7 +101,7 @@ printf "${NC}%s${NC}\n" "$STAGE"
 if [ -z "$GIT" ]; then
   UPDATE_DOT_FILES=false
   INSTALL_DOT_FILES=false
-  printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "``git`` not found"
+  printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "git mising"
 fi
 
 if [ "$INSTALL_DOT_FILES" == true ]; then
@@ -185,16 +185,14 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
   BREW=$(which brew)
   if [[ ! -z $BREW ]]; then
     RUBY=$(which ruby)
-    echo -e "$BREW\n\n"
-    echo -e "$RUBY\n\n"
-    if [[ ! -f "$RUBY" ]]; then
+    if [[ -f "$RUBY" ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING" "brew"
       eval CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
       if [[ $? != 0 ]]; then
         printf "${REPLACE2}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
       fi
     else
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "ruby not found"
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "ruby missing"
     fi
   elif [[ -z $BREW ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
@@ -426,10 +424,10 @@ if [ "$USER_SHELL" != "zsh" ]; then
 
       printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
     else
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+      printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
     fi
   else
-    printf "${REPLACE}${NC}${STAGE}\t\t${ERROR}%s${NC}\t%s${NC}\n" "MISSING" "zsh"
+    printf "${REPLACE}${NC}${STAGE}\t${ERROR}%s${NC}\t%s${NC}\n" "MISSING" "zsh"
   fi
 else
   printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
