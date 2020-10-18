@@ -208,13 +208,11 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew update failed"
       exit 255
     fi
-  fi
 
-  if [[ ! -z $BREW ]]; then
+    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
     BREW_UPDATES=$(eval $BREW outdated)
-    echo " :: Verifying ``brew`` packages"
     if [[ $? != 0 ]]; then
-      echo " :: ERROR: ``brew`` outdated failed"
+      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew outdate failed"
       exit 255
     fi
     if [[ ! -z "$BREW_UPDATES" ]]; then
