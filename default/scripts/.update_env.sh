@@ -181,10 +181,12 @@ fi
 STAGE=":: Verifying packages"
 printf "${NC}%s${NC}\n" "$STAGE"
 if [[ "$OS_PREFIX" == "OSX" ]]; then
-  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
+  printf "${REPLACE}${NC}${STAGE}\t\r${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
   BREW=$(which brew)
-  if [[ ! -f "$BREW" ]]; then
+  if [[ ! -z $BREW ]]; then
     RUBY=(which ruby)
+    echo -e "$BREW\n\n"
+    echo -e "$RUBY\n\n"
     if [[ ! -f "$RUBY" ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING" "brew"
       eval CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
@@ -194,7 +196,7 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
     else
       printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "ruby not found"
     fi
-  elif [[ -z "#BREW" ]]; then
+  elif [[ -z $BREW ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
     eval $BREW update &>/dev/null
     if [[ $? != 0 ]]; then
@@ -415,13 +417,17 @@ if [ "$USER_SHELL" != "zsh" ]; then
 
   ZSH=$(which zsh)
   if [[ ! -z $ZSH ]]; then
-    eval chsh -s "$ZSH" $USER &>/dev/null
-    if [ $? != 0 ]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "chsh failed"
-      exit 255
-    fi
+    if [[ "$IS_SUDO" == false ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+    else
+      eval chsh -s "$ZSH" $USER &>/dev/null
+      if [ $? != 0 ]; then
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "chsh failed"
+        exit 255
+      fi
 
-    printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
+      printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
+    fi
   else
     printf "${REPLACE}${NC}${STAGE}\t\t${ERROR}%s${NC}\t%s${NC}\n" "MISSING" "zsh"
   fi
