@@ -10,7 +10,7 @@ APT_ADD_SRC=$(which add-apt-repository)
 APT_APPS=~/.apt_apps
 APT_GET=$(which apt-get)
 APT_SOURCES=~/.apt_sources
-BREW=$(which brew)
+BREW=
 CONFIGURE_DOT_FILES=false
 DOT_FILES=~/.dotfiles
 DOT_FILES_INSTALL=~/.dotfiles/install
@@ -31,6 +31,7 @@ PYTHON3=
 RED="\033[0;31m"
 REPLACE="\e[1A\e[K"
 REPLACE2="\e[2A\e[K"
+RUBY=
 SUDO=$(which sudo)
 UPDATE_DOT_FILES=true
 YELLOW="\033[0;33m"
@@ -100,7 +101,7 @@ printf "${NC}%s${NC}\n" "$STAGE"
 if [ -z "$GIT" ]; then
   UPDATE_DOT_FILES=false
   INSTALL_DOT_FILES=false
-  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "SKIPPING" "``git`` not found"
+  printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "``git`` not found"
 fi
 
 if [ "$INSTALL_DOT_FILES" == true ]; then
@@ -179,14 +180,19 @@ fi
 
 STAGE=":: Verifying packages"
 printf "${NC}%s${NC}\n" "$STAGE"
-if [ "$OS_PREFIX" == "OSX" ]; then
+if [[ "$OS_PREFIX" == "OSX" ]]; then
   printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
-  if [ ! -z $BREW ]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING" "brew"
-    CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
-    if [ $? != 0 ]; then
-      echo " :: ERROR: ``brew`` installation failed"
-      exit 255
+  BREW=$(which brew)
+  if [[ ! -z $BREW ]]; then
+    RUBY=(which ruby)
+    if [[ -z $RUBY ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING" "brew"
+      eval CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
+      if [[ $? != 0 ]]; then
+        printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
+      fi
+    else
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "ruby not found"
     fi
   else
     echo " :: Updating ``brew``"
@@ -195,6 +201,10 @@ if [ "$OS_PREFIX" == "OSX" ]; then
       echo " :: ERROR: ``brew`` update failed"
       exit 255
     fi
+  fi
+
+  BREW=$(which brew)
+  if [[ -z $BREW ]]; then
     BREW_UPDATES=$(eval $BREW outdated)
     echo " :: Verifying ``brew`` packages"
     if [ $? != 0 ]; then
@@ -209,26 +219,28 @@ if [ "$OS_PREFIX" == "OSX" ]; then
         exit 255
       fi
     fi
-  fi
-  if [ -f ~/.brew_apps ]; then
-    echo " :: Verifying ``brew`` required packages"
-    MD5_HASH=$(md5 -r ~/.brew_apps | cut -d ' ' -f 1)
-    if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
-      echo " :: Installing ``brew`` required packages"
-      if [ -z "$MD5_BREW_APPS" ]; then
-        echo "export MD5_BREW_APPS=$MD5_HASH" >> $ENVIRONMENT
-      else
-        sed -i '' "s/$MD5_BREW_APPS/$MD5_HASH/" $ENVIRONMENT
-      fi
-      while read app; do
-        BREW_APP=$(eval $BREW ls --versions $app)
-        if [ -z "$BREW_APP" ]; then
-          eval $BREW install $app &>/dev/null
+
+    if [ -f ~/.brew_apps ]; then
+      echo " :: Verifying ``brew`` required packages"
+      MD5_HASH=$(md5 -r ~/.brew_apps | cut -d ' ' -f 1)
+      if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
+        echo " :: Installing ``brew`` required packages"
+        if [ -z "$MD5_BREW_APPS" ]; then
+          echo "export MD5_BREW_APPS=$MD5_HASH" >> $ENVIRONMENT
+        else
+          sed -i '' "s/$MD5_BREW_APPS/$MD5_HASH/" $ENVIRONMENT
         fi
-        unset BREW_APP
-      done < ~/.brew_apps
+        while read app; do
+          BREW_APP=$(eval $BREW ls --versions $app)
+          if [ -z "$BREW_APP" ]; then
+            eval $BREW install $app &>/dev/null
+          fi
+          unset BREW_APP
+        done < ~/.brew_apps
+      fi
+
+      unset MD5_HASH
     fi
-    unset MD5_HASH
   fi
 fi
 
@@ -360,7 +372,7 @@ fi
 STAGE=":: Verifying python3"
 printf "${NC}%s${NC}\n" "$STAGE"
 printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
-PYTHON3=$(which python)
+PYTHON3=$(which python3)
 PIP3=$(which pip3)
 if [[ ! -f "$PYTHON3" ]]; then
     if [[ "$OS_PREFIX" == "OSX" ]]; then
@@ -443,6 +455,7 @@ unset PYTHON3
 unset RED
 unset REPLACE
 unset REPLACE2
+unset RUBY
 unset SUDO
 unset USER_SHELL
 unset UPDATE_DOT_FILES
