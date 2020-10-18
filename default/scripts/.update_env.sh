@@ -211,7 +211,6 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
     fi
 
     BREW_UPDATES=$(eval $BREW outdated)
-    echo -e "$BREW_UPDATES\n"
     if [[ $? != 0 ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew outdated failed"
       exit 255
@@ -228,7 +227,9 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
 
     if [[ -f "$BREW_APPS" ]]; then
       MD5=$(which md5)
+      echo -e "$MD5\n"
       MD5_HASH=$(eval $MD5 -r "$BREW_APPS" | cut -d ' ' -f 1)
+      echo -e "$MD5_HASH\n"
       if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         while read app; do
@@ -428,6 +429,7 @@ if [ "$USER_SHELL" != "zsh" ]; then
   ZSH=$(which zsh)
   if [[ ! -z $ZSH ]]; then
     if [[ "$IS_SUDO" == true ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
       eval $SUDO chsh -s "$ZSH" $USER &>/dev/null
       if [ $? != 0 ]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "chsh failed"
