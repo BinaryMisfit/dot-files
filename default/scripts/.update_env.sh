@@ -23,9 +23,11 @@ IS_SUDO=false
 MD5=
 MD5_APT_ADD_SRC=
 NC="\033[0m"
-NPM=$(which npm)
+NPM=
+NODE=
 OS_PREFIX=
-PIP3=$(which pip3)
+PIP3=
+PYTHON3=
 RED="\033[0;31m"
 REPLACE="\e[1A\e[K"
 REPLACE2="\e[2A\e[K"
@@ -338,34 +340,78 @@ else
     printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
 fi
 
+STAGE=":: Verifying nodejs"
+printf "${NC}%s${NC}\n" "$STAGE"
+printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
+NPM=$(which npm)
+NODE=$(which node)
+if [[ ! -f "$NODE" ]]; then
+    if [[ "$OS_PREFIX" == "OSX" ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "INSTALLING"
+    elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "INSTALLING"
+    elif [[ "$IS_SUDO" == false ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+    fi
+else
+    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
+fi
+
+STAGE=":: Verifying python3"
+printf "${NC}%s${NC}\n" "$STAGE"
+printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
+PYTHON3=$(which python)
+PIP3=$(which pip3)
+if [[ ! -f "$PYTHON3" ]]; then
+    if [[ "$OS_PREFIX" == "OSX" ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "INSTALLING"
+    elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "INSTALLING"
+    elif [[ "$IS_SUDO" == false ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+    fi
+else
+    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
+fi
+
+
 STAGE=":: Verifying default shell"
 printf "${NC}%s${NC}\n" "$STAGE"
 printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
 USER_SHELL=$(basename $SHELL)
 if [ "$USER_SHELL" != "zsh" ]; then
   ZSH=$(which zsh)
-  if [ -z $ZSH ]; then
-    if [ "$OS_PREFIX" == "OSX" ]; then
+  if [[ -z $ZSH ]]; then
+    if [[ "$OS_PREFIX" == "OSX" ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
       eval $BREW install zsh &>/dev/null
-      if [ $? != 0 ]; then
-        echo ":: ERROR: ``zsh`` install failed"
+      if [[ $? != 0 ]]; then
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install zsh failed"
         exit 255
       fi
-    elif [ "$OS_PREFIX" == "UBUNTU" ]; then
-      sudo apt-get -qq install zsh -y
-      if [ $? != 0 ]; then
-        echo ":: ERROR: ``zsh`` install failed"
+    elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
+      eval $SUDO $APT_GET -qq install zsh -y &>/dev/null
+      if [[ $? != 0 ]]; then
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get install zsh failed"
         exit 255
       fi
+    elif [[ "$IS_SUDO" == false ]]; then
+        printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
     fi
   fi
+
   ZSH=$(which zsh)
-  if [ ! -z $ZSH ]; then
-    sudo chsh -s "$ZSH"  &>/dev/null
+  if [[ ! -z $ZSH ]]; then
+    eval $SUDO chsh -s "$ZSH" $USER &>/dev/null
     if [ $? != 0 ]; then
-      echo ":: ERROR: ``zsh`` cannot be set as shell"
+      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "chsh failed"
       exit 255
     fi
+
+    printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
+  else
+    printf "${REPLACE}${NC}${STAGE}\t\t${ERROR}%s${NC}\t%s${NC}\n" "MISSING" "zsh"
   fi
 else
   printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
@@ -390,8 +436,10 @@ unset MD5
 unset MD5_APT_ADD_SRC
 unset NC
 unset NPM
+unset NODE
 unset OS_PREFIX
 unset PIP3
+unset PYTHON3
 unset RED
 unset REPLACE
 unset REPLACE2
