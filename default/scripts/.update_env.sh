@@ -418,7 +418,7 @@ if [[ ! -z $"NODE" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         while read app; do
           printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
-          NODE_APP=$($NPM -g install --quiet --upgrade $app &>/dev/null)
+          NODE_APP=$($NPM install --quiet --upgrade $app &>/dev/null)
           if [[ $? != 0 ]]; then
             printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "npm $app failed"
             exit 255
