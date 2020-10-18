@@ -357,7 +357,6 @@ if [[ "$IS_SUDO" == true ]]; then
             unset APP_INSTALLED
           done < "$APT_APPS"
 
-          echo "Update MD5"
           if [[ -z "$MD5_APT_APPS" ]]; then
             echo "export MD5_APT_APPS=$MD5_HASH" >> $ENVIRONMENT
           else
@@ -385,7 +384,7 @@ if [[ ! -f "$NODE" ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
     eval $BREW install node &>/dev/null
     if [[ $? != 0 ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew node failed"
+      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "nodejs failed"
       exit 255
     fi
   elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
@@ -393,7 +392,7 @@ if [[ ! -f "$NODE" ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
     eval $SUDO $APT_GET -qq install nodejs -y &>/dev/null
     if [[ $? != 0 ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get nodejs failed"
+      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "nodejs failed"
       exit 255
     fi
   elif [[ "$IS_SUDO" == false ]]; then
@@ -473,14 +472,14 @@ if [ "$USER_SHELL" != "zsh" ]; then
       printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
       eval $BREW install zsh &>/dev/null
       if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install zsh failed"
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "zsh install failed"
         exit 255
       fi
     elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
       printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
       eval $SUDO $APT_GET -qq install zsh -y &>/dev/null
       if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get install zsh failed"
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "zsh install failed"
         exit 255
       fi
     elif [[ "$IS_SUDO" == false ]]; then
