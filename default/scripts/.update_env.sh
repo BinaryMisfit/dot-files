@@ -106,7 +106,7 @@ if [[ -z "$GIT" ]]; then
 fi
 
 if [[ "$INSTALL_DOT_FILES" == true ]]; then
-  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\n" "INSTALLING"
+  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\n" "INSTALL"
   eval $GIT clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null
   if [[ $? != 0 ]]; then
     printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git clone failed"
@@ -191,7 +191,7 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
   if [[ -z $BREW ]]; then
     RUBY=$(which ruby)
     if [[ -f "$RUBY" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING" "brew"
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL" "brew"
       eval CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
       if [[ $? != 0 ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
@@ -368,13 +368,23 @@ fi
 STAGE=":: Verifying nodejs"
 printf "${NC}%s${NC}\n" "$STAGE"
 printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
-NPM=$(which npm)
 NODE=$(which node)
+NPM=$(which npm)
 if [[ ! -f "$NODE" ]]; then
     if [[ "$OS_PREFIX" == "OSX" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING"
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
+      eval $BREW install node &>/dev/null
+      if [[ $? != 0 ]]; then
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install node failed"
+        exit 255
+      fi
     elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING"
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
+      eval $SUDO $APT_GET -qq install nodejs -y &>/dev/null
+      if [[ $? != 0 ]]; then
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get install nodejs failed"
+        exit 255
+      fi
     elif [[ "$IS_SUDO" == false ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
     fi
@@ -389,9 +399,9 @@ PYTHON3=$(which python3)
 PIP3=$(which pip3)
 if [[ ! -f "$PYTHON3" ]]; then
     if [[ "$OS_PREFIX" == "OSX" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING"
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
     elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING"
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
     elif [[ "$IS_SUDO" == false ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
     fi
@@ -430,9 +440,9 @@ if [ "$USER_SHELL" != "zsh" ]; then
   if [[ ! -z $ZSH ]]; then
     if [[ "$IS_SUDO" == true ]]; then
       printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
-      eval $SUDO chsh -s "$ZSH" $USER &>/dev/null
+      eval $SUDO usermod --shell $ZSH $USER &>/dev/null
       if [ $? != 0 ]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "chsh failed"
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "usermod failed"
         exit 255
       fi
 
