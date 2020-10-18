@@ -25,6 +25,8 @@
       path: platform/osx/ssh/config
     ~/.brew_apps:
       path: platform/osx/.brew_apps
+    ~/.node_apps:
+      path: platform/osx/.node_apps
 
 - shell:
   - [~/.iterm2/update_config.sh,Configuring iTerm2]

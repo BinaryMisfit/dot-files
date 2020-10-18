@@ -27,3 +27,5 @@
       path: platform/ubuntu/.apt_sources
     ~/.apt_apps:
       path: platform/ubuntu/.apt_apps
+    ~/.node_apps:
+      path: platform/ubuntu/.node_apps

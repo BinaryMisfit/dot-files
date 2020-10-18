@@ -26,9 +26,11 @@ MD5_APT_ADD_SRC=
 NC="\033[0m"
 NPM=
 NODE=
+NODE_APPS=~/.node_apps
 OS_PREFIX=
 PIP3=
 PYTHON3=
+PYTHON_APPS=~/.python_apps
 RED="\033[0;31m"
 REPLACE="\e[1A\e[K"
 REPLACE2="\e[2A\e[K"
@@ -230,6 +232,7 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
       echo -e "$MD5\n"
       MD5_HASH=$(eval $MD5 -r "$BREW_APPS" | cut -d ' ' -f 1)
       echo -e "$MD5_HASH\n"
+      echo -e "$MD5_BREW_APPS\b"
       if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         while read app; do
@@ -253,7 +256,7 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
       unset MD5_HASH
     fi
 
-    printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
+    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
   fi
 fi
 
@@ -362,55 +365,91 @@ if [[ "$IS_SUDO" == true ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\n" "OK"
   fi
 else
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+  printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
 fi
 
-STAGE=":: Verifying nodejs"
+STAGE=":: Verifying node"
 printf "${NC}%s${NC}\n" "$STAGE"
 printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
 NODE=$(which node)
 if [[ ! -f "$NODE" ]]; then
-    if [[ "$OS_PREFIX" == "OSX" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
-      eval $BREW install node &>/dev/null
-      if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install node failed"
-        exit 255
-      fi
-    elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
-      eval $SUDO $APT_GET -qq install nodejs -y &>/dev/null
-      if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get install nodejs failed"
-        exit 255
-      fi
-    elif [[ "$IS_SUDO" == false ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+  if [[ "$OS_PREFIX" == "OSX" ]]; then
+    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
+    eval $BREW install node &>/dev/null
+    if [[ $? != 0 ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install node failed"
+      exit 255
     fi
-
-    NPM=$(which npm)
-    if [[ -z "$NPM" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
+  elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
+    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
+    eval $SUDO $APT_GET -qq install nodejs -y &>/dev/null
+    if [[ $? != 0 ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get install nodejs failed"
+      exit 255
     fi
-else
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
+  elif [[ "$IS_SUDO" == false ]]; then
+    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+  fi
 fi
 
-STAGE=":: Verifying python3"
+NODE=$(which node)
+if [[ ! -z $"NODE" ]]; then
+  NPM=$(which npm)
+  if [[ ! -z "$NPM" ]]; then
+    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
+    if [[ -f "$NODE_APPS" ]]; then
+      if [[ "$OS_PREFIX" == "OSX" ]]; then
+        MD5=$(which md5)
+        MD5_HASH=$(eval $MD5 -r "$NODE_APPS" | cut -d ' ' -f 1)
+      elif [[ "$OS_PREFIX" == "UBUNTU" ]]; then
+        MD5=$(which md5sum)
+        MD5_HASH=$(eval $MD5 "$NODE_APPS" | cut -d ' ' -f 1)
+      fi
+
+      echo -e "$MD5\n"
+      echo -e "$MD5_HASH\n"
+      echo -e "$MD5_NODE_APPS\b"
+      if [[ "$MD5_HASH" != "$MD5_NODE_APPS" ]]; then
+        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
+        while read app; do
+          printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
+          eval $NPM -g install --upgrade $app
+          exit 255
+          unset NODE_APP
+        done < "$NODE_APPS"
+
+        if [ -z "$MD5_NODE_APPS" ]; then
+          echo "export MD5_NODE_APPS=$MD5_HASH" >> $ENVIRONMENT
+        else
+          sed -i '' "s/$MD5_NODE_APPS/$MD5_HASH/" $ENVIRONMENT
+        fi
+      fi
+
+      unset MD5
+      unset MD5_HASH
+    fi
+
+    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
+  else
+    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "npm missing"
+  fi
+fi
+
+STAGE=":: Verifying python"
 printf "${NC}%s${NC}\n" "$STAGE"
 printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
 PYTHON3=$(which python3)
 PIP3=$(which pip3)
 if [[ ! -f "$PYTHON3" ]]; then
-    if [[ "$OS_PREFIX" == "OSX" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
-    elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
-    elif [[ "$IS_SUDO" == false ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
-    fi
+  if [[ "$OS_PREFIX" == "OSX" ]]; then
+    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
+  elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
+    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
+  elif [[ "$IS_SUDO" == false ]]; then
+    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+  fi
 else
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
+  printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
 fi
 
 
@@ -436,7 +475,7 @@ if [ "$USER_SHELL" != "zsh" ]; then
         exit 255
       fi
     elif [[ "$IS_SUDO" == false ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
     fi
   fi
 
@@ -467,6 +506,7 @@ unset APT_GET
 unset APT_SOURCES
 unset BREW
 unset BREW_UPDATES
+unset BREW_APPS
 unset CONFIGURE_DOT_FILES
 unset DOT_FILES
 unset DOT_FILES_INSTALL
@@ -481,9 +521,11 @@ unset MD5_APT_ADD_SRC
 unset NC
 unset NPM
 unset NODE
+unset NODE_APPS
 unset OS_PREFIX
 unset PIP3
 unset PYTHON3
+unset PYTHON_APPS
 unset RED
 unset REPLACE
 unset REPLACE2
