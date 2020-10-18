@@ -236,7 +236,7 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
         while read app; do
           BREW_APP=$($BREW ls --versions $app)
           if [[ -z "$BREW_APP" ]]; then
-            printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
+            printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL" $app
             eval $BREW install $app &>/dev/null
           fi
 
@@ -404,7 +404,7 @@ fi
 NODE=$(which node)
 if [[ ! -z $"NODE" ]]; then
   NPM=$(which npm)
-  if [[ ! -x "$NPM" ]]; then
+  if [[ -x "$NPM" ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
     if [[ -f "$NODE_APPS" ]]; then
       if [[ "$OS_PREFIX" == "OSX" ]]; then
@@ -456,7 +456,7 @@ if [[ ! -f "$PYTHON3" ]]; then
   elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
   elif [[ "$IS_SUDO" == false ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
   fi
 else
   printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
@@ -485,7 +485,7 @@ if [ "$USER_SHELL" != "zsh" ]; then
         exit 255
       fi
     elif [[ "$IS_SUDO" == false ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
     fi
   fi
 
@@ -501,7 +501,7 @@ if [ "$USER_SHELL" != "zsh" ]; then
 
       printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
     else
-      printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+      printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
     fi
   else
     printf "${REPLACE}${NC}${STAGE}\t${ERROR}%s${NC}\t%s${NC}\n" "MISSING" "zsh"
