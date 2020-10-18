@@ -424,7 +424,6 @@ if [[ ! -z $"NODE" ]]; then
             printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "npm $app failed"
             exit 255
           fi
-          exit 255
           unset NODE_APP
         done < "$NODE_APPS"
 
