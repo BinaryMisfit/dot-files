@@ -193,23 +193,23 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING" "brew"
       eval CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
       if [[ $? != 0 ]]; then
-        printf "${REPLACE2}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
       fi
     else
       printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "ruby missing"
     fi
   fi
 
+  BREW=$(which brew)
   if [[ ! -z $BREW ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
     eval $BREW update &>/dev/null
     if [[ $? != 0 ]]; then
-      printf "${REPLACE2}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
+      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew update failed"
       exit 255
     fi
   fi
 
-  BREW=$(which brew)
   if [[ ! -z $BREW ]]; then
     BREW_UPDATES=$(eval $BREW outdated)
     echo " :: Verifying ``brew`` packages"
