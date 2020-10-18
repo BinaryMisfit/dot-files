@@ -105,7 +105,7 @@ if [[ -z "$GIT" ]]; then
 fi
 
 if [[ "$INSTALL_DOT_FILES" == true ]]; then
-  printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "INSTALLING"
+  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\n" "INSTALLING"
   eval $GIT clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null
   if [[ $? != 0 ]]; then
     printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git clone failed"
@@ -365,9 +365,9 @@ NPM=$(which npm)
 NODE=$(which node)
 if [[ ! -f "$NODE" ]]; then
     if [[ "$OS_PREFIX" == "OSX" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "INSTALLING"
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING"
     elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "INSTALLING"
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING"
     elif [[ "$IS_SUDO" == false ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
     fi
@@ -382,9 +382,9 @@ PYTHON3=$(which python3)
 PIP3=$(which pip3)
 if [[ ! -f "$PYTHON3" ]]; then
     if [[ "$OS_PREFIX" == "OSX" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "INSTALLING"
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING"
     elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "INSTALLING"
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING"
     elif [[ "$IS_SUDO" == false ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
     fi
