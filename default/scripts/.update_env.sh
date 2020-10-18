@@ -211,10 +211,12 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
     fi
 
     BREW_UPDATES=$(eval $BREW outdated)
+    echo -e "$BREW_UPDATES\n"
     if [[ $? != 0 ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew outdated failed"
       exit 255
     fi
+
     if [[ ! -z "$BREW_UPDATES" ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPGRADE"
       eval $BREW upgrade &>/dev/null
@@ -249,6 +251,8 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
       unset MD5
       unset MD5_HASH
     fi
+
+    printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
   fi
 fi
 
