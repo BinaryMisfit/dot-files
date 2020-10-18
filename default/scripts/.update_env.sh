@@ -372,7 +372,7 @@ if [[ "$IS_SUDO" == true ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\n" "OK"
   fi
 else
-  printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+  printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
 fi
 
 STAGE=":: Verifying node"
@@ -396,7 +396,7 @@ if [[ ! -f "$NODE" ]]; then
       exit 255
     fi
   elif [[ "$IS_SUDO" == false ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
   fi
 fi
 
