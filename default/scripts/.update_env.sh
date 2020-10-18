@@ -115,64 +115,68 @@ if [[ "$INSTALL_DOT_FILES" == true ]]; then
   CONFIGURE_DOT_FILES=true
 fi
 
-if [ "$UPDATE_DOT_FILES" == true ]; then
+if [[ "$UPDATE_DOT_FILES" == true ]]; then
   printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
   pushd $DOT_FILES &>/dev/null
   CURRENT_HEAD=$(eval $GIT log --pretty=%H ...refs/heads/latest^)
-  if [ $? != 0 ]; then
+  if [[ $? != 0 ]]; then
     printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git log failed"
     exit 255
   fi
 
   REMOTE_HEAD=$(eval $GIT ls-remote origin -h refs/heads/latest | cut -f1)
-  if [ $? != 0 ]; then
+  if [[ $? != 0 ]]; then
     printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git ls-remote failed"
     exit 255
   fi
 
-  if [ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]; then
+  if [[ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]]; then
     printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
     CONFIGURE_DOT_FILES=true
     eval $GIT pull --quiet &>/dev/null
-    if [ $? != 0 ]; then
+    if [[ $? != 0 ]]; then
       printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git pull failed"
       exit 255
     fi
   fi
 
   DOT_FILES_PUSH=$(eval $GIT status -s | wc -l)
-  if [ $? != 0 ]; then
+  if [[ $? != 0 ]]; then
     printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git status failed"
     exit 255
   fi
-  if [ "$DOT_FILES_PUSH" -gt "0" ]; then
+
+  if [[ "$DOT_FILES_PUSH" -gt "0" ]]; then
     CONFIGURE_DOT_FILES=true
   fi
 
   popd &>/dev/null
 fi
 
-if [ "$CONFIGURE_DOT_FILES" == true ]; then
+if [[ "$CONFIGURE_DOT_FILES" == true ]]; then
   printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CONFIGURING"
-  if [ ! -f "$DOT_FILES_INSTALL" ]; then
+  if [[ ! -f "$DOT_FILES_INSTALL" ]]; then
     printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "install script missing"
     exit 255
   fi
 
   eval $DOT_FILES_INSTALL &>/dev/null
-  if [ $? != 0 ]; then
+  if [[ $? != 0 ]]; then
     printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "install failed"
     exit 255
   fi
+
   pushd $DOT_FILES &>/dev/null
   DOT_FILES_PUSH=$(eval $GIT status -s | wc -l)
-  if [ $? != 0 ]; then
+  if [[ $? != 0 ]]; then
     printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git status failed"
     exit 255
   fi
+
   popd &>/dev/null
 fi
-if [ "$DOT_FILES_PUSH" -gt "0" ]; then
+
+if [[ "$DOT_FILES_PUSH" -gt "0" ]]; then
   printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\n" "PUSH"
 else
   printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "OK"
@@ -183,7 +187,7 @@ printf "${NC}%s${NC}\n" "$STAGE"
 if [[ "$OS_PREFIX" == "OSX" ]]; then
   printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
   BREW=$(which brew)
-  if [[ ! -z $BREW ]]; then
+  if [[ -z $BREW ]]; then
     RUBY=$(which ruby)
     if [[ -f "$RUBY" ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALLING" "brew"
@@ -194,7 +198,9 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
     else
       printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "ruby missing"
     fi
-  elif [[ -z $BREW ]]; then
+  fi
+
+  if [[ -z $BREW ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
     eval $BREW update &>/dev/null
     if [[ $? != 0 ]]; then
@@ -204,14 +210,14 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
   fi
 
   BREW=$(which brew)
-  if [[ -z $BREW ]]; then
+  if [[ ! -z $BREW ]]; then
     BREW_UPDATES=$(eval $BREW outdated)
     echo " :: Verifying ``brew`` packages"
-    if [ $? != 0 ]; then
+    if [[ $? != 0 ]]; then
       echo " :: ERROR: ``brew`` outdated failed"
       exit 255
     fi
-    if [ ! -z "$BREW_UPDATES" ]; then
+    if [[ ! -z "$BREW_UPDATES" ]]; then
       echo " :: Upgrading ``brew`` packages"
       eval $BREW upgrade &>/dev/null
       if [ $? != 0 ]; then
