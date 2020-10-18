@@ -260,7 +260,7 @@ if [ "$USER_SHELL" != "zsh" ]; then
     fi
   fi
 else
-  source ~/.zsrhc
+  source ~/.zshrc
 fi
 
 
