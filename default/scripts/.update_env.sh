@@ -222,7 +222,7 @@ if [ "$OS_PREFIX" == "ubuntu" ]; then
       while read app; do
         APP_INSTALLED=$(which $app)
         if [ -z "$APP_INSTALLED" ]; then
-          sudo apt-get -qq install $app
+          sudo apt-get -qq install $app &>/dev/null
         fi
         unset APP_INSTALLED
       done < ~/.apt_apps
@@ -259,6 +259,8 @@ if [ "$USER_SHELL" != "zsh" ]; then
       exit 255
     fi
   fi
+else
+  source ~/.zsrhc
 fi
 
 
