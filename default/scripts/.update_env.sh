@@ -6,9 +6,9 @@ fi
 
 touch ~/.update_in_progress
 
-APT_ADD_SRC=$(which add-apt-repository)
+APT_ADD_SRC=
 APT_APPS=~/.apt_apps
-APT_GET=$(which apt-get)
+APT_GET=
 APT_SOURCES=~/.apt_sources
 BREW=
 BREW_APPS=~/.brew_apps
@@ -16,6 +16,7 @@ CONFIGURE_DOT_FILES=false
 DOT_FILES=~/.dotfiles
 DOT_FILES_INSTALL=~/.dotfiles/install
 DOT_FILES_PUSH=
+DPKG_QUERY=
 ENVIRONMENT=~/.environment.zsh
 GIT=$(which git)
 GREEN="\033[0;32m"
@@ -260,6 +261,7 @@ fi
 if [[ "$IS_SUDO" == true ]]; then
   if [[ "$OS_PREFIX" == "UBUNTU" ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
+    APT_GET=$(which apt-get)
     if [[ ! -f "$APT_GET" ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get missing"
       exit 255
@@ -306,6 +308,7 @@ if [[ "$IS_SUDO" == true ]]; then
 
       if [[ -f "$APT_SOURCES" ]]; then
         MD5=$(which md5sum)
+        APT_ADD_SRC=$(which add-apt-repository)
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "SOURCES"
         MD5_HASH=$($MD5 "$APT_SOURCES" | cut -d ' ' -f 1)
         if [[ "$MD5_HASH" != "$MD5_APT_ADD_SRC" ]]; then
@@ -333,26 +336,28 @@ if [[ "$IS_SUDO" == true ]]; then
         MD5=$(which md5sum)
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         MD5_HASH=$($MD5 "$APT_APPS" | cut -d ' ' -f 1)
+        DPKG_QUERY=$(which dpkg-query)
         if [[ "$MD5_HASH" != "$MD5_APT_APPS" ]]; then
           while read app; do
-            APP_INSTALLED=$(which $app)
-            echo -e "$APP_INSTALLED\n"
-            if [[ -z "$APP_INSTALLED" ]] && [[ -x "$APP_INSTALLED" ]]; then
-              echo -e "$app ready\n"
-              echo -e "$APP_INSTALLED ready\n"
+            APP_INSTALLED=$($DPKG_QUERY -W -f='${Status}' $app 2>/dev/null | grep -c "ok installed")
+            APP_INSTALL=false
+            if [[ $APP_INSTALLED == 0 ]]; then
+              APP_INSTALL=true
             fi
-            if [[ ! -x "$(command -v $app)" ]]; then
-              exit
-              printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
+
+            if [[ "$APP_INSTALL" == true ]]; then
+              printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL" $app
               eval $SUDO $APT_GET -qq install $app &>/dev/null
               if [[ $? != 0 ]]; then
                 printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get $app failed"
                 exit 255
               fi
             fi
+
             unset APP_INSTALLED
           done < "$APT_APPS"
 
+          echo "Update MD5"
           if [[ -z "$MD5_APT_APPS" ]]; then
             echo "export MD5_APT_APPS=$MD5_HASH" >> $ENVIRONMENT
           else
@@ -384,6 +389,7 @@ if [[ ! -f "$NODE" ]]; then
       exit 255
     fi
   elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
+    APT_GET=$(which apt-get)
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
     eval $SUDO $APT_GET -qq install nodejs -y &>/dev/null
     if [[ $? != 0 ]]; then
@@ -515,6 +521,7 @@ unset CONFIGURE_DOT_FILES
 unset DOT_FILES
 unset DOT_FILES_INSTALL
 unset DOT_FILES_PUSH
+unset DPKG_QUERY
 unset ENVIRONMENT
 unset GIT
 unset GREEN
