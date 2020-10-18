@@ -121,13 +121,13 @@ fi
 if [[ "$UPDATE_DOT_FILES" == true ]]; then
   printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
   pushd $DOT_FILES &>/dev/null
-  CURRENT_HEAD=$(eval $GIT log --pretty=%H ...refs/heads/latest^)
+  CURRENT_HEAD=$($GIT log --pretty=%H ...refs/heads/latest^)
   if [[ $? != 0 ]]; then
     printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git log failed"
     exit 255
   fi
 
-  REMOTE_HEAD=$(eval $GIT ls-remote origin -h refs/heads/latest | cut -f1)
+  REMOTE_HEAD=$($GIT ls-remote origin -h refs/heads/latest | cut -f1)
   if [[ $? != 0 ]]; then
     printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git ls-remote failed"
     exit 255
@@ -170,7 +170,7 @@ if [[ "$CONFIGURE_DOT_FILES" == true ]]; then
   fi
 
   pushd $DOT_FILES &>/dev/null
-  DOT_FILES_PUSH=$(eval $GIT status -s | wc -l)
+  DOT_FILES_PUSH=$($GIT status -s | wc -l)
   if [[ $? != 0 ]]; then
     printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git status failed"
     exit 255
@@ -212,7 +212,7 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
       exit 255
     fi
 
-    BREW_UPDATES=$(eval $BREW outdated)
+    BREW_UPDATES=$($BREW outdated)
     if [[ $? != 0 ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew outdated failed"
       exit 255
@@ -230,13 +230,13 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
     if [[ -f "$BREW_APPS" ]]; then
       MD5=$(which md5)
       echo -e "$MD5\n"
-      MD5_HASH=$(eval $MD5 -r "$BREW_APPS" | cut -d ' ' -f 1)
+      MD5_HASH=$($MD5 -r "$BREW_APPS" | cut -d ' ' -f 1)
       echo -e "$MD5_HASH\n"
       echo -e "$MD5_BREW_APPS\b"
       if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         while read app; do
-          BREW_APP=$(eval $BREW ls --versions $app)
+          BREW_APP=$($BREW ls --versions $app)
           if [ -z "$BREW_APP" ]; then
             printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
             eval $BREW install $app &>/dev/null
@@ -273,7 +273,7 @@ if [[ "$IS_SUDO" == true ]]; then
         exit 255
       fi
 
-      APT_UPDATE=$(eval $SUDO -E -n $APT_GET -qq upgrade --dry-run)
+      APT_UPDATE=$($SUDO -E -n $APT_GET -qq upgrade --dry-run)
       if [[ $? != 0 ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get upgrade failed"
         exit 255
@@ -281,7 +281,7 @@ if [[ "$IS_SUDO" == true ]]; then
 
       if [[ ! -z "$APT_UPDATE" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPGRADE"
-        APT_UPGRADE=$(eval $SUDO -E -n $APT_GET -qq upgrade -y)
+        APT_UPGRADE=$($SUDO -E -n $APT_GET -qq upgrade -y)
         if [[ $? != 0 ]]; then
           printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get upgrade failed"
           exit 255
@@ -290,7 +290,7 @@ if [[ "$IS_SUDO" == true ]]; then
         unset APT_UPDATE
       fi
 
-      APT_UPDATE=$(eval $SUDO -E -n $APT_GET -qq dist-upgrade --dry-run)
+      APT_UPDATE=$($SUDO -E -n $APT_GET -qq dist-upgrade --dry-run)
       if [[ $? != 0 ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get dist-upgrade failed"
         exit 255
@@ -298,7 +298,7 @@ if [[ "$IS_SUDO" == true ]]; then
 
       if [[ ! -z "$APT_UPDATE" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "DIST-UPGRADE"
-        APT_UPGRADE=$(eval $SUDO -E -n $APT_GET -qq dist-upgrade -y)
+        APT_UPGRADE=$($SUDO -E -n $APT_GET -qq dist-upgrade -y)
         if [[ $? != 0 ]]; then
           printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get dist-upgrade failed"
           exit 255
@@ -310,7 +310,7 @@ if [[ "$IS_SUDO" == true ]]; then
       if [[ -f "$APT_SOURCES" ]]; then
         MD5=$(which md5sum)
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "SOURCES"
-        MD5_HASH=$(eval $MD5 "$APT_SOURCES" | cut -d ' ' -f 1)
+        MD5_HASH=$($MD5 "$APT_SOURCES" | cut -d ' ' -f 1)
         if [[ "$MD5_HASH" != "$MD5_APT_ADD_SRC" ]]; then
           while read src; do
             printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "SOURCES" "$src"
@@ -335,7 +335,11 @@ if [[ "$IS_SUDO" == true ]]; then
       if [ -f "$APT_APPS" ]; then
         MD5=$(which md5sum)
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
-        MD5_HASH=$(eval $MD5 "$APT_APPS" | cut -d ' ' -f 1)
+        MD5_HASH=$($MD5 "$APT_APPS" | cut -d ' ' -f 1)
+        eval $MD5 "$APT_APPS" | cut -d ' ' -f 1
+        echo -e "$MD5\n"
+        echo -e "$MD5_HASH\n"
+        echo -e "$MD5_APT_APPS\b"
         if [[ "$MD5_HASH" != "$MD5_APT_APPS" ]]; then
           while read app; do
             APP_INSTALLED=$(which $app)
@@ -343,7 +347,7 @@ if [[ "$IS_SUDO" == true ]]; then
               printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
               eval $SUDO $APT_GET -qq install $app &>/dev/null
               if [[ $? != 0 ]]; then
-                printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get install $app failed"
+                printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get $app failed"
                 exit 255
               fi
             fi
@@ -377,14 +381,14 @@ if [[ ! -f "$NODE" ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
     eval $BREW install node &>/dev/null
     if [[ $? != 0 ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install node failed"
+      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew node failed"
       exit 255
     fi
   elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
     eval $SUDO $APT_GET -qq install nodejs -y &>/dev/null
     if [[ $? != 0 ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get install nodejs failed"
+      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get nodejs failed"
       exit 255
     fi
   elif [[ "$IS_SUDO" == false ]]; then
@@ -400,10 +404,10 @@ if [[ ! -z $"NODE" ]]; then
     if [[ -f "$NODE_APPS" ]]; then
       if [[ "$OS_PREFIX" == "OSX" ]]; then
         MD5=$(which md5)
-        MD5_HASH=$(eval $MD5 -r "$NODE_APPS" | cut -d ' ' -f 1)
+        MD5_HASH=$($MD5 -r "$NODE_APPS" | cut -d ' ' -f 1)
       elif [[ "$OS_PREFIX" == "UBUNTU" ]]; then
         MD5=$(which md5sum)
-        MD5_HASH=$(eval $MD5 "$NODE_APPS" | cut -d ' ' -f 1)
+        MD5_HASH=$($MD5 "$NODE_APPS" | cut -d ' ' -f 1)
       fi
 
       echo -e "$MD5\n"
@@ -413,7 +417,11 @@ if [[ ! -z $"NODE" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         while read app; do
           printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
-          eval $NPM -g install --upgrade $app
+          NODE_APP=$($NPM -g install --quiet --upgrade $app &>/dev/null)
+          if [[ $? != 0 ]]; then
+            printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "npm $app failed"
+            exit 255
+          fi
           exit 255
           unset NODE_APP
         done < "$NODE_APPS"
