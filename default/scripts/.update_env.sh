@@ -6,15 +6,27 @@ fi
 
 touch ~/.update_in_progress
 
-INSTALL_DOT_FILES=false
-UPDATE_DOT_FILES=true
+BREW=$(which brew)
 CONFIGURE_DOT_FILES=false
 DOT_FILES=~/.dotfiles
+DOT_FILES_INSTALL=~/.dotfiles/install
+DOT_FILES_PUSH=
 ENVIRONMENT=~/.environment.zsh
 GIT=$(which git)
-BREW=$(which brew)
+GREEN="\033[0;32m"
+INSTALL_DOT_FILES=false
+NC="\033[0m"
+NPM=$(which npm)
 OS_PREFIX=
-DOT_FILES_PUSH=
+PIP3=$(which pip3)
+RED="\033[0;31m"
+REPLACE="\e[1A\e[K"
+REPLACE2="\e[2A\e[K"
+UPDATE_DOT_FILES=true
+YELLOW="\033[0;33m"
+
+STAGE=":: Verifying environment"
+printf "${NC}%s${NC}\n" "$STAGE"
 if [[ "$OSTYPE" == "darwin"* ]]; then
   OS_PREFIX="osx"
 elif [ "$OSTYPE" == "linux-gnu" ]; then
@@ -22,7 +34,7 @@ elif [ "$OSTYPE" == "linux-gnu" ]; then
 fi
 
 if [ -z $OS_PREFIX ]; then
-  echo ":: ERROR: Unknown OS $OSTYPE"
+  printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "Unknown OS $OSTYPE"
   exit 255
 fi
 
@@ -31,17 +43,10 @@ if [ ! -d "$DOT_FILES" ]; then
   INSTALL_DOT_FILES=true
 fi
 
-if [ -z "$GIT" ]; then
-  UPDATE_DOT_FILES=false
-  INSTALL_DOT_FILES=false
-  echo ":: ERROR: Skipping dotfiles (\`git\` not found)"
-fi
-
 if [ ! -f "$ENVIRONMENT" ]; then
   touch "$ENVIRONMENT"
 fi
 
-echo ":: Verifying environment"
 unset COLORTERM
 unset DEFAULT_USER
 unset ITERM2_SQUELCH_MARK
@@ -60,71 +65,82 @@ fi
 if [ -z $KEYTIMEOUT ]; then
   echo "export KEYTIMEOUT=1" >> $ENVIRONMENT
 fi
+printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "${OS_PREFIX^^}"
 
-echo ":: Verifying ``.dotfiles``"
+STAGE=":: Verifying config files"
+printf "${NC}%s${NC}\n" "$STAGE"
+if [ -z "$GIT" ]; then
+  UPDATE_DOT_FILES=false
+  INSTALL_DOT_FILES=false
+  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "SKIPPING" "``git`` not found"
+fi
+
 if [ "$INSTALL_DOT_FILES" == true ]; then
-  echo " :: Installing ``.dotfiles``"
-  git clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null
+  printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "INSTALLING"
+  eval $GIT clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null
   if [ $? != 0 ]; then
-    echo " :: ERROR: Git clone failed for ``.dotfiles``"
+    printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git clone failed"
     exit 255
   fi
   CONFIGURE_DOT_FILES=true
 fi
 
 if [ "$UPDATE_DOT_FILES" == true ]; then
-  echo " :: Checking for latest ``.dotfiles``"
+  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
   pushd $DOT_FILES &>/dev/null
-  #  git remote update --prune &>/dev/null
-  CURRENT_BRANCH=$(git branch --show-current)
+  CURRENT_HEAD=$(eval $GIT log --pretty=%H ...refs/heads/latest^)
   if [ $? != 0 ]; then
-    echo " :: ERROR: Git branch failed for ``.dotfiles``"
+    printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git log failed"
     exit 255
   fi
-  CURRENT_HEAD=$(git log --pretty=%H ...refs/heads/$CURRENT_BRANCH^)
+  REMOTE_HEAD=$(eval $GIT ls-remote origin -h refs/heads/latest | cut -f1)
   if [ $? != 0 ]; then
-    echo " :: ERROR: Git log failed for ``.dotfiles``"
-    exit 255
-  fi
-  REMOTE_HEAD=$(git ls-remote origin -h refs/heads/$CURRENT_BRANCH | cut -f1)
-  if [ $? != 0 ]; then
-    echo " :: ERROR: Git remote failed for ``.dotfiles``"
+    printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git ls-remote failed"
     exit 255
   fi
   if [ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]; then
-    echo " :: Updating ``.dotfiles``"
+    printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
     CONFIGURE_DOT_FILES=true
-    git pull --quiet &>/dev/null
+    eval $GIT pull --quiet &>/dev/null
     if [ $? != 0 ]; then
-      echo " :: ERROR: Git pull failed for ``.dotfiles``"
+      printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git pull failed"
       exit 255
     fi
   fi
-  DOT_FILES_PUSH=$(git status -s)
+  DOT_FILES_PUSH=$(eval $GIT status -s | wc -l)
   if [ $? != 0 ]; then
-    echo " :: ERROR: Git status failed for ``.dotfiles``"
+    printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git status failed"
     exit 255
   fi
-  if [ ! -z "$DOT_FILES_PUSH" ]; then
+  if [ "$DOT_FILES_PUSH" -gt "0" ]; then
     CONFIGURE_DOT_FILES=true
   fi
   popd &>/dev/null
 fi
 
 if [ "$CONFIGURE_DOT_FILES" == true ]; then
-  echo ":: Running ``.dotfiles`` install"
-  ~/.dotfiles/install &>/dev/null
+  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CONFIGURING"
+  if [ ! -f "$DOT_FILES_INSTALL" ]; then
+    printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "install script missing"
+    exit 255
+  fi
+  eval $DOT_FILES_INSTALL &>/dev/null
   if [ $? != 0 ]; then
-    echo " :: ERROR: ``dotfiles/install`` failed"
+    printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "install failed"
     exit 255
   fi
   pushd $DOT_FILES &>/dev/null
-  DOT_FILES_PUSH=$(git status -s)
+  DOT_FILES_PUSH=$(eval $GIT status -s | wc -l)
   if [ $? != 0 ]; then
-    echo " :: ERROR: Git status failed for ``.dotfiles``"
+    printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git status failed"
     exit 255
   fi
   popd &>/dev/null
+fi
+if [ "$DOT_FILES_PUSH" -gt "0" ]; then
+  printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\n" "PUSH"
+else
+  printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "OK"
 fi
 
 if [ "$OS_PREFIX" == "osx" ]; then
@@ -138,12 +154,12 @@ if [ "$OS_PREFIX" == "osx" ]; then
     fi
   else
     echo " :: Updating ``brew``"
-    brew update &>/dev/null
+    eval $BREW update &>/dev/null
     if [ $? != 0 ]; then
       echo " :: ERROR: ``brew`` update failed"
       exit 255
     fi
-    BREW_UPDATES=$(brew outdated)
+    BREW_UPDATES=$(eval $BREW outdated)
     echo " :: Verifying ``brew`` packages"
     if [ $? != 0 ]; then
       echo " :: ERROR: ``brew`` outdated failed"
@@ -151,7 +167,7 @@ if [ "$OS_PREFIX" == "osx" ]; then
     fi
     if [ ! -z "$BREW_UPDATES" ]; then
       echo " :: Upgrading ``brew`` packages"
-      brew upgrade &>/dev/null
+      eval $BREW upgrade &>/dev/null
       if [ $? != 0 ]; then
         echo " :: ERROR: ``brew`` upgrade failed"
         exit 255
@@ -169,9 +185,9 @@ if [ "$OS_PREFIX" == "osx" ]; then
         sed -i '' "s/$MD5_BREW_APPS/$MD5_HASH/" $ENVIRONMENT
       fi
       while read app; do
-        BREW_APP=$(brew ls --versions $app)
+        BREW_APP=$(eval $BREW ls --versions $app)
         if [ -z "$BREW_APP" ]; then
-          brew install $app &>/dev/null
+          eval $BREW install $app &>/dev/null
         fi
         unset BREW_APP
       done < ~/.brew_apps
@@ -237,7 +253,7 @@ if [ "$USER_SHELL" != "zsh" ]; then
   ZSH=$(which zsh)
   if [ -z $ZSH ]; then
     if [ "$OS_PREFIX" == "osx" ]; then
-      brew install zsh &>/dev/null
+      eval $BREW install zsh &>/dev/null
       if [ $? != 0 ]; then
         echo ":: ERROR: ``zsh`` install failed"
         exit 255
@@ -263,22 +279,26 @@ fi
 
 
 echo ":: Verifying ``.dotfiles`` updates"
-if [ ! -z "$DOT_FILES_PUSH" ]; then
-  echo " :: ``.dotfiles`` needs to be pushed"
-fi
 
 unset BREW
 unset BREW_UPDATES
 unset CONFIGURE_DOT_FILES
 unset DOT_FILES
+unset DOT_FILES_INSTALL
 unset DOT_FILES_PUSH
 unset ENVIRONMENT
 unset GIT
+unset GREEN
 unset INSTALL_DOT_FILES
+unset NC
 unset UPDATE_DOT_FILES
 unset OS_PREFIX
+unset RED
+unset REPLACE
+unset REPLACE2
 unset USER_SHELL
 unset ZSH
+unset YELLOW
 
 rm ~/.update_in_progress
 echo ":: Verified environment"
