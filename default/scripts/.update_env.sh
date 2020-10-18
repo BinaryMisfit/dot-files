@@ -11,6 +11,7 @@ APT_APPS=~/.apt_apps
 APT_GET=$(which apt-get)
 APT_SOURCES=~/.apt_sources
 BREW=
+BREW_APPS=~/.brew_apps
 CONFIGURE_DOT_FILES=false
 DOT_FILES=~/.dotfiles
 DOT_FILES_INSTALL=~/.dotfiles/install
@@ -209,40 +210,43 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
       exit 255
     fi
 
-    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
     BREW_UPDATES=$(eval $BREW outdated)
     if [[ $? != 0 ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew outdate failed"
+      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew outdated failed"
       exit 255
     fi
     if [[ ! -z "$BREW_UPDATES" ]]; then
-      echo " :: Upgrading ``brew`` packages"
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPGRADE"
       eval $BREW upgrade &>/dev/null
-      if [ $? != 0 ]; then
-        echo " :: ERROR: ``brew`` upgrade failed"
+      if [[ $? != 0 ]]; then
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew upgrade failed"
         exit 255
       fi
     fi
 
-    if [ -f ~/.brew_apps ]; then
-      echo " :: Verifying ``brew`` required packages"
-      MD5_HASH=$(md5 -r ~/.brew_apps | cut -d ' ' -f 1)
+    if [[ -f "$BREW_APPS" ]]; then
+      MD5=$(which md5)
+      MD5_HASH=$(eval $MD5 -r "$BREW_APPS" | cut -d ' ' -f 1)
       if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
-        echo " :: Installing ``brew`` required packages"
+        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
+        while read app; do
+          BREW_APP=$(eval $BREW ls --versions $app)
+          if [ -z "$BREW_APP" ]; then
+            printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
+            eval $BREW install $app &>/dev/null
+          fi
+
+          unset BREW_APP
+        done < "$BREW_APPS"
+
         if [ -z "$MD5_BREW_APPS" ]; then
           echo "export MD5_BREW_APPS=$MD5_HASH" >> $ENVIRONMENT
         else
           sed -i '' "s/$MD5_BREW_APPS/$MD5_HASH/" $ENVIRONMENT
         fi
-        while read app; do
-          BREW_APP=$(eval $BREW ls --versions $app)
-          if [ -z "$BREW_APP" ]; then
-            eval $BREW install $app &>/dev/null
-          fi
-          unset BREW_APP
-        done < ~/.brew_apps
       fi
 
+      unset MD5
       unset MD5_HASH
     fi
   fi
