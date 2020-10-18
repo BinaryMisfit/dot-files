@@ -369,7 +369,6 @@ STAGE=":: Verifying nodejs"
 printf "${NC}%s${NC}\n" "$STAGE"
 printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
 NODE=$(which node)
-NPM=$(which npm)
 if [[ ! -f "$NODE" ]]; then
     if [[ "$OS_PREFIX" == "OSX" ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
@@ -387,6 +386,11 @@ if [[ ! -f "$NODE" ]]; then
       fi
     elif [[ "$IS_SUDO" == false ]]; then
       printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "sudo required"
+    fi
+
+    NPM=$(which npm)
+    if [[ -z "$NPM" ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
     fi
 else
     printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
