@@ -15,6 +15,9 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 export ZSH_DISABLE_COMPFIX=true
 export ZSH_THEME=powerlevel9k/powerlevel9k
 
+# Optional Variables
+test -e /usr/local/bin/mono && export MONO_GAC_PREFIX="/usr/local"
+
 # Plugins
 plugins=(
   zsh-completions
@@ -39,7 +42,6 @@ test -e /usr/local/bin/nvim && alias vi="/usr/local/bin/nvim "
 test -e /usr/local/bin/nvim && alias vim="/usr/local/bin/nvim "
 
 # Update PATH
-PATH=/Library/Frameworks/Mono.framework/Versions/Current:$PATH
 PATH=$HOME/.yarn/bin:$PATH
 
 # Cleanup
