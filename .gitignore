@@ -1,4 +1,5 @@
 */**/*.swp
+*/**/authorized_keys
 .DS_Store
 default/nvim/autoload
 default/nvim/.netrwhist
