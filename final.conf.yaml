@@ -3,6 +3,3 @@
     link:
       create: true
       relink: true
-
-- shell:
-  - [chmod 600 ~/.ssh/authorized_keys,Setting mode for SSH keys]
