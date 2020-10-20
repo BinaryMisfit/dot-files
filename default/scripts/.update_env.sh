@@ -24,7 +24,7 @@ INSTALL_DOT_FILES=false
 IS_SUDO=false
 MD5=
 MD5_APT_ADD_SRC=
-NC="\033[0m"
+gC="\033[0m"
 NPM=
 NODE=
 NODE_APPS=~/.node_apps
@@ -112,7 +112,7 @@ if [[ "$INSTALL_DOT_FILES" == true ]]; then
   printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\n" "INSTALL"
   eval $GIT clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null
   if [[ $? != 0 ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git clone failed"
+t   printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git clone failed"
     exit 255
   fi
 
@@ -539,6 +539,7 @@ unset RED
 unset REPLACE
 unset REPLACE2
 unset RUBY
+unset STAGE
 unset SUDO
 unset USER_SHELL
 unset UPDATE_DOT_FILES
