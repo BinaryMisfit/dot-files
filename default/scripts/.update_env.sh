@@ -220,6 +220,7 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
     fi
 
     if [[ ! -z "$BREW_UPDATES" ]]; then
+      BREW_CLEAN=true
       printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPGRADE"
       eval $BREW upgrade &>/dev/null
       if [[ $? != 0 ]]; then
@@ -232,20 +233,16 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
       MD5=$(which md5)
       MD5_HASH=$($MD5 -r "$BREW_APPS" | cut -d ' ' -f 1)
       if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
+        BREW_CLEAN=true
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         while read app; do
           BREW_ARGS=
           if [[ $app == *","* ]]; then
-            echo -e "$app"
             BREW_APP=$(echo "$app" | cut -d ',' -f 1)
             BREW_ARGS="--$(echo "$app" | cut -d ',' -f 2)"
-            echo -e "$BREW_APP"
-            echo -e "$BREW_ARGS"
           fi
 
           BREW_INSTALL=$($BREW ls --versions $app)
-          echo -e $BREW_INSTALL
-          exit
           if [[ -z "$BREW_INSTALL" ]]; then
             printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL" $BREW_APP
             eval $BREW install $BREW_ARGS $BREW_APP &>/dev/null
@@ -265,6 +262,15 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
 
       unset MD5
       unset MD5_HASH
+    fi
+
+    if [[ "$BREW_CLEAN" == true ]]; then
+      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CLEANUP"
+      eval $BREW cleanup &>/dev/null
+      if [[ $? != 0 ]]; then
+        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew cleanup failed"
+        exit 255
+      fi
     fi
 
     printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
@@ -293,6 +299,7 @@ if [[ "$IS_SUDO" == true ]]; then
 
       if [[ ! -z "$APT_UPDATE" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPGRADE"
+        APT_CLEAN=true
         APT_UPGRADE=$($SUDO -E -n $APT_GET -qq upgrade -y)
         if [[ $? != 0 ]]; then
           printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get upgrade failed"
@@ -310,6 +317,7 @@ if [[ "$IS_SUDO" == true ]]; then
 
       if [[ ! -z "$APT_UPDATE" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "DIST-UPGRADE"
+        APT_CLEAN=true
         APT_UPGRADE=$($SUDO -E -n $APT_GET -qq dist-upgrade -y)
         if [[ $? != 0 ]]; then
           printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get dist-upgrade failed"
@@ -351,6 +359,7 @@ if [[ "$IS_SUDO" == true ]]; then
         MD5_HASH=$($MD5 "$APT_APPS" | cut -d ' ' -f 1)
         DPKG_QUERY=$(which dpkg-query)
         if [[ "$MD5_HASH" != "$MD5_APT_APPS" ]]; then
+          APT_CLEAN=true
           while read app; do
             APP_INSTALLED=$($DPKG_QUERY -W -f='${Status}' $app 2>/dev/null | grep -c "ok installed")
             APP_INSTALL=false
@@ -379,6 +388,21 @@ if [[ "$IS_SUDO" == true ]]; then
 
         unset MD5
         unset MD5_HASH
+      fi
+
+      if [[ "$APT_CLEAN" == true ]]; then
+        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "DIST-UPGRADE"
+        eval $SUDO -E -n $APT_GET -qq autoremove -y
+        if [[ $? != 0 ]]; then
+          printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get autoremove failed"
+          exit 255
+        fi
+
+        eval $SUDO -E -n $APT_GET -qq autoclean -y
+        if [[ $? != 0 ]]; then
+          printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get autoclean failed"
+          exit 255
+        fi
       fi
     fi
 
@@ -523,9 +547,11 @@ fi
 
 unset APT_ADD_SRC
 unset APT_APPS
+unset APT_CLEAN
 unset APT_GET
 unset APT_SOURCES
 unset BREW
+unset BREW_CLEAN
 unset BREW_UPDATES
 unset BREW_APPS
 unset CONFIGURE_DOT_FILES
