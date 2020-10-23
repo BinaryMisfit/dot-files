@@ -234,13 +234,26 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
       if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         while read app; do
-          BREW_APP=$($BREW ls --versions $app)
-          if [[ -z "$BREW_APP" ]]; then
-            printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL" $app
-            eval $BREW install $app &>/dev/null
+          BREW_ARGS=
+          if [[ $app == *","* ]]; then
+            echo -e "$app"
+            BREW_APP=$(echo "$app" | cut -d ',' -f 1)
+            BREW_ARGS="--$(echo "$app" | cut -d ',' -f 2)"
+            echo -e "$BREW_APP"
+            echo -e "$BREW_ARGS"
+          fi
+
+          BREW_INSTALL=$($BREW ls --versions $app)
+          echo -e $BREW_INSTALL
+          exit
+          if [[ -z "$BREW_INSTALL" ]]; then
+            printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL" $BREW_APP
+            eval $BREW install $BREW_ARGS $BREW_APP &>/dev/null
           fi
 
           unset BREW_APP
+          unset BREW_ARGS
+          unset BREW_INSTALL
         done < "$BREW_APPS"
 
         if [[ -z "$MD5_BREW_APPS" ]]; then

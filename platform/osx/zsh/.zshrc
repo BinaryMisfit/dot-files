@@ -17,6 +17,7 @@ export ZSH_THEME=powerlevel9k/powerlevel9k
 
 # Optional Variables
 test -e /usr/local/bin/mono && export MONO_GAC_PREFIX="/usr/local"
+test -e /usr/local/share/dotnet/dotnet && export MSBuildSDKsPath="/usr/local/share/dotnet/sdk/$(dotnet --version)/Sdks"
 
 # Plugins
 plugins=(
