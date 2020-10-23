@@ -1,5 +1,5 @@
 # Load environment
-if [ -z $TMUX ] || [[ "$TERM_PROGRAM" -ne "vscode" ]]; then
+if [ -z $TMUX ] && [[ "$TERM_PROGRAM" != "vscode" ]]; then
   test -e ${HOME}/.scripts/.update_online.sh && /bin/bash ${HOME}/.scripts/.update_online.sh
 fi
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
