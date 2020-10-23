@@ -391,7 +391,7 @@ if [[ "$IS_SUDO" == true ]]; then
       fi
 
       if [[ "$APT_CLEAN" == true ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "DIST-UPGRADE"
+        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CLEANUP"
         eval $SUDO -E -n $APT_GET -qq autoremove -y
         if [[ $? != 0 ]]; then
           printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get autoremove failed"
