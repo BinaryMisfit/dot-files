@@ -136,12 +136,13 @@ fi
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 if [[ $DOT_FILES_UPDATE == true ]]; then
   pushd "$DIR_DOT_FILES" &>/dev/null || return
-  if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/latest^); then
+  read -r CURRENT_BRANCH < <(eval "$APP_GIT" branch | cut -d ' ' -f 2)
+  if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/"$CURRENT_BRANCH"^); then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git log failed"
     exit 255
   fi
 
-  if ! read -r REMOTE_HEAD < <(eval "$APP_GIT" ls-remote origin -h refs/heads/latest | cut -f1); then
+  if ! read -r REMOTE_HEAD < <(eval "$APP_GIT" ls-remote origin -h refs/heads/"$CURRENT_BRANCH" | cut -f1); then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git ls-remote failed"
     exit 255
   fi
@@ -241,9 +242,9 @@ case "$OS_PREFIX" in
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew upgrade failed"
       exit 255
     fi
-    unset BREW_UPDATES
   fi
 
+  unset BREW_UPDATES
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
   FILE_CHECKSUM=$HOME/.packages/checksum
   if [[ ! -f $FILE_CHECKSUM ]]; then
@@ -329,8 +330,7 @@ case "$OS_PREFIX" in
     fi
 
     read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade --dry-run)
-    echo -e "$APT_UPDATE\n"
-    if [[ -n $APT_UPDATE ]]; then
+    if [[ -z $APT_UPDATE ]]; then
       APT_CLEAN=true
       if eval "$SUDO" -E -n "$APP_APT" -qq upgrade -y; then
         printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get upgrade failed"
@@ -339,8 +339,7 @@ case "$OS_PREFIX" in
 
     unset APT_UPDATE
     read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade --dry-run)
-    echo -e "$APT_UPDATE\n"
-    if [[ -n $APT_UPDATE ]]; then
+    if [[ -z $APT_UPDATE ]]; then
       APT_CLEAN=true
       if eval "$SUDO" -E -n "$APP_APT" -qq dist-upgrade -y; then
         printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get dist-upgrade failed"
@@ -350,7 +349,7 @@ case "$OS_PREFIX" in
       unset APT_UPDATE
     fi
 
-    #printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
     unset APT_CLEAN
     unset APP_APT
     unset APP_SUDO
@@ -362,29 +361,97 @@ esac
 STAGE="Verifying node"
 printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+FILE_CHECKSUM=$HOME/.packages/checksum
+if [[ ! -f $FILE_CHECKSUM ]]; then
+  touch "$FILE_CHECKSUM"
+fi
+
 APP_NODE=$(which node)
-if [[ -x $APP_NODE ]]; then
+APP_NPM=$(which npm)
+if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
+  read -r NODE_UPDATES < <(eval "$APP_NPM" outdated)
+  if [[ -n "$NODE_UPDATES" ]]; then
+    if ! eval "$APP_NPM" upgrade &>/dev/null; then
+      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm upgrade failed"
+      exit 255
+    fi
+  fi
+
+  unset NODE_UPDATES
+  # shellcheck source=/dev/null
+  source "$FILE_CHECKSUM"
+  FILE_NODE_APPS=$HOME/.packages/node
+  if [[ -f $FILE_NODE_APPS ]]; then
+    MD5=$(which md5)
+    read -r MD5_HASH < <(eval "$MD5" -r "$FILE_NODE_APPS" | cut -d ' ' -f 1)
+    if [[ "$MD5_HASH" != "$ND5_NODE" ]]; then
+      while read -r APP; do
+        NODE_APP=
+        NODE_APP=$(echo "$APP" | cut -d ',' -f 1)
+        read -r NODE_INSTALL < <("$APP_NPM" list | grep "$NODE_APP")
+        if [[ -z "$NODE_INSTALL" ]]; then
+          printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
+          if ! eval "$APP_NPM" install --upgrade "$NODE_APP" &>/dev/null; then
+            printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm install $NODE_APP failed"
+            exit 255
+          fi
+        fi
+
+        printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+        unset NODE_APP
+        unset NODE_INSTALL
+      done <"$FILE_NODE_APPS"
+    fi
+
+    if [[ -z "$MD5_NODE" ]]; then
+      echo "export MD5_NODE=$MD5_HASH" >>"$FILE_CHECKSUM"
+    else
+      sed -i '' "s/$MD5_NODE/$MD5_HASH/" "$FILE_CHECKSUM"
+    fi
+
+    unset MD5_HASH
+    unset MD5
+  fi
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 else
-  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "node not installed"
-  exit 255
+  if [[ -z $APP_NODE ]]; then
+    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "node not installed"
+    exit 255
+  fi
+
+  if [[ -z $APP_NPM ]]; then
+    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "npm not installed"
+    exit 255
+  fi
 fi
 
 unset APP_NODE
+unset APP_NPM
 
 STAGE="Verifying python3"
 printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 APP_PY3=$(which python3)
-if [[ -x $APP_PY3 ]]; then
+APP_PIP3=$(which pip3)
+if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 else
-  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "python3 not installed"
-  exit 255
+  if [[ -z $APP_PY3 ]]; then
+    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "python3 not installed"
+    exit 255
+  fi
+
+  if [[ -z $APP_PIP3 ]]; then
+    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "pip3 not installed"
+    exit 255
+  fi
 fi
 
 unset APP_PY3
+unset APP_PIP3
 
+eval rm "$FILE_BUSY"
+unset FILE_BUSY
 exit 0
 
       if [[ -f "$APT_SOURCES" ]]; then
@@ -572,6 +639,3 @@ if [ "$USER_SHELL" != "zsh" ]; then
 else
   printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
 fi
-
-rm "$FILE_BUSY"
-unset FILE_BUSY

@@ -8,6 +8,8 @@
 - link:
     ~/.gitconfig:
       path: platform/osx/git/.gitconfig
+    ~/.hushlogin:
+      path: platform/ubuntu/.hushlogin
     ~/.iterm2:
       path: platform/osx/iterm2
     ~/.oh-my-zsh/custom/themes/powerlevel9k:
