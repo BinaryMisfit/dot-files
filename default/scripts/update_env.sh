@@ -1,32 +1,29 @@
 #!/usr/bin/env bash
 COLOR_GREEN="\033[0;32m"
 COLOR_NONE="\033[0m"
-COLOR_RED="\033[0;31m"
+COLOR_RED="\033[1;31m"
 COLOR_YELLOW="\033[0;33m"
 FORMAT_REPLACE="\e[1A\e[K"
 FILE_BUSY=$HOME/.update_in_progress
 
-STAGE=":: Verifying environment"
+STAGE="Verifying environment"
+printf "$COLOR_YELLOW - $COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
 if [[ -n $TMUX ]]; then
-  printf "$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t\t%s$COLOR_NONE\n" "TMUX"
+  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t\t%s$COLOR_NONE\n" "TMUX"
   exit 0
 fi
 
 if [[ "$TERM_PROGRAM" == "vscode" ]]; then
-  printf "$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t\t%s$COLOR_NONE\n" "VSCODE"
+  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t\t%s$COLOR_NONE\n" "VSCODE"
   exit 0
 fi
 
 if [[ -f $FILE_BUSY ]]; then
-  printf "$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t\t%s$COLOR_NONE\n" "RUNNING"
+  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t\t%s$COLOR_NONE\n" "RUNNING"
   exit 0
 fi
 touch "$FILE_BUSY"
 
-printf "$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
 OS_PREFIX=
 case "$OSTYPE" in
 "darwin"*)
@@ -37,11 +34,11 @@ case "$OSTYPE" in
   ;;
 esac
 if [[ -z $OS_PREFIX ]]; then
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "Unknown OS $OSTYPE"
+  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "Unknown OS $OSTYPE"
   exit 255
 fi
 
-printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "SUDO"
+printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "SUDO"
 APP_SUDO=$(which sudo)
 USER_IS_ROOT=false
 USER_IS_SUDO=false
@@ -64,7 +61,7 @@ elif [[ -x $APP_SUDO ]]; then
   fi
 fi
 
-printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "CONFIG"
+printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "CONFIG"
 unset COLORTERM
 unset DEFAULT_USER
 unset DISABLE_AUTO_UPDATE
@@ -103,20 +100,20 @@ unset FILE_ENV
 unset USER_IS_ROOT
 
 OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | awk '{print toupper($1)}')
-printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "$OS_PREFIX_UPPER"
+printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "$OS_PREFIX_UPPER"
 unset OS_PREFIX_UPPER
 
-STAGE=":: Verifying config files"
-printf "${NC}%s${NC}\n" "$STAGE"
-printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "GIT"
+STAGE="Verifying config files"
+printf "$COLOR_YELLOW - $COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "GIT"
 APP_GIT=$(which git)
 if [[ -z $APP_GIT ]]; then
   DOT_FILES_UPDATE=false
   DOT_FILES_INSTALL=false
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "git mising"
+  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "git mising"
 fi
 
-printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "DOTFILES"
+printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "DOTFILES"
 DIR_DOT_FILES=$HOME/.dotfiles
 DOT_FILES_CONFIGURE=false
 DOT_FILES_INSTALL=false
@@ -128,9 +125,9 @@ else
 fi
 
 if [[ $DOT_FILES_INSTALL == true ]]; then
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
   if ! eval "$GIT" clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null; then
-    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git clone failed"
+    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git clone failed"
     exit 255
   fi
 
@@ -139,29 +136,29 @@ if [[ $DOT_FILES_INSTALL == true ]]; then
 fi
 
 if [[ $DOT_FILES_UPDATE == true ]]; then
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
   pushd "$DIR_DOT_FILES" &>/dev/null || return
   if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/latest^); then
-    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git log failed"
+    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git log failed"
     exit 255
   fi
 
   if ! read -r REMOTE_HEAD < <(eval "$APP_GIT" ls-remote origin -h refs/heads/latest | cut -f1); then
-    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git ls-remote failed"
+    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git ls-remote failed"
     exit 255
   fi
 
   if [[ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]]; then
-    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPDATE"
+    printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPDATE"
     DOT_FILES_CONFIGURE=true
     if ! eval "$APP_GIT" pull --quiet &>/dev/null; then
-      printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git pull failed"
+      printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git pull failed"
       exit 255
     fi
   fi
 
   if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | wc -l); then
-    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git status failed"
+    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git status failed"
     exit 255
   fi
 
@@ -178,21 +175,21 @@ fi
 
 if [[ $DOT_FILES_CONFIGURE == true ]]; then
   pushd "$DIR_DOT_FILES" &>/dev/null || return
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "CONFIGURE"
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "CONFIGURE"
   DOT_FILES_INSTALLER=$HOME/.dotfiles/install
   if [[ ! -x "$DOT_FILES_INSTALLER" ]]; then
-    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script missing"
+    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script missing"
     exit 255
   fi
 
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALLER"
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALLER"
   if ! eval "$DOT_FILES_INSTALLER" &>/dev/null; then
-    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script failed"
+    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script failed"
     exit 255
   fi
 
   if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | wc -l); then
-    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" " git status failed"
+    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" " git status failed"
     exit 255
   fi
 
@@ -202,17 +199,33 @@ if [[ $DOT_FILES_CONFIGURE == true ]]; then
 fi
 
 if [[ $DOT_FILES_PUSH -gt 0 ]]; then
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\n" "PUSH"
+  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\n" "PUSH"
 else
-  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 fi
 
 unset DIR_DOT_FILES
 unset DOT_FILES_PUSH
+
+STAGE="Verifying packages"
+printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+case "$OS_PREFIX" in
+"osx")
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
+  APP_BREW=$(which brew)
+  unset APP_BREW
+  ;;
+"ubuntu")
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
+  APP_APT=$(which apt-get)
+  unset APP_APT
+  ;;
+esac
+
 exit 0
 
-SOURCES_APT=${HOME}/.packages/sources/apt
-APPS_APT=${HOME}/.packages/apt
+SOURCES_APT=$HOME/.packages/sources/apt
+APPS_APT=$HOME/.packages/apt
 APP_APT_SRC=
 APP_APT=
 APP_BREW=
@@ -230,11 +243,7 @@ REPLACE2="\e[2A\e[K"
 RUBY=
 ZSH=
 
-STAGE=":: Verifying packages"
-printf "${NC}%s${NC}\n" "$STAGE"
 if [[ "$OS_PREFIX" == "OSX" ]]; then
-  printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
-  BREW=$(which brew)
   if [[ -z $BREW ]]; then
     RUBY=$(which ruby)
     if [[ -f "$RUBY" ]]; then
@@ -456,7 +465,7 @@ else
   printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
 fi
 
-STAGE=":: Verifying node"
+STAGE=":::Verifying node"
 printf "${NC}%s${NC}\n" "$STAGE"
 printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
 NODE=$(which node)
@@ -524,7 +533,7 @@ if [[ ! -z $NODE ]]; then
   fi
 fi
 
-STAGE=":: Verifying python"
+STAGE=":::Verifying python"
 printf "${NC}%s${NC}\n" "$STAGE"
 printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
 PYTHON3=$(which python3)
@@ -541,7 +550,7 @@ else
   printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
 fi
 
-STAGE=":: Verifying default shell"
+STAGE=":::Verifying default shell"
 printf "${NC}%s${NC}\n" "$STAGE"
 printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
 USER_SHELL=$(basename $SHELL)
