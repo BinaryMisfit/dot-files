@@ -34,11 +34,11 @@ case "$OSTYPE" in
   ;;
 esac
 if [[ -z $OS_PREFIX ]]; then
-  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "Unknown OS $OSTYPE"
+  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "$OSTYPE"
   exit 255
 fi
 
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "SUDO"
+printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "RUNNING"
 APP_SUDO=$(which sudo)
 USER_IS_ROOT=false
 USER_IS_SUDO=false
@@ -61,7 +61,6 @@ elif [[ -x $APP_SUDO ]]; then
   fi
 fi
 
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "CONFIG"
 unset COLORTERM
 unset DEFAULT_USER
 unset DISABLE_AUTO_UPDATE
@@ -103,9 +102,9 @@ OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | awk '{print toupper($1)}')
 printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "$OS_PREFIX_UPPER"
 unset OS_PREFIX_UPPER
 
-STAGE="Verifying config files"
+STAGE="Verifying dotfiles files"
 printf "$COLOR_YELLOW - $COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "GIT"
+printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "RUNNING"
 APP_GIT=$(which git)
 if [[ -z $APP_GIT ]]; then
   DOT_FILES_UPDATE=false
@@ -113,7 +112,6 @@ if [[ -z $APP_GIT ]]; then
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "git mising"
 fi
 
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "DOTFILES"
 DIR_DOT_FILES=$HOME/.dotfiles
 DOT_FILES_CONFIGURE=false
 DOT_FILES_INSTALL=false
@@ -135,8 +133,8 @@ if [[ $DOT_FILES_INSTALL == true ]]; then
   unset DOT_FILES_INSTALL
 fi
 
+printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 if [[ $DOT_FILES_UPDATE == true ]]; then
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
   pushd "$DIR_DOT_FILES" &>/dev/null || return
   if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/latest^); then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git log failed"
@@ -173,9 +171,9 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
   unset REMOTE_HEAD
 fi
 
+printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 if [[ $DOT_FILES_CONFIGURE == true ]]; then
   pushd "$DIR_DOT_FILES" &>/dev/null || return
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "CONFIGURE"
   DOT_FILES_INSTALLER=$HOME/.dotfiles/install
   if [[ ! -x "$DOT_FILES_INSTALLER" ]]; then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script missing"
@@ -209,9 +207,9 @@ unset DOT_FILES_PUSH
 
 STAGE="Verifying packages"
 printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 case "$OS_PREFIX" in
 "osx")
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
   APP_BREW=$(which brew)
   if [[ ! -x $APP_BREW ]]; then
     APP_RUBY=$(which ruby)
@@ -228,30 +226,44 @@ case "$OS_PREFIX" in
     unset APP_RUBY
   fi
 
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
   APP_BREW=$(which brew)
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPDATE"
   if ! eval "$APP_BREW" update &>/dev/null; then
     printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew update failed"
     exit 255
   fi
 
   read -r BREW_UPDATES < <(eval "$APP_BREW" outdated)
-  if [[ -z "$BREW_UPDATES" ]]; then
+  if [[ -n "$BREW_UPDATES" ]]; then
     BREW_CLEAN=true
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPGRADE"
     if ! eval "$APP_BREW" upgrade &>/dev/null; then
     printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew upgrade failed"
       exit 255
     fi
-
     unset BREW_UPDATES
   fi
 
-  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+  FILE_CHECKSUM=$HOME/.packages/checksum
+  if [[ ! -f $FILE_CHECKSUM ]]; then
+    touch "$FILE_CHECKSUM"
+  fi
+
+  # shellcheck source=/dev/null
+  source "$FILE_CHECKSUM"
+  FILE_BREW_APPS=$HOME/.packages/brew
+  if [[ -f $FILE_BREW_APPS ]]; then
+    MD5=$(which md5)
+    unset MD5
+  fi
+
+  #printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+  unset FILE_CHECKSUM
+  unset FILE_BREW_APPS
   unset APP_BREW
   ;;
 "ubuntu")
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
   if [[ $USER_IS_SUDO == false ]]; then
     printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
   else
@@ -267,7 +279,7 @@ case "$OS_PREFIX" in
       exit 255
     fi
 
-    if eval "$APP_SUDO" -E -n "$APP_APT" -qq update; then
+    if ! eval "$APP_SUDO" -E -n "$APP_APT" update; then
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get update failed"
       exit 255
     fi
