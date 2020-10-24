@@ -333,7 +333,7 @@ case "$OS_PREFIX" in
     read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade --dry-run)
     if [[ -z $APT_UPDATE ]]; then
       APT_CLEAN=true
-      if eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade -y; then
+      if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade -y; then
         printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get upgrade failed"
         exit 255
       fi
