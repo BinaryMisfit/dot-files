@@ -256,8 +256,18 @@ case "$OS_PREFIX" in
   source "$FILE_CHECKSUM"
   FILE_BREW_APPS=$HOME/.packages/brew
   if [[ -f $FILE_BREW_APPS ]]; then
-    MD5=$(which md5)
-    read -r MD5_HASH < <(eval "$MD5" -r "$FILE_BREW_APPS" | cut -d ' ' -f 1)
+    MD5=
+    case "$OS_PREFIX" in
+    "osx")
+      MD5=$(which md5)
+      MD5="$MD5 -r"
+      ;;
+    "ubuntu")
+      MD5=$(which md5sum)
+      ;;
+    esac
+
+    read -r MD5_HASH < <(eval "$MD5" "$FILE_BREW_APPS" | cut -d ' ' -f 1)
     if [[ "$MD5_HASH" != "$ND5_BREW" ]]; then
       BREW_CLEAN=true
       while IFS="" read -r APP || [ -n "$APP" ]; do
@@ -404,8 +414,18 @@ if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
   source "$FILE_CHECKSUM"
   FILE_NODE_APPS=$HOME/.packages/node
   if [[ -f $FILE_NODE_APPS ]]; then
-    MD5=$(which md5)
-    read -r MD5_HASH < <(eval "$MD5" -r "$FILE_NODE_APPS" | cut -d ' ' -f 1)
+    MD5=
+    case "$OS_PREFIX" in
+    "osx")
+      MD5=$(which md5)
+      MD5="$MD5 -r"
+      ;;
+    "ubuntu")
+      MD5=$(which md5sum)
+      ;;
+    esac
+
+    read -r MD5_HASH < <(eval "$MD5" "$FILE_NODE_APPS" | cut -d ' ' -f 1)
     if [[ "$MD5_HASH" != "$ND5_NODE" ]]; then
       while IFS="" read -r APP || [ -n "$APP" ]; do
         NODE_APP=
@@ -423,16 +443,16 @@ if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
         unset NODE_APP
         unset NODE_INSTALL
       done <"$FILE_NODE_APPS"
-    fi
 
-    if [[ -z "$MD5_NODE" ]]; then
-      echo "export MD5_NODE=$MD5_HASH" >>"$FILE_CHECKSUM"
-    else
-      sed -i '' "s/$MD5_NODE/$MD5_HASH/" "$FILE_CHECKSUM"
-    fi
+      if [[ -z "$MD5_NODE" ]]; then
+        echo "export MD5_NODE=$MD5_HASH" >>"$FILE_CHECKSUM"
+      else
+        sed -i '' "s/$MD5_NODE/$MD5_HASH/" "$FILE_CHECKSUM"
+      fi
 
-    unset MD5_HASH
-    unset MD5
+      unset MD5_HASH
+      unset MD5
+    fi
   fi
 
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
@@ -462,7 +482,7 @@ fi
 APP_PY3=$(which python3)
 APP_PIP3=$(which pip3)
 if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
-  eval "$APP_PIP3" list --outdated --format freeze | while read -r LINE; do
+  eval "$APP_PIP3" list --outdated --format freeze 2>/dev/null | while read -r LINE; do
     PYTHON_APP="${LINE/==/=}"
     PYTHON_APP=$(echo "$PYTHON_APP" | cut -d '=' -f 1)
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$PYTHON_APP"
@@ -473,6 +493,35 @@ if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
 
     unset PYTHON_APP
   done
+
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+  # shellcheck source=/dev/null
+  source "$FILE_CHECKSUM"
+  FILE_PYTHON_APPS=$HOME/.packages/python
+  if [[ -f $FILE_PYTHON_APPS ]]; then
+    MD5=
+    case "$OS_PREFIX" in
+    "osx")
+      MD5=$(which md5)
+      MD5="$MD5 -r"
+      ;;
+    "ubuntu")
+      MD5=$(which md5sum)
+      ;;
+    esac
+
+    read -r MD5_HASH < <(eval "$MD5" "$FILE_PYTHON_APPS" | cut -d ' ' -f 1)
+    if [[ "$MD5_HASH" != "$ND5_PYTHON" ]]; then
+      if [[ -z "$MD5_PYTHON" ]]; then
+        echo "export MD5_PYTHON=$MD5_HASH" >>"$FILE_CHECKSUM"
+      else
+        sed -i '' "s/$MD5_PYTHON/$MD5_HASH/" "$FILE_CHECKSUM"
+      fi
+
+      unset MD5_HASH
+      unset MD5
+    fi
+  fi
 
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 else
