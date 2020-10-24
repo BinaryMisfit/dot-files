@@ -332,7 +332,7 @@ case "$OS_PREFIX" in
     read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade --dry-run)
     if [[ -n $APT_UPDATE ]]; then
       APT_CLEAN=true
-      if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade -y; then
+      if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade -y &>/dev/null; then
         printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get upgrade failed"
         exit 255
       fi
@@ -341,12 +341,24 @@ case "$OS_PREFIX" in
       read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade --dry-run)
       if [[ -n $APT_UPDATE ]]; then
         APT_CLEAN=true
-        if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade -y; then
+        if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade -y &>/dev/null; then
           printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get dist-upgrade failed"
           exit 255
         fi
 
         unset APT_UPDATE
+      fi
+
+      if [[ $APT_CLEAN == true ]]; then
+        if eval "$APP_SUDO" -E -n "$APP_APT" -qq autoremove -y &>/dev/null; then
+          printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get autoremove failed"
+          exit 255
+        fi
+
+        if eval "$APP_SUDO" -E -n "$APP_APT" -qq autoclean -y &>/dev/null; then
+          printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get autoremove failed"
+          exit 255
+        fi
       fi
 
       printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
@@ -371,13 +383,20 @@ APP_NPM=$(which npm)
 NODE_UPDATE=false
 if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
   read -r NODE_PATH < <(eval "$APP_NPM" -g root)
-  NODE_PATH="$NODE_PATH/npm/node_modules/"
-  eval "$APP_NPM" -g list --parseable | while read -r LINE; do
-    NODE_APP=
-    echo -e "$LINE\n"
-    NODE_APP=${LINE/$NODE_PATH/}
-    echo -e "$NODE_APP\n"
-    unset NODE_APP
+  eval "$APP_NPM" -g list outdated --depth=0 --parseable | while read -r LINE; do
+    if [[ ${#LINE} -gt ${#NODE_PATH} ]]; then
+      NODE_APP=
+      NODE_APP=${LINE/$NODE_PATH/}
+      if [[ -n "$NODE_APP" ]]; then
+        NODE_APP=$(echo -e "$NODE_APP" | rev | cut -d '/' -f 1 | rev)
+        printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$NODE_APP"
+        if ! eval "$APP_NPM" -g install --upgrade "$NODE_APP" &>/dev/null; then
+          printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install  --upgrade $NODE_APP failed"
+          exit 255
+        fi
+        unset NODE_APP
+      fi
+    fi
   done
   read -r NODE_UPDATES < <(eval "$APP_NPM" -g outdated)
   if [[ -n "$NODE_UPDATES" ]]; then
@@ -398,7 +417,7 @@ if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
         read -r NODE_INSTALL < <("$APP_NPM" -g list | grep "$NODE_APP")
         if [[ -z "$NODE_INSTALL" ]] || [[ $NODE_UPDATE == true ]]; then
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
-          if ! eval "$APP_NPM" -g install --upgrade "$NODE_APP" &>/dev/null; then
+          if ! eval "$APP_NPM" -g install "$NODE_APP" &>/dev/null; then
             printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install $NODE_APP failed"
             exit 255
           fi
