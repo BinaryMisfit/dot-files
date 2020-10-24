@@ -349,7 +349,7 @@ case "$OS_PREFIX" in
         unset APT_UPDATE
       fi
 
-      if [[ $APT_CLEAN == true ]]; then
+      if [[ $APT_CLEAN == false ]]; then
         if eval "$APP_SUDO" -E -n "$APP_APT" -qq autoremove -y &>/dev/null; then
           printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get autoremove failed"
           exit 255
@@ -361,11 +361,12 @@ case "$OS_PREFIX" in
         fi
       fi
 
-      printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
       unset APT_CLEAN
       unset APP_APT
       unset APP_SUDO
     fi
+
+    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
   fi
   ;;
 esac
@@ -380,29 +381,24 @@ fi
 
 APP_NODE=$(which node)
 APP_NPM=$(which npm)
-NODE_UPDATE=false
 if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
   read -r NODE_PATH < <(eval "$APP_NPM" -g root)
   eval "$APP_NPM" -g list outdated --depth=0 --parseable | while read -r LINE; do
     if [[ ${#LINE} -gt ${#NODE_PATH} ]]; then
-      NODE_APP=
       NODE_APP=${LINE/$NODE_PATH/}
       if [[ -n "$NODE_APP" ]]; then
         NODE_APP=$(echo -e "$NODE_APP" | rev | cut -d '/' -f 1 | rev)
         printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$NODE_APP"
         if ! eval "$APP_NPM" -g install --upgrade "$NODE_APP" &>/dev/null; then
-          printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install  --upgrade $NODE_APP failed"
+          printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install --upgrade $NODE_APP failed"
           exit 255
         fi
+
         unset NODE_APP
       fi
     fi
   done
-  read -r NODE_UPDATES < <(eval "$APP_NPM" -g outdated)
-  if [[ -n "$NODE_UPDATES" ]]; then
-    NODE_UPDATE=true
-  fi
-  unset NODE_UPDATES
+
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
   # shellcheck source=/dev/null
   source "$FILE_CHECKSUM"
@@ -410,12 +406,12 @@ if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
   if [[ -f $FILE_NODE_APPS ]]; then
     MD5=$(which md5)
     read -r MD5_HASH < <(eval "$MD5" -r "$FILE_NODE_APPS" | cut -d ' ' -f 1)
-    if [[ "$MD5_HASH" != "$ND5_NODE" ]] || [[ $NODE_UPDATE == true ]]; then
+    if [[ "$MD5_HASH" != "$ND5_NODE" ]]; then
       while IFS="" read -r APP || [ -n "$APP" ]; do
         NODE_APP=
         NODE_APP=$(echo "$APP" | cut -d ',' -f 1)
         read -r NODE_INSTALL < <("$APP_NPM" -g list | grep "$NODE_APP")
-        if [[ -z "$NODE_INSTALL" ]] || [[ $NODE_UPDATE == true ]]; then
+        if [[ -z "$NODE_INSTALL" ]]; then
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
           if ! eval "$APP_NPM" -g install "$NODE_APP" &>/dev/null; then
             printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install $NODE_APP failed"
@@ -439,7 +435,6 @@ if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
     unset MD5
   fi
 
-  unset NODE_UPDATE
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 else
   if [[ -z $APP_NODE ]]; then
@@ -467,6 +462,18 @@ fi
 APP_PY3=$(which python3)
 APP_PIP3=$(which pip3)
 if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
+  eval "$APP_PIP3" list --outdated --format freeze | while read -r LINE; do
+    PYTHON_APP="${LINE/==/=}"
+    PYTHON_APP=$(echo "$PYTHON_APP" | cut -d '=' -f 1)
+    printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$PYTHON_APP"
+    if ! eval "$APP_PIP3" install --upgrade "$PYTHON_APP" &>/dev/null; then
+      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "pip3 install --upgrade $PYTHON_APP failed"
+      exit 255
+    fi
+
+    unset PYTHON_APP
+  done
+
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 else
   if [[ -z $APP_PY3 ]]; then
