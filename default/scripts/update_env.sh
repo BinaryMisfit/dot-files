@@ -232,8 +232,8 @@ case "$OS_PREFIX" in
   ;;
 "ubuntu")
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
-  if [[ $USER_IS_SUDO == true ]]; then
-    printf "$FORMAT_REPLACE$COLOR_GREEN::: $COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
+  if [[ $USER_IS_SUDO == false ]]; then
+    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
   else
     APP_SUDO=$(which sudo)
     if [[ -n $APP_SUDO ]]; then
