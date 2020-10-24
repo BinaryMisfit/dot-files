@@ -1,32 +1,29 @@
 #!/usr/bin/env bash
-
 set -e
-
 DEFAULT_CONFIG_PREFIX="default"
 INSTALL_CONFIG_PREFIX="install"
 FINAL_CONFIG_PREFIX="final"
 CONFIG_SUFFIX=".conf.yaml"
 DOTBOT_DIR="dotbot"
-
 DOTBOT_BIN="bin/dotbot"
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 OS_PREFIX=
-if [[ "${OSTYPE}" == "darwin"* ]]; then
-    OS_PREFIX="osx"
-elif [[ "${OSTYPE}" == "linux-gnu" ]]; then
-    OS_PREFIX=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
-fi
-
-if [[ -z ${OS_PREFIX} ]]; then
-    echo "Unknown OS: ${OSTYPE}"
-    exit 1
-fi
+case "${OSTYPE}" in
+    "darwin"*)
+        OS_PREFIX='osx'
+    ;;
+    "linux-gnu")
+        OS_PREFIX=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    ;;
+    *)
+        echo "Unknown OS: ${OSTYPE}"
+        exit 1
+    ;;
+esac
 
 cd "${BASEDIR}"
 git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
 git submodule update --init --recursive "${DOTBOT_DIR}"
-
 for conf in ${DEFAULT_CONFIG_PREFIX} ${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} ${@}; do
     "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${conf}${CONFIG_SUFFIX}"
 done

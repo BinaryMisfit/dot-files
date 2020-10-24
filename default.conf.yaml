@@ -3,19 +3,19 @@
     link:
       create: true
       relink: true
-
-- clean: ["~"]
-
+- clean:
+    - "~"
 - shell:
-    - [git submodule update --init --recursive, Installing submodules]
-    - [git submodule update --init --remote, Upgrading submodules]
-
+    - - git submodule update --init --recursive
+      - Installing submodules
+    - - git submodule update --init --remote
+      - Upgrading submodules
 - link:
-    ~/.oh-my-zsh:
-      path: external/oh-my-zsh
     ~/.config/nvim:
       path: default/nvim
-    ~/.scripts:
-      path: default/scripts
     ~/.iterm2_shell_integration.zsh:
       path: default/.iterm2_shell_integration.zsh
+    ~/.oh-my-zsh:
+      path: external/oh-my-zsh
+    ~/.scripts:
+      path: default/scripts

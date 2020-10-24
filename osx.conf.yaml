@@ -3,30 +3,29 @@
     link:
       create: true
       relink: true
-
-- clean: ["~"]
-
+- clean:
+    - "~"
 - link:
-    ~/.oh-my-zsh/custom/themes/powerlevel9k:
-      path: external/powerlevel9k
-    ~/.iterm2:
-      path: platform/osx/iterm2
-    ~/.gitconfig:
-      path: platform/osx/git/.gitconfig
-    ~/.p9k.zsh:
-      path: platform/osx/zsh/.p9k.zsh
-    ~/.zshrc:
-      path: platform/osx/zsh/.zshrc
-    ~/.papercolor.tmux.conf:
-      path: platform/osx/tmux/.papercolor.tmux.conf
-    ~/.tmux.conf:
-      path: platform/osx/tmux/.tmux.conf
-    ~/.ssh/config:
-      path: platform/osx/ssh/config
     ~/.brew_apps:
       path: platform/osx/.brew_apps
+    ~/.gitconfig:
+      path: platform/osx/git/.gitconfig
+    ~/.iterm2:
+      path: platform/osx/iterm2
     ~/.node_apps:
       path: platform/osx/.node_apps
-
+    ~/.oh-my-zsh/custom/themes/powerlevel9k:
+      path: external/powerlevel9k
+    ~/.p9k.zsh:
+      path: platform/osx/zsh/.p9k.zsh
+    ~/.papercolor.tmux.conf:
+      path: platform/osx/tmux/.papercolor.tmux.conf
+    ~/.ssh/config:
+      path: platform/osx/ssh/config
+    ~/.tmux.conf:
+      path: platform/osx/tmux/.tmux.conf
+    ~/.zshrc:
+      path: platform/osx/zsh/.zshrc
 - shell:
-  - [~/.iterm2/update_config.sh,Configuring iTerm2]
+    - - ~/.iterm2/update_config.sh
+      - Configuring iTerm2

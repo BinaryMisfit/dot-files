@@ -3,9 +3,8 @@
     link:
       create: true
       relink: true
-
-- clean: ["~"]
-
+- clean:
+    - "~"
 - link:
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions:
       path: external/zsh-autosuggestions

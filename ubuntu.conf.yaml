@@ -3,29 +3,28 @@
     link:
       create: true
       relink: true
-
-- clean: ["~"]
-
+- clean:
+    - "~"
 - link:
-    ~/.oh-my-zsh/custom/themes/powerlevel9k:
-      path: external/powerlevel9k
-    ~/.gitconfig:
-      path: platform/ubuntu/git/.gitconfig
-    ~/.p9k.zsh:
-      path: platform/ubuntu/zsh/.p9k.zsh
-    ~/.zshrc:
-      path: platform/ubuntu/zsh/.zshrc
-    ~/.papercolor.tmux.conf:
-      path: platform/ubuntu/tmux/.papercolor.tmux.conf
-    ~/.tmux.conf:
-      path: platform/ubuntu/tmux/.tmux.conf
-    ~/.ssh/config:
-      path: platform/ubuntu/ssh/config
-    ~/.hushlogin:
-      path: platform/ubuntu/.hushlogin
-    ~/.apt_sources:
-      path: platform/ubuntu/.apt_sources
     ~/.apt_apps:
       path: platform/ubuntu/.apt_apps
+    ~/.apt_sources:
+      path: platform/ubuntu/.apt_sources
+    ~/.gitconfig:
+      path: platform/ubuntu/git/.gitconfig
+    ~/.hushlogin:
+      path: platform/ubuntu/.hushlogin
     ~/.node_apps:
       path: platform/ubuntu/.node_apps
+    ~/.oh-my-zsh/custom/themes/powerlevel9k:
+      path: external/powerlevel9k
+    ~/.p9k.zsh:
+      path: platform/ubuntu/zsh/.p9k.zsh
+    ~/.papercolor.tmux.conf:
+      path: platform/ubuntu/tmux/.papercolor.tmux.conf
+    ~/.ssh/config:
+      path: platform/ubuntu/ssh/config
+    ~/.tmux.conf:
+      path: platform/ubuntu/tmux/.tmux.conf
+    ~/.zshrc:
+      path: platform/ubuntu/zsh/.zshrc

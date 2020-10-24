@@ -1,14 +1,16 @@
-*/**/*.swp
-*/**/authorized_keys
+# OS/IDE Files
 .DS_Store
-default/nvim/autoload
-default/nvim/.netrwhist
+.vscode/*
+*.code-workspace
+
+# Temporary  Files
+*/**/*.swp
+
+# Secrets & Keys
+*/**/authorized_keys
 ssh/.ssh/id_*
 ssh/.ssh/known_hosts
 
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
+# System Folders
+default/nvim/.netrwhist
+default/nvim/autoload
