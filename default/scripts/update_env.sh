@@ -369,10 +369,10 @@ fi
 APP_NODE=$(which node)
 APP_NPM=$(which npm)
 if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
-  read -r NODE_UPDATES < <(eval "$APP_NPM" outdated)
+  read -r NODE_UPDATES < <(eval "$APP_NPM" -g outdated)
   if [[ -n "$NODE_UPDATES" ]]; then
-    if ! eval "$APP_NPM" upgrade &>/dev/null; then
-      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm upgrade failed"
+    if ! eval "$APP_NPM" -g upgrade &>/dev/null; then
+      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g upgrade failed"
       exit 255
     fi
   fi
@@ -388,11 +388,11 @@ if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
       while read -r APP; do
         NODE_APP=
         NODE_APP=$(echo "$APP" | cut -d ',' -f 1)
-        read -r NODE_INSTALL < <("$APP_NPM" list | grep "$NODE_APP")
+        read -r NODE_INSTALL < <("$APP_NPM" -g list | grep "$NODE_APP")
         if [[ -z "$NODE_INSTALL" ]]; then
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
-          if ! eval "$APP_NPM" install --upgrade "$NODE_APP" &>/dev/null; then
-            printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm install $NODE_APP failed"
+          if ! eval "$APP_NPM" -g install --upgrade "$NODE_APP" &>/dev/null; then
+            printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install $NODE_APP failed"
             exit 255
           fi
         fi
@@ -551,9 +551,9 @@ if [[ ! -z $NODE ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
         while read app; do
           printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
-          NODE_APP=$($NPM install --quiet --upgrade $app &>/dev/null)
+          NODE_APP=$($NPM -g install --quiet --upgrade $app &>/dev/null)
           if [[ $? != 0 ]]; then
-            printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "npm $app failed"
+            printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "npm -g install $app failed"
             exit 255
           fi
           unset NODE_APP
