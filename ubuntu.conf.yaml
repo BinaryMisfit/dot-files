@@ -10,6 +10,8 @@
       path: platform/ubuntu/git/.gitconfig
     ~/.hushlogin:
       path: platform/ubuntu/.hushlogin
+    ~/.npmrc:
+      path: platform/ubuntu/node/.npmrc
     ~/.oh-my-zsh/custom/themes/powerlevel9k:
       path: external/powerlevel9k
     ~/.p9k.zsh:

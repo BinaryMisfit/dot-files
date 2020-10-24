@@ -12,6 +12,8 @@
       path: platform/ubuntu/.hushlogin
     ~/.iterm2:
       path: platform/osx/iterm2
+    ~/.npmrc:
+      path: platform/osx/node/.npmrc
     ~/.oh-my-zsh/custom/themes/powerlevel9k:
       path: external/powerlevel9k
     ~/.p9k.zsh:

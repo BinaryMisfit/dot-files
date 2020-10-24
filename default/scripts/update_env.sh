@@ -260,7 +260,8 @@ case "$OS_PREFIX" in
     read -r MD5_HASH < <(eval "$MD5" -r "$FILE_BREW_APPS" | cut -d ' ' -f 1)
     if [[ "$MD5_HASH" != "$ND5_BREW" ]]; then
       BREW_CLEAN=true
-      while read -r APP; do
+      while IFS="" read -r APP || [ -n "$APP" ]
+      do
         BREW_APP=
         BREW_ARGS=
         BREW_APP=$(echo "$APP" | cut -d ',' -f 1)
@@ -332,7 +333,7 @@ case "$OS_PREFIX" in
     read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade --dry-run)
     if [[ -z $APT_UPDATE ]]; then
       APT_CLEAN=true
-      if eval "$SUDO" -E -n "$APP_APT" -qq upgrade -y; then
+      if eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade -y; then
         printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get upgrade failed"
         exit 255
       fi
@@ -341,7 +342,7 @@ case "$OS_PREFIX" in
     read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade --dry-run)
     if [[ -z $APT_UPDATE ]]; then
       APT_CLEAN=true
-      if eval "$SUDO" -E -n "$APP_APT" -qq dist-upgrade -y; then
+      if eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade -y; then
         printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get dist-upgrade failed"
         exit 255
       fi
@@ -368,28 +369,28 @@ fi
 
 APP_NODE=$(which node)
 APP_NPM=$(which npm)
+NODE_UPDATE=false
 if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
   read -r NODE_UPDATES < <(eval "$APP_NPM" -g outdated)
   if [[ -n "$NODE_UPDATES" ]]; then
-    if ! eval "$APP_NPM" -g upgrade &>/dev/null; then
-      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g upgrade failed"
-      exit 255
-    fi
+    NODE_UPDATE=true
   fi
 
   unset NODE_UPDATES
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
   # shellcheck source=/dev/null
   source "$FILE_CHECKSUM"
   FILE_NODE_APPS=$HOME/.packages/node
   if [[ -f $FILE_NODE_APPS ]]; then
     MD5=$(which md5)
     read -r MD5_HASH < <(eval "$MD5" -r "$FILE_NODE_APPS" | cut -d ' ' -f 1)
-    if [[ "$MD5_HASH" != "$ND5_NODE" ]]; then
-      while read -r APP; do
+    if [[ "$MD5_HASH" != "$ND5_NODE" ]] || [[ $NODE_UPDATE == true ]]; then
+      while IFS="" read -r APP || [ -n "$APP" ]
+      do
         NODE_APP=
         NODE_APP=$(echo "$APP" | cut -d ',' -f 1)
         read -r NODE_INSTALL < <("$APP_NPM" -g list | grep "$NODE_APP")
-        if [[ -z "$NODE_INSTALL" ]]; then
+        if [[ -z "$NODE_INSTALL" ]] || [[ $NODE_UPDATE == true ]]; then
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
           if ! eval "$APP_NPM" -g install --upgrade "$NODE_APP" &>/dev/null; then
             printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install $NODE_APP failed"
@@ -412,6 +413,8 @@ if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
     unset MD5_HASH
     unset MD5
   fi
+
+  unset NODE_UPDATE
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 else
   if [[ -z $APP_NODE ]]; then
