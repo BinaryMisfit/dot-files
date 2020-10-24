@@ -359,7 +359,7 @@ case "$OS_PREFIX" in
         unset APT_UPDATE
       fi
 
-      if [[ $APT_CLEAN == false ]]; then
+      if [[ $APT_CLEAN == true ]]; then
         if eval "$APP_SUDO" -E -n "$APP_APT" -qq autoremove -y &>/dev/null; then
           printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get autoremove failed"
           exit 255
@@ -391,85 +391,102 @@ fi
 
 APP_NODE=$(which node)
 APP_NPM=$(which npm)
-if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
-  read -r NODE_PATH < <(eval "$APP_NPM" -g root)
-  eval "$APP_NPM" -g list outdated --depth=0 --parseable | while read -r LINE; do
-    if [[ ${#LINE} -gt ${#NODE_PATH} ]]; then
-      NODE_APP=${LINE/$NODE_PATH/}
-      if [[ -n "$NODE_APP" ]]; then
-        NODE_APP=$(echo -e "$NODE_APP" | rev | cut -d '/' -f 1 | rev)
-        printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$NODE_APP"
-        if ! eval "$APP_NPM" -g install --upgrade "$NODE_APP" &>/dev/null; then
-          printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install --upgrade $NODE_APP failed"
-          exit 255
-        fi
+NEED_SUDO=false
+USE_SUDO=
+if [[ "$OS_PREFIX" == "ubuntu" ]] && [[ $USER_IS_SUDO == true ]]; then
+  USE_SUDO="$APP_SUDO -E -n "
+elif [[ "$OS_PREFIX" == "ubuntu" ]]; then
+  NEED_SUDO=true
+fi
 
-        unset NODE_APP
-      fi
-    fi
-  done
-
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
-  # shellcheck source=/dev/null
-  source "$FILE_CHECKSUM"
-  FILE_NODE_APPS=$HOME/.packages/node
-  if [[ -f $FILE_NODE_APPS ]]; then
-    MD5=
-    case "$OS_PREFIX" in
-    "osx")
-      MD5=$(which md5)
-      MD5="$MD5 -r"
-      ;;
-    "ubuntu")
-      MD5=$(which md5sum)
-      ;;
-    esac
-
-    read -r MD5_HASH < <(eval "$MD5" "$FILE_NODE_APPS" | cut -d ' ' -f 1)
-    if [[ "$MD5_HASH" != "$ND5_NODE" ]]; then
-      while IFS="" read -r APP || [ -n "$APP" ]; do
-        NODE_APP=
-        NODE_APP=$(echo "$APP" | cut -d ',' -f 1)
-        read -r NODE_INSTALL < <("$APP_NPM" -g list | grep "$NODE_APP")
-        if [[ -z "$NODE_INSTALL" ]]; then
-          printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
-          if ! eval "$APP_NPM" -g install "$NODE_APP" &>/dev/null; then
-            printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install $NODE_APP failed"
+if [[ $NEED_SUDO == false ]]; then
+  if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
+    echo -e "$USE_SUDO\n\n"
+    echo -e "$USE_SUDO$APP_NPM\n\n"
+    read -r NODE_PATH < <(eval "$USE_SUDO$APP_NPM" -g root)
+    echo -e "$NODE_PATH\n\n"
+    eval "$USE_SUDO" "$APP_NPM" -g list outdated --depth=0 --parseable | while read -r LINE; do
+      if [[ ${#LINE} -gt ${#NODE_PATH} ]]; then
+        NODE_APP=${LINE/$NODE_PATH/}
+        if [[ -n "$NODE_APP" ]]; then
+          NODE_APP=$(echo -e "$NODE_APP" | rev | cut -d '/' -f 1 | rev)
+          printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$NODE_APP"
+          if ! eval "$USE_SUDO" "$APP_NPM" -g install --upgrade "$NODE_APP" &>/dev/null; then
+            printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install --upgrade $NODE_APP failed"
             exit 255
           fi
+
+          unset NODE_APP
+        fi
+      fi
+    done
+
+    printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+    # shellcheck source=/dev/null
+    source "$FILE_CHECKSUM"
+    FILE_NODE_APPS=$HOME/.packages/node
+    if [[ -f $FILE_NODE_APPS ]]; then
+      MD5=
+      case "$OS_PREFIX" in
+      "osx")
+        MD5=$(which md5)
+        MD5="$MD5 -r"
+        ;;
+      "ubuntu")
+        MD5=$(which md5sum)
+        ;;
+      esac
+
+      read -r MD5_HASH < <(eval "$MD5" "$FILE_NODE_APPS" | cut -d ' ' -f 1)
+      if [[ "$MD5_HASH" != "$ND5_NODE" ]]; then
+        while IFS="" read -r APP || [ -n "$APP" ]; do
+          NODE_APP=
+          NODE_APP=$(echo "$APP" | cut -d ',' -f 1)
+          read -r NODE_INSTALL < <("$USE_SUDO" "$APP_NPM" -g list | grep "$NODE_APP")
+          if [[ -z "$NODE_INSTALL" ]]; then
+            printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
+            if ! eval "$USE_SUDO" "$APP_NPM" -g install "$NODE_APP" &>/dev/null; then
+              printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install $NODE_APP failed"
+              exit 255
+            fi
+          fi
+
+          printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+          unset NODE_APP
+          unset NODE_INSTALL
+        done <"$FILE_NODE_APPS"
+
+        if [[ -z "$MD5_NODE" ]]; then
+          echo "export MD5_NODE=$MD5_HASH" >>"$FILE_CHECKSUM"
+        else
+          sed -i '' "s/$MD5_NODE/$MD5_HASH/" "$FILE_CHECKSUM"
         fi
 
-        printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
-        unset NODE_APP
-        unset NODE_INSTALL
-      done <"$FILE_NODE_APPS"
-
-      if [[ -z "$MD5_NODE" ]]; then
-        echo "export MD5_NODE=$MD5_HASH" >>"$FILE_CHECKSUM"
-      else
-        sed -i '' "s/$MD5_NODE/$MD5_HASH/" "$FILE_CHECKSUM"
+        unset MD5_HASH
+        unset MD5
       fi
+    fi
 
-      unset MD5_HASH
-      unset MD5
+    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+  else
+    if [[ -z $APP_NODE ]]; then
+      printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "node not installed"
+      exit 255
+    fi
+
+    if [[ -z $APP_NPM ]]; then
+      printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "npm not installed"
+      exit 255
     fi
   fi
-
-  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 else
-  if [[ -z $APP_NODE ]]; then
-    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "node not installed"
-    exit 255
-  fi
-
-  if [[ -z $APP_NPM ]]; then
-    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "npm not installed"
-    exit 255
-  fi
+  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
 fi
 
 unset APP_NODE
 unset APP_NPM
+unset NEED_SUDO
+unset USE_SUDO
 
 STAGE="Verifying python3"
 printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
