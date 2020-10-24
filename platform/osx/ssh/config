@@ -1,11 +1,7 @@
 Host *
   SendEnv LC_*
 
-Host sensehost
-  HostName sensehost.senselesslyfoolish.com
-  User willie
-
-Host hosting 
+Host hosting
   HostName hosting.senselesslyfoolish.com
   User binarymisfit
 

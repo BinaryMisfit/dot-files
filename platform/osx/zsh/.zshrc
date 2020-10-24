@@ -1,6 +1,6 @@
 # Load environment
 if [ -z $TMUX ] && [[ "$TERM_PROGRAM" != "vscode" ]]; then
-  test -e ${HOME}/.scripts/.update_online.sh && /bin/bash ${HOME}/.scripts/.update_online.sh
+    test -e ${HOME}/.scripts/update_online.sh && /bin/bash ${HOME}/.scripts/update_online.sh
 fi
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
@@ -21,11 +21,11 @@ test -e /usr/local/share/dotnet/dotnet && export MSBuildSDKsPath="/usr/local/sha
 
 # Plugins
 plugins=(
-  zsh-completions
-  zsh-autosuggestions
-  zsh-navigation-tools
-  zsh_reload
-  zsh-syntax-highlighting
+    zsh-completions
+    zsh-autosuggestions
+    zsh-navigation-tools
+    zsh_reload
+    zsh-syntax-highlighting
 )
 
 # Source config files

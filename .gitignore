@@ -11,6 +11,9 @@
 ssh/.ssh/id_*
 ssh/.ssh/known_hosts
 
+# User config
+*/**/packages/*_user
+
 # System Folders
 default/nvim/.netrwhist
 default/nvim/autoload

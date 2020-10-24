@@ -1,9 +1,7 @@
 git
 neovim,HEAD
 node
-openssl@1.1
-pcre
-pcre2
+openssl
 python3
 reattach-to-user-namespace
 tmux
