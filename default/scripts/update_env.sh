@@ -235,6 +235,18 @@ case "$OS_PREFIX" in
     exit 255
   fi
 
+  read -r BREW_UPDATES < <(eval "$APP_BREW" outdated)
+  if [[ -z "$BREW_UPDATES" ]]; then
+    BREW_CLEAN=true
+    printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPGRADE"
+    if ! eval "$APP_BREW" upgrade &>/dev/null; then
+    printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew upgrade failed"
+      exit 255
+    fi
+
+    unset BREW_UPDATES
+  fi
+
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
   unset APP_BREW
   ;;
@@ -250,11 +262,17 @@ case "$OS_PREFIX" in
     fi
 
     APP_APT=$(which apt-get)
-    if [[ -n $APP_APT ]]; then
+    if [[ ! -x $APP_APT ]]; then
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get missing"
       exit 255
     fi
 
+    if eval "$APP_SUDO" -E -n "$APP_APT" -qq update; then
+      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get update failed"
+      exit 255
+    fi
+
+    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
     unset APP_APT
     unset APP_SUDO
   fi
@@ -280,31 +298,6 @@ RUBY=
 ZSH=
 
 if [[ "$OS_PREFIX" == "OSX" ]]; then
-  BREW=$(which brew)
-  if [[ ! -z $BREW ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
-    eval $BREW update &>/dev/null
-    if [[ $? != 0 ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew update failed"
-      exit 255
-    fi
-
-    BREW_UPDATES=$($BREW outdated)
-    if [[ $? != 0 ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew outdated failed"
-      exit 255
-    fi
-
-    if [[ ! -z "$BREW_UPDATES" ]]; then
-      BREW_CLEAN=true
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPGRADE"
-      eval $BREW upgrade &>/dev/null
-      if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew upgrade failed"
-        exit 255
-      fi
-    fi
-
     if [[ -f "$BREW_APPS" ]]; then
       MD5=$(which md5)
       MD5_HASH=$($MD5 -r "$BREW_APPS" | cut -d ' ' -f 1)
@@ -354,12 +347,6 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
 fi
 
 if [[ "$IS_SUDO" == true ]]; then
-      eval $SUDO -E -n $APT_GET -qq update
-      if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get update failed"
-        exit 255
-      fi
-
       APT_UPDATE=$($SUDO -E -n $APT_GET -qq upgrade --dry-run)
       if [[ $? != 0 ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get upgrade failed"
