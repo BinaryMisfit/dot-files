@@ -329,11 +329,21 @@ case "$OS_PREFIX" in
     fi
 
     read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade --dry-run)
-    echo -e "$APT_UPGRADE\n"
+    echo -e "$APT_UPDATE\n"
     if [[ -n $APT_UPDATE ]]; then
       APT_CLEAN=true
       if eval "$SUDO" -E -n "$APP_APT" -qq upgrade -y; then
         printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get upgrade failed"
+        exit 255
+      fi
+
+    unset APT_UPDATE
+    read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade --dry-run)
+    echo -e "$APT_UPDATE\n"
+    if [[ -n $APT_UPDATE ]]; then
+      APT_CLEAN=true
+      if eval "$SUDO" -E -n "$APP_APT" -qq dist-upgrade -y; then
+        printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get dist-upgrade failed"
         exit 255
       fi
 
@@ -345,7 +355,8 @@ case "$OS_PREFIX" in
     unset APP_APT
     unset APP_SUDO
   fi
-  ;;
+fi
+;;
 esac
 
 STAGE="Verifying node"
@@ -375,53 +386,6 @@ fi
 unset APP_PY3
 
 exit 0
-
-SOURCES_APT=$HOME/.packages/sources/apt
-APPS_APT=$HOME/.packages/apt
-BREW_APPS=~/.brew_apps
-DPKG_QUERY=
-MD5=
-MD5_APT_ADD_SRC=
-NPM=
-NODE=
-NODE_APPS=~/.node_apps
-PIP3=
-PYTHON3=
-PYTHON_APPS=~/.python_apps
-REPLACE2="\e[2A\e[K"
-RUBY=
-ZSH=
-
-if [[ "$IS_SUDO" == true ]]; then
-      if [[ ! -z "$APT_UPDATE" ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPGRADE"
-        APT_CLEAN=true
-        APT_UPGRADE=$($SUDO -E -n $APT_GET -qq upgrade -y)
-        if [[ $? != 0 ]]; then
-          printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get upgrade failed"
-          exit 255
-        fi
-
-        unset APT_UPDATE
-      fi
-
-      APT_UPDATE=$($SUDO -E -n $APT_GET -qq dist-upgrade --dry-run)
-      if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get dist-upgrade failed"
-        exit 255
-      fi
-
-      if [[ ! -z "$APT_UPDATE" ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "DIST-UPGRADE"
-        APT_CLEAN=true
-        APT_UPGRADE=$($SUDO -E -n $APT_GET -qq dist-upgrade -y)
-        if [[ $? != 0 ]]; then
-          printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get dist-upgrade failed"
-          exit 255
-        fi
-
-        unset APT_UPDATE
-      fi
 
       if [[ -f "$APT_SOURCES" ]]; then
         MD5=$(which md5sum)
@@ -501,31 +465,6 @@ if [[ "$IS_SUDO" == true ]]; then
         fi
       fi
       fi
-
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\n" "OK"
-  fi
-fi
-
-if [[ ! -f "$NODE" ]]; then
-  if [[ "$OS_PREFIX" == "OSX" ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
-    eval $BREW install node &>/dev/null
-    if [[ $? != 0 ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "nodejs failed"
-      exit 255
-    fi
-  elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
-    APT_GET=$(which apt-get)
-    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
-    eval $SUDO $APT_GET -qq install nodejs -y &>/dev/null
-    if [[ $? != 0 ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "nodejs failed"
-      exit 255
-    fi
-  elif [[ "$IS_SUDO" == false ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
-  fi
-fi
 
 NODE=$(which node)
 if [[ ! -z $NODE ]]; then
