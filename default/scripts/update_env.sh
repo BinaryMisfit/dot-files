@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-COLOR_GREEN="\033[0;32m"
+COLOR_GREEN="\033[1;32m"
 COLOR_NONE="\033[0m"
 COLOR_RED="\033[1;31m"
-COLOR_YELLOW="\033[0;33m"
+COLOR_YELLOW="\033[1;33m"
 FORMAT_REPLACE="\e[1A\e[K"
 FILE_BUSY=$HOME/.update_in_progress
 
@@ -238,7 +238,7 @@ case "$OS_PREFIX" in
     BREW_CLEAN=true
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPGRADE"
     if ! eval "$APP_BREW" upgrade &>/dev/null; then
-    printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew upgrade failed"
+      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew upgrade failed"
       exit 255
     fi
     unset BREW_UPDATES
@@ -250,15 +250,59 @@ case "$OS_PREFIX" in
     touch "$FILE_CHECKSUM"
   fi
 
+  BREW_CLEAN=false
   # shellcheck source=/dev/null
   source "$FILE_CHECKSUM"
   FILE_BREW_APPS=$HOME/.packages/brew
   if [[ -f $FILE_BREW_APPS ]]; then
     MD5=$(which md5)
+    read -r MD5_HASH < <(eval "$MD5" -r "$FILE_BREW_APPS" | cut -d ' ' -f 1)
+    if [[ "$MD5_HASH" != "$ND5_BREW" ]]; then
+      BREW_CLEAN=true
+      while read -r APP; do
+        BREW_APP=
+        BREW_ARGS=
+        BREW_APP=$(echo "$APP" | cut -d ',' -f 1)
+        if [[ $APP == *","* ]]; then
+          BREW_ARGS="--$(echo "$APP" | cut -d ',' -f 2)"
+        fi
+
+        read -r BREW_INSTALL < <("$APP_BREW" ls --versions "$BREW_APP")
+        if [[ -z "$BREW_INSTALL" ]]; then
+          printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$BREW_APP"
+          if ! eval "$APP_BREW" install "$BREW_ARGS" "$BREW_APP" &>/dev/null; then
+            printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew install $BREW_APP failed"
+            exit 255
+          fi
+        fi
+
+        printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+        unset BREW_APP
+        unset BREW_ARGS
+        unset BREW_INSTALL
+      done <"$FILE_BREW_APPS"
+    fi
+
+    if [[ -z "$MD5_BREW" ]]; then
+      echo "export MD5_BREW=$MD5_HASH" >>"$FILE_CHECKSUM"
+    else
+      sed -i '' "s/$MD5_BREW/$MD5_HASH/" "$FILE_CHECKSUM"
+    fi
+
+    unset MD5_HASH
     unset MD5
   fi
 
-  #printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+  if [[ $BREW_CLEAN == true ]]; then
+    if ! eval "$APP_BREW" cleanup &>/dev/null; then
+      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew cleanup failed"
+      exit 255
+    fi
+  fi
+
+  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+  unset BREW_CLEAN
   unset FILE_CHECKSUM
   unset FILE_BREW_APPS
   unset APP_BREW
@@ -279,12 +323,19 @@ case "$OS_PREFIX" in
       exit 255
     fi
 
-    if ! eval "$APP_SUDO" -E -n "$APP_APT" update; then
+    if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq update; then
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get update failed"
       exit 255
     fi
 
-    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+    read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade --dry-run)
+    echo "$APT_UPDATE"
+    if [[ -z $APT_UPDATE ]]; then
+      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get upgrade failed"
+      exit 255
+    fi
+
+    #printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
     unset APP_APT
     unset APP_SUDO
   fi
@@ -309,62 +360,7 @@ REPLACE2="\e[2A\e[K"
 RUBY=
 ZSH=
 
-if [[ "$OS_PREFIX" == "OSX" ]]; then
-    if [[ -f "$BREW_APPS" ]]; then
-      MD5=$(which md5)
-      MD5_HASH=$($MD5 -r "$BREW_APPS" | cut -d ' ' -f 1)
-      if [[ "$MD5_HASH" != "$MD5_BREW_APPS" ]]; then
-        BREW_CLEAN=true
-        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
-        while read app; do
-          BREW_ARGS=
-          if [[ $app == *","* ]]; then
-            BREW_APP=$(echo "$app" | cut -d ',' -f 1)
-            BREW_ARGS="--$(echo "$app" | cut -d ',' -f 2)"
-          fi
-
-          BREW_INSTALL=$($BREW ls --versions $app)
-          if [[ -z "$BREW_INSTALL" ]]; then
-            printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL" $BREW_APP
-            eval $BREW install $BREW_ARGS $BREW_APP &>/dev/null
-          fi
-
-          unset BREW_APP
-          unset BREW_ARGS
-          unset BREW_INSTALL
-        done <"$BREW_APPS"
-
-        if [[ -z "$MD5_BREW_APPS" ]]; then
-          echo "export MD5_BREW_APPS=$MD5_HASH" >>$ENVIRONMENT
-        else
-          sed -i '' "s/$MD5_BREW_APPS/$MD5_HASH/" $ENVIRONMENT
-        fi
-      fi
-
-      unset MD5
-      unset MD5_HASH
-    fi
-
-    if [[ "$BREW_CLEAN" == true ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CLEANUP"
-      eval $BREW cleanup &>/dev/null
-      if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew cleanup failed"
-        exit 255
-      fi
-    fi
-
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
-  fi
-fi
-
 if [[ "$IS_SUDO" == true ]]; then
-      APT_UPDATE=$($SUDO -E -n $APT_GET -qq upgrade --dry-run)
-      if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get upgrade failed"
-        exit 255
-      fi
-
       if [[ ! -z "$APT_UPDATE" ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPGRADE"
         APT_CLEAN=true

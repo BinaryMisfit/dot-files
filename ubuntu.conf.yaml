@@ -6,10 +6,6 @@
 - clean:
     - "~"
 - link:
-    ~/.apt_apps:
-      path: platform/ubuntu/.apt_apps
-    ~/.apt_sources:
-      path: platform/ubuntu/.apt_sources
     ~/.gitconfig:
       path: platform/ubuntu/git/.gitconfig
     ~/.hushlogin:
@@ -20,6 +16,8 @@
       path: external/powerlevel9k
     ~/.p9k.zsh:
       path: platform/ubuntu/zsh/.p9k.zsh
+    ~/.packages:
+      path: platform/ubuntu/packages
     ~/.papercolor.tmux.conf:
       path: platform/ubuntu/tmux/.papercolor.tmux.conf
     ~/.ssh/config:
