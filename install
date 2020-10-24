@@ -9,15 +9,15 @@ DOTBOT_BIN="bin/dotbot"
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OS_PREFIX=
 case "${OSTYPE}" in
-    "darwin"*)
-        OS_PREFIX='osx'
+"darwin"*)
+    OS_PREFIX='osx'
     ;;
-    "linux-gnu")
-        OS_PREFIX=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+"linux-gnu")
+    OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
     ;;
-    *)
-        echo "Unknown OS: ${OSTYPE}"
-        exit 1
+*)
+    echo "Unknown OS: ${OSTYPE}"
+    exit 1
     ;;
 esac
 

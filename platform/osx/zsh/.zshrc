@@ -1,7 +1,5 @@
 # Load environment
-if [ -z $TMUX ] && [[ "$TERM_PROGRAM" != "vscode" ]]; then
-    test -e ${HOME}/.scripts/update_online.sh && /bin/bash ${HOME}/.scripts/update_online.sh
-fi
+test -e ${HOME}/.scripts/update_online.sh && /bin/bash ${HOME}/.scripts/update_online.sh
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 

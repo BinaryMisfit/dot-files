@@ -1,190 +1,234 @@
 #!/usr/bin/env bash
+COLOR_GREEN="\033[0;32m"
+COLOR_NONE="\033[0m"
+COLOR_RED="\033[0;31m"
+COLOR_YELLOW="\033[0;33m"
+FORMAT_REPLACE="\e[1A\e[K"
+FILE_BUSY=$HOME/.update_in_progress
 
-if [ -f ~/.update_in_progress ]; then
+STAGE=":: Verifying environment"
+if [[ -n $TMUX ]]; then
+  printf "$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t\t%s$COLOR_NONE\n" "TMUX"
   exit 0
 fi
 
-touch ~/.update_in_progress
-
-APT_ADD_SRC=
-APT_APPS=~/.apt_apps
-APT_GET=
-APT_SOURCES=~/.apt_sources
-BREW=
-BREW_APPS=~/.brew_apps
-CONFIGURE_DOT_FILES=false
-DOT_FILES=~/.dotfiles
-DOT_FILES_INSTALL=~/.dotfiles/install
-DOT_FILES_PUSH=
-DPKG_QUERY=
-ENVIRONMENT=~/.environment.zsh
-GIT=$(which git)
-GREEN="\033[0;32m"
-INSTALL_DOT_FILES=false
-IS_SUDO=false
-MD5=
-MD5_APT_ADD_SRC=
-NC="\033[0m"
-NPM=
-NODE=
-NODE_APPS=~/.node_apps
-OS_PREFIX=
-PIP3=
-PYTHON3=
-PYTHON_APPS=~/.python_apps
-RED="\033[0;31m"
-REPLACE="\e[1A\e[K"
-REPLACE2="\e[2A\e[K"
-RUBY=
-SUDO=$(which sudo)
-UPDATE_DOT_FILES=true
-YELLOW="\033[0;33m"
-ZSH=
-
-STAGE=":: Verifying environment"
-printf "${NC}%s${NC}\n" "$STAGE"
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  OS_PREFIX="OSX"
-elif [[ "$OSTYPE" == "linux-gnu" ]]; then
-  OS_PREFIX=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print toupper($1)}')
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+  printf "$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t\t%s$COLOR_NONE\n" "VSCODE"
+  exit 0
 fi
 
+if [[ -f $FILE_BUSY ]]; then
+  printf "$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t\t%s$COLOR_NONE\n" "RUNNING"
+  exit 0
+fi
+touch "$FILE_BUSY"
+
+printf "$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+OS_PREFIX=
+case "$OSTYPE" in
+"darwin"*)
+  OS_PREFIX='osx'
+  ;;
+"linux-gnu")
+  OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+  ;;
+esac
 if [[ -z $OS_PREFIX ]]; then
-  printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "Unknown OS $OSTYPE"
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "Unknown OS $OSTYPE"
   exit 255
 fi
 
-if [[ ! -d "$DOT_FILES" ]]; then
-  UPDATE_DOT_FILES=false
-  INSTALL_DOT_FILES=true
+printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "SUDO"
+APP_SUDO=$(which sudo)
+USER_IS_ROOT=false
+USER_IS_SUDO=false
+USER_ID=$(id -u "$USER")
+if [[ $USER_ID == 0 ]]; then
+  USER_IS_ROOT=true
+  USER_IS_SUDO=true
+elif [[ -x $APP_SUDO ]]; then
+  case "$OS_PREFIX" in
+  "osx")
+    USER_IS_SUDO=$(groups "$USER" | grep -w admin)
+    ;;
+  "ubuntu")
+    USER_IS_SUDO=$(groups "$USER" | grep -w sudo)
+    ;;
+  esac
+
+  if [[ "$USER_IS_SUDO" != "" ]]; then
+    USER_IS_SUDO=true
+  fi
 fi
 
-if [[ ! -f "$ENVIRONMENT" ]]; then
-  touch "$ENVIRONMENT"
-fi
-
+printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "CONFIG"
 unset COLORTERM
 unset DEFAULT_USER
+unset DISABLE_AUTO_UPDATE
 unset ITERM2_SQUELCH_MARK
 unset KEYTIMEOUT
-unset MD5_BREW_APPS
-source "$ENVIRONMENT"
-if [[ -z $COLORTERM ]]; then
-  echo "export COLORTERM=truecolor" >> $ENVIRONMENT
+FILE_ENV=$HOME/.environment.zsh
+if [[ ! -f $FILE_ENV ]]; then
+  touch "$FILE_ENV"
 fi
 
-if [[ -z $DEFAULT_USER ]]; then
-  echo "export DEFAULT_USER=$(whoami)" >> $ENVIRONMENT
+# shellcheck source=/dev/null
+source "$FILE_ENV"
+if [[ -z $COLORTERM ]]; then
+  echo "export COLORTERM=truecolor" >>"$FILE_ENV"
+fi
+
+if [[ $USER_IS_ROOT == false ]] && [[ -z $DEFAULT_USER ]]; then
+  echo "export DEFAULT_USER=$(whoami)" >>"$FILE_ENV"
+fi
+
+if [[ -z $DISABLE_AUTO_UPDATE ]]; then
+  echo "export DISABLE_AUTO_UPDATE=true" >>"$FILE_ENV"
 fi
 
 if [[ -z $ITERM2_SQUELCH_MARK ]]; then
-  echo "export ITERM2_SQUELCH_MARK=1" >> $ENVIRONMENT
+  echo "export ITERM2_SQUELCH_MARK=1" >>"$FILE_ENV"
 fi
 
 if [[ -z $KEYTIMEOUT ]]; then
-  echo "export KEYTIMEOUT=1" >> $ENVIRONMENT
+  echo "export KEYTIMEOUT=1" >>"$FILE_ENV"
 fi
 
-if [[ -f "$SUDO" ]]; then
-  if [[ "$OS_PREFIX" == "OSX" ]]; then
-    IS_SUDO=$(groups $USER | grep -w admin)
-  fi
+# shellcheck source=/dev/null
+source "$FILE_ENV"
+unset FILE_ENV
+unset USER_IS_ROOT
 
-  if [[ "$OS_PREFIX" == "UBUNTU" ]]; then
-    IS_SUDO=$(groups $USER | grep -w sudo)
-  fi
+OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | awk '{print toupper($1)}')
+printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "$OS_PREFIX_UPPER"
+unset OS_PREFIX_UPPER
 
-  if [[ "$IS_SUDO" != "" ]]; then
-    IS_SUDO=true
-  fi
-fi
-
-printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "${OS_PREFIX}"
 STAGE=":: Verifying config files"
 printf "${NC}%s${NC}\n" "$STAGE"
-if [[ -z "$GIT" ]]; then
-  UPDATE_DOT_FILES=false
-  INSTALL_DOT_FILES=false
-  printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "git mising"
+printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "GIT"
+APP_GIT=$(which git)
+if [[ -z $APP_GIT ]]; then
+  DOT_FILES_UPDATE=false
+  DOT_FILES_INSTALL=false
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "git mising"
 fi
 
-if [[ "$INSTALL_DOT_FILES" == true ]]; then
-  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\n" "INSTALL"
-  eval $GIT clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null
-  if [[ $? != 0 ]]; then
-t   printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git clone failed"
+printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "DOTFILES"
+DIR_DOT_FILES=$HOME/.dotfiles
+DOT_FILES_CONFIGURE=false
+DOT_FILES_INSTALL=false
+DOT_FILES_UPDATE=false
+if [[ -d $DIR_DOT_FILES ]]; then
+  DOT_FILES_UPDATE=true
+else
+  DOT_FILES_INSTALL=true
+fi
+
+if [[ $DOT_FILES_INSTALL == true ]]; then
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
+  if ! eval "$GIT" clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null; then
+    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git clone failed"
     exit 255
   fi
 
-  CONFIGURE_DOT_FILES=true
+  DOT_FILES_CONFIGURE=true
+  unset DOT_FILES_INSTALL
 fi
 
-if [[ "$UPDATE_DOT_FILES" == true ]]; then
-  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
-  pushd $DOT_FILES &>/dev/null
-  CURRENT_HEAD=$($GIT log --pretty=%H ...refs/heads/latest^)
-  if [[ $? != 0 ]]; then
-    printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git log failed"
+if [[ $DOT_FILES_UPDATE == true ]]; then
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
+  pushd "$DIR_DOT_FILES" &>/dev/null || return
+  if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/latest^); then
+    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git log failed"
     exit 255
   fi
 
-  REMOTE_HEAD=$($GIT ls-remote origin -h refs/heads/latest | cut -f1)
-  if [[ $? != 0 ]]; then
-    printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git ls-remote failed"
+  if ! read -r REMOTE_HEAD < <(eval "$APP_GIT" ls-remote origin -h refs/heads/latest | cut -f1); then
+    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git ls-remote failed"
     exit 255
   fi
 
   if [[ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
-    CONFIGURE_DOT_FILES=true
-    eval $GIT pull --quiet &>/dev/null
-    if [[ $? != 0 ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git pull failed"
+    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPDATE"
+    DOT_FILES_CONFIGURE=true
+    if ! eval "$APP_GIT" pull --quiet &>/dev/null; then
+      printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git pull failed"
       exit 255
     fi
   fi
 
-  DOT_FILES_PUSH=$(eval $GIT status -s | wc -l)
-  if [[ $? != 0 ]]; then
-    printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git status failed"
+  if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | wc -l); then
+    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git status failed"
     exit 255
   fi
 
-  if [[ "$DOT_FILES_PUSH" -gt "0" ]]; then
-    CONFIGURE_DOT_FILES=true
+  if [[ $DOT_FILES_PUSH -gt 0 ]]; then
+    DOT_FILES_CONFIGURE=true
   fi
 
-  popd &>/dev/null
+  popd &>/dev/null || return
+  unset CURRENT_HEAD
+  unset DOT_FILES_PUSH
+  unset DOT_FILES_UPDATE
+  unset REMOTE_HEAD
 fi
 
-if [[ "$CONFIGURE_DOT_FILES" == true ]]; then
-  printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CONFIGURING"
-  if [[ ! -f "$DOT_FILES_INSTALL" ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "install script missing"
+if [[ $DOT_FILES_CONFIGURE == true ]]; then
+  pushd "$DIR_DOT_FILES" &>/dev/null || return
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "CONFIGURE"
+  DOT_FILES_INSTALLER=$HOME/.dotfiles/install
+  if [[ ! -x "$DOT_FILES_INSTALLER" ]]; then
+    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script missing"
     exit 255
   fi
 
-  eval $DOT_FILES_INSTALL &>/dev/null
-  if [[ $? != 0 ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "install failed"
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALLER"
+  if ! eval "$DOT_FILES_INSTALLER" &>/dev/null; then
+    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script failed"
     exit 255
   fi
 
-  pushd $DOT_FILES &>/dev/null
-  DOT_FILES_PUSH=$($GIT status -s | wc -l)
-  if [[ $? != 0 ]]; then
-    printf "${REPLACE2}${NC}${STAGE}\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "git status failed"
+  if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | wc -l); then
+    printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" " git status failed"
     exit 255
   fi
 
-  popd &>/dev/null
+  popd &>/dev/null || return
+  unset DOT_FILES_CONFIGURE
+  unset DOT_FILES_INSTALLER
 fi
 
-if [[ "$DOT_FILES_PUSH" -gt "0" ]]; then
-  printf "${REPLACE}${NC}${STAGE}\t${RED}%s${NC}\n" "PUSH"
+if [[ $DOT_FILES_PUSH -gt 0 ]]; then
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\n" "PUSH"
 else
-  printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\n" "OK"
+  printf "$FORMAT_REPLACE$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 fi
+
+unset DIR_DOT_FILES
+unset DOT_FILES_PUSH
+exit 0
+
+SOURCES_APT=${HOME}/.packages/sources/apt
+APPS_APT=${HOME}/.packages/apt
+APP_APT_SRC=
+APP_APT=
+APP_BREW=
+BREW_APPS=~/.brew_apps
+DPKG_QUERY=
+MD5=
+MD5_APT_ADD_SRC=
+NPM=
+NODE=
+NODE_APPS=~/.node_apps
+PIP3=
+PYTHON3=
+PYTHON_APPS=~/.python_apps
+REPLACE2="\e[2A\e[K"
+RUBY=
+ZSH=
 
 STAGE=":: Verifying packages"
 printf "${NC}%s${NC}\n" "$STAGE"
@@ -251,10 +295,10 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
           unset BREW_APP
           unset BREW_ARGS
           unset BREW_INSTALL
-        done < "$BREW_APPS"
+        done <"$BREW_APPS"
 
         if [[ -z "$MD5_BREW_APPS" ]]; then
-          echo "export MD5_BREW_APPS=$MD5_HASH" >> $ENVIRONMENT
+          echo "export MD5_BREW_APPS=$MD5_HASH" >>$ENVIRONMENT
         else
           sed -i '' "s/$MD5_BREW_APPS/$MD5_HASH/" $ENVIRONMENT
         fi
@@ -340,10 +384,10 @@ if [[ "$IS_SUDO" == true ]]; then
               printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "$APT_ADD_SRC $src failed"
               exit 255
             fi
-          done < "$APT_SOURCES"
+          done <"$APT_SOURCES"
 
           if [[ -z "$MD5_APT_ADD_SRC" ]]; then
-            echo "export MD5_APT_ADD_SRC=$MD5_HASH" >> $ENVIRONMENT
+            echo "export MD5_APT_ADD_SRC=$MD5_HASH" >>$ENVIRONMENT
           else
             sed -i "s/$MD5_APT_ADD_SRC/$MD5_HASH/" "$ENVIRONMENT"
           fi
@@ -377,10 +421,10 @@ if [[ "$IS_SUDO" == true ]]; then
             fi
 
             unset APP_INSTALLED
-          done < "$APT_APPS"
+          done <"$APT_APPS"
 
           if [[ -z "$MD5_APT_APPS" ]]; then
-            echo "export MD5_APT_APPS=$MD5_HASH" >> $ENVIRONMENT
+            echo "export MD5_APT_APPS=$MD5_HASH" >>$ENVIRONMENT
           else
             sed -i "s/$MD5_APT_APPS/$MD5_HASH/" "$ENVIRONMENT"
           fi
@@ -438,7 +482,7 @@ if [[ ! -f "$NODE" ]]; then
 fi
 
 NODE=$(which node)
-if [[ ! -z $"NODE" ]]; then
+if [[ ! -z $NODE ]]; then
   NPM=$(which npm)
   if [[ -x "$NPM" ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
@@ -461,10 +505,10 @@ if [[ ! -z $"NODE" ]]; then
             exit 255
           fi
           unset NODE_APP
-        done < "$NODE_APPS"
+        done <"$NODE_APPS"
 
         if [ -z "$MD5_NODE_APPS" ]; then
-          echo "export MD5_NODE_APPS=$MD5_HASH" >> $ENVIRONMENT
+          echo "export MD5_NODE_APPS=$MD5_HASH" >>$ENVIRONMENT
         else
           sed -i '' "s/$MD5_NODE_APPS/$MD5_HASH/" $ENVIRONMENT
         fi
@@ -496,7 +540,6 @@ if [[ ! -f "$PYTHON3" ]]; then
 else
   printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
 fi
-
 
 STAGE=":: Verifying default shell"
 printf "${NC}%s${NC}\n" "$STAGE"
@@ -545,44 +588,5 @@ else
   printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
 fi
 
-unset APT_ADD_SRC
-unset APT_APPS
-unset APT_CLEAN
-unset APT_GET
-unset APT_SOURCES
-unset BREW
-unset BREW_CLEAN
-unset BREW_UPDATES
-unset BREW_APPS
-unset CONFIGURE_DOT_FILES
-unset DOT_FILES
-unset DOT_FILES_INSTALL
-unset DOT_FILES_PUSH
-unset DPKG_QUERY
-unset ENVIRONMENT
-unset GIT
-unset GREEN
-unset INSTALL_DOT_FILES
-unset IS_SUDO
-unset MD5
-unset MD5_APT_ADD_SRC
-unset NC
-unset NPM
-unset NODE
-unset NODE_APPS
-unset OS_PREFIX
-unset PIP3
-unset PYTHON3
-unset PYTHON_APPS
-unset RED
-unset REPLACE
-unset REPLACE2
-unset RUBY
-unset STAGE
-unset SUDO
-unset USER_SHELL
-unset UPDATE_DOT_FILES
-unset YELLOW
-unset ZSH
-
-rm ~/.update_in_progress
+rm "$FILE_BUSY"
+unset FILE_BUSY

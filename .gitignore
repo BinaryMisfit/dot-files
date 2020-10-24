@@ -13,6 +13,7 @@ ssh/.ssh/known_hosts
 
 # User config
 */**/packages/*_user
+*/**/packages/checksum
 
 # System Folders
 default/nvim/.netrwhist
