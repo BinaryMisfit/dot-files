@@ -228,6 +228,14 @@ case "$OS_PREFIX" in
     unset APP_RUBY
   fi
 
+  APP_BREW=$(which brew)
+  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPDATE"
+  if ! eval "$APP_BREW" update &>/dev/null; then
+    printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew update failed"
+    exit 255
+  fi
+
+  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
   unset APP_BREW
   ;;
 "ubuntu")
@@ -236,7 +244,7 @@ case "$OS_PREFIX" in
     printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
   else
     APP_SUDO=$(which sudo)
-    if [[ -n $APP_SUDO ]]; then
+    if [[ ! -x $APP_SUDO ]]; then
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "sudo missing"
       exit 255
     fi
