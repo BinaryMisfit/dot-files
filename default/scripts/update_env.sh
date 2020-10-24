@@ -213,12 +213,43 @@ case "$OS_PREFIX" in
 "osx")
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
   APP_BREW=$(which brew)
+  if [[ ! -x $APP_BREW ]]; then
+    APP_RUBY=$(which ruby)
+    if [[ -z $APP_RUBY ]]; then
+      printf "$FORMAT_REPLACE$COLOR_GREEN::: $COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "ruby missing"
+      exit 255
+    fi
+
+    printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
+    if ! eval CI=1 "$APP_RUBY" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null; then
+      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install brew failed"
+    fi
+
+    unset APP_RUBY
+  fi
+
   unset APP_BREW
   ;;
 "ubuntu")
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "CHECKING"
-  APP_APT=$(which apt-get)
-  unset APP_APT
+  if [[ $USER_IS_SUDO == true ]]; then
+    printf "$FORMAT_REPLACE$COLOR_GREEN::: $COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
+  else
+    APP_SUDO=$(which sudo)
+    if [[ -n $APP_SUDO ]]; then
+      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "sudo missing"
+      exit 255
+    fi
+
+    APP_APT=$(which apt-get)
+    if [[ -n $APP_APT ]]; then
+      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get missing"
+      exit 255
+    fi
+
+    unset APP_APT
+    unset APP_SUDO
+  fi
   ;;
 esac
 
@@ -226,9 +257,6 @@ exit 0
 
 SOURCES_APT=$HOME/.packages/sources/apt
 APPS_APT=$HOME/.packages/apt
-APP_APT_SRC=
-APP_APT=
-APP_BREW=
 BREW_APPS=~/.brew_apps
 DPKG_QUERY=
 MD5=
@@ -244,19 +272,6 @@ RUBY=
 ZSH=
 
 if [[ "$OS_PREFIX" == "OSX" ]]; then
-  if [[ -z $BREW ]]; then
-    RUBY=$(which ruby)
-    if [[ -f "$RUBY" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL" "brew"
-      eval CI=1 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" &>/dev/null
-      if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "brew install failed"
-      fi
-    else
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "ruby missing"
-    fi
-  fi
-
   BREW=$(which brew)
   if [[ ! -z $BREW ]]; then
     printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
@@ -331,13 +346,6 @@ if [[ "$OS_PREFIX" == "OSX" ]]; then
 fi
 
 if [[ "$IS_SUDO" == true ]]; then
-  if [[ "$OS_PREFIX" == "UBUNTU" ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
-    APT_GET=$(which apt-get)
-    if [[ ! -f "$APT_GET" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get missing"
-      exit 255
-    else
       eval $SUDO -E -n $APT_GET -qq update
       if [[ $? != 0 ]]; then
         printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get update failed"
@@ -457,12 +465,10 @@ if [[ "$IS_SUDO" == true ]]; then
           exit 255
         fi
       fi
-    fi
+      fi
 
     printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\n" "OK"
   fi
-else
-  printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
 fi
 
 STAGE=":::Verifying node"
