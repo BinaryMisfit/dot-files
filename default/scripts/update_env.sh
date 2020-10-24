@@ -260,8 +260,7 @@ case "$OS_PREFIX" in
     read -r MD5_HASH < <(eval "$MD5" -r "$FILE_BREW_APPS" | cut -d ' ' -f 1)
     if [[ "$MD5_HASH" != "$ND5_BREW" ]]; then
       BREW_CLEAN=true
-      while IFS="" read -r APP || [ -n "$APP" ]
-      do
+      while IFS="" read -r APP || [ -n "$APP" ]; do
         BREW_APP=
         BREW_ARGS=
         BREW_APP=$(echo "$APP" | cut -d ',' -f 1)
@@ -331,32 +330,32 @@ case "$OS_PREFIX" in
     fi
 
     read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade --dry-run)
-    if [[ -z $APT_UPDATE ]]; then
+    if [[ -n $APT_UPDATE ]]; then
       APT_CLEAN=true
       if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade -y; then
         printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get upgrade failed"
         exit 255
       fi
 
-    unset APT_UPDATE
-    read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade --dry-run)
-    if [[ -z $APT_UPDATE ]]; then
-      APT_CLEAN=true
-      if eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade -y; then
-        printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get dist-upgrade failed"
-        exit 255
+      unset APT_UPDATE
+      read -r APT_UPDATE < <(eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade --dry-run)
+      if [[ -n $APT_UPDATE ]]; then
+        APT_CLEAN=true
+        if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade -y; then
+          printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get dist-upgrade failed"
+          exit 255
+        fi
+
+        unset APT_UPDATE
       fi
 
-      unset APT_UPDATE
+      printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+      unset APT_CLEAN
+      unset APP_APT
+      unset APP_SUDO
     fi
-
-    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
-    unset APT_CLEAN
-    unset APP_APT
-    unset APP_SUDO
   fi
-fi
-;;
+  ;;
 esac
 
 STAGE="Verifying node"
@@ -371,11 +370,19 @@ APP_NODE=$(which node)
 APP_NPM=$(which npm)
 NODE_UPDATE=false
 if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
+  read -r NODE_PATH < <(eval "$APP_NPM" -g root)
+  NODE_PATH="$NODE_PATH/npm/node_modules/"
+  eval "$APP_NPM" -g list --parseable | while read -r LINE; do
+    NODE_APP=
+    echo -e "$LINE\n"
+    NODE_APP=${LINE/$NODE_PATH/}
+    echo -e "$NODE_APP\n"
+    unset NODE_APP
+  done
   read -r NODE_UPDATES < <(eval "$APP_NPM" -g outdated)
   if [[ -n "$NODE_UPDATES" ]]; then
     NODE_UPDATE=true
   fi
-
   unset NODE_UPDATES
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
   # shellcheck source=/dev/null
@@ -385,8 +392,7 @@ if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
     MD5=$(which md5)
     read -r MD5_HASH < <(eval "$MD5" -r "$FILE_NODE_APPS" | cut -d ' ' -f 1)
     if [[ "$MD5_HASH" != "$ND5_NODE" ]] || [[ $NODE_UPDATE == true ]]; then
-      while IFS="" read -r APP || [ -n "$APP" ]
-      do
+      while IFS="" read -r APP || [ -n "$APP" ]; do
         NODE_APP=
         NODE_APP=$(echo "$APP" | cut -d ',' -f 1)
         read -r NODE_INSTALL < <("$APP_NPM" -g list | grep "$NODE_APP")
@@ -434,6 +440,11 @@ unset APP_NPM
 STAGE="Verifying python3"
 printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+FILE_CHECKSUM=$HOME/.packages/checksum
+if [[ ! -f $FILE_CHECKSUM ]]; then
+  touch "$FILE_CHECKSUM"
+fi
+
 APP_PY3=$(which python3)
 APP_PIP3=$(which pip3)
 if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
@@ -455,190 +466,3 @@ unset APP_PIP3
 
 eval rm "$FILE_BUSY"
 unset FILE_BUSY
-exit 0
-
-      if [[ -f "$APT_SOURCES" ]]; then
-        MD5=$(which md5sum)
-        APT_ADD_SRC=$(which add-apt-repository)
-        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "SOURCES"
-        MD5_HASH=$($MD5 "$APT_SOURCES" | cut -d ' ' -f 1)
-        if [[ "$MD5_HASH" != "$MD5_APT_ADD_SRC" ]]; then
-          while read src; do
-            printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "SOURCES" "$src"
-            eval $SUDO $APT_ADD_SRC $src &>/dev/null
-            if [[ $? != 0 ]]; then
-              printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "$APT_ADD_SRC $src failed"
-              exit 255
-            fi
-          done <"$APT_SOURCES"
-
-          if [[ -z "$MD5_APT_ADD_SRC" ]]; then
-            echo "export MD5_APT_ADD_SRC=$MD5_HASH" >>$ENVIRONMENT
-          else
-            sed -i "s/$MD5_APT_ADD_SRC/$MD5_HASH/" "$ENVIRONMENT"
-          fi
-        fi
-
-        unset MD5
-        unset MD5_HASH
-      fi
-
-      if [ -f "$APT_APPS" ]; then
-        MD5=$(which md5sum)
-        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
-        MD5_HASH=$($MD5 "$APT_APPS" | cut -d ' ' -f 1)
-        DPKG_QUERY=$(which dpkg-query)
-        if [[ "$MD5_HASH" != "$MD5_APT_APPS" ]]; then
-          APT_CLEAN=true
-          while read app; do
-            APP_INSTALLED=$($DPKG_QUERY -W -f='${Status}' $app 2>/dev/null | grep -c "ok installed")
-            APP_INSTALL=false
-            if [[ $APP_INSTALLED == 0 ]]; then
-              APP_INSTALL=true
-            fi
-
-            if [[ "$APP_INSTALL" == true ]]; then
-              printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL" $app
-              eval $SUDO $APT_GET -qq install $app &>/dev/null
-              if [[ $? != 0 ]]; then
-                printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get $app failed"
-                exit 255
-              fi
-            fi
-
-            unset APP_INSTALLED
-          done <"$APT_APPS"
-
-          if [[ -z "$MD5_APT_APPS" ]]; then
-            echo "export MD5_APT_APPS=$MD5_HASH" >>$ENVIRONMENT
-          else
-            sed -i "s/$MD5_APT_APPS/$MD5_HASH/" "$ENVIRONMENT"
-          fi
-        fi
-
-        unset MD5
-        unset MD5_HASH
-      fi
-
-      if [[ "$APT_CLEAN" == true ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CLEANUP"
-        eval $SUDO -E -n $APT_GET -qq autoremove -y
-        if [[ $? != 0 ]]; then
-          printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get autoremove failed"
-          exit 255
-        fi
-
-        eval $SUDO -E -n $APT_GET -qq autoclean -y
-        if [[ $? != 0 ]]; then
-          printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "apt-get autoclean failed"
-          exit 255
-        fi
-      fi
-      fi
-
-NODE=$(which node)
-if [[ ! -z $NODE ]]; then
-  NPM=$(which npm)
-  if [[ -x "$NPM" ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
-    if [[ -f "$NODE_APPS" ]]; then
-      if [[ "$OS_PREFIX" == "OSX" ]]; then
-        MD5=$(which md5)
-        MD5_HASH=$($MD5 -r "$NODE_APPS" | cut -d ' ' -f 1)
-      elif [[ "$OS_PREFIX" == "UBUNTU" ]]; then
-        MD5=$(which md5sum)
-        MD5_HASH=$($MD5 "$NODE_APPS" | cut -d ' ' -f 1)
-      fi
-
-      if [[ "$MD5_HASH" != "$MD5_NODE_APPS" ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES"
-        while read app; do
-          printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "PACKAGES" $app
-          NODE_APP=$($NPM -g install --quiet --upgrade $app &>/dev/null)
-          if [[ $? != 0 ]]; then
-            printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "npm -g install $app failed"
-            exit 255
-          fi
-          unset NODE_APP
-        done <"$NODE_APPS"
-
-        if [ -z "$MD5_NODE_APPS" ]; then
-          echo "export MD5_NODE_APPS=$MD5_HASH" >>$ENVIRONMENT
-        else
-          sed -i '' "s/$MD5_NODE_APPS/$MD5_HASH/" $ENVIRONMENT
-        fi
-      fi
-
-      unset MD5
-      unset MD5_HASH
-    fi
-
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
-  else
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING" "npm missing"
-  fi
-fi
-
-STAGE=":::Verifying python"
-printf "${NC}%s${NC}\n" "$STAGE"
-printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
-PYTHON3=$(which python3)
-PIP3=$(which pip3)
-if [[ ! -f "$PYTHON3" ]]; then
-  if [[ "$OS_PREFIX" == "OSX" ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
-  elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
-  elif [[ "$IS_SUDO" == false ]]; then
-    printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
-  fi
-else
-  printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
-fi
-
-STAGE=":::Verifying default shell"
-printf "${NC}%s${NC}\n" "$STAGE"
-printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "CHECKING"
-USER_SHELL=$(basename $SHELL)
-if [ "$USER_SHELL" != "zsh" ]; then
-  ZSH=$(which zsh)
-  if [[ -z $ZSH ]]; then
-    if [[ "$OS_PREFIX" == "OSX" ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
-      eval $BREW install zsh &>/dev/null
-      if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "zsh install failed"
-        exit 255
-      fi
-    elif [[ "$OS_PREFIX" == "UBUNTU" ]] && [[ "$IS_SUDO" == true ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "INSTALL"
-      eval $SUDO $APT_GET -qq install zsh -y &>/dev/null
-      if [[ $? != 0 ]]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "zsh install failed"
-        exit 255
-      fi
-    elif [[ "$IS_SUDO" == false ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
-    fi
-  fi
-
-  ZSH=$(which zsh)
-  if [[ ! -z $ZSH ]]; then
-    if [[ "$IS_SUDO" == true ]]; then
-      printf "${REPLACE}${NC}${STAGE}\t${YELLOW}%s${NC}\t%s${NC}\n" "UPDATE"
-      eval $SUDO usermod --shell $ZSH $USER &>/dev/null
-      if [ $? != 0 ]; then
-        printf "${REPLACE}${NC}${STAGE}\t\t${RED}%s${NC}\t%s${NC}\n" "ERROR" "usermod failed"
-        exit 255
-      fi
-
-      printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
-    else
-      printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "SKIPPING"
-    fi
-  else
-    printf "${REPLACE}${NC}${STAGE}\t${ERROR}%s${NC}\t%s${NC}\n" "MISSING" "zsh"
-  fi
-else
-  printf "${REPLACE}${NC}${STAGE}\t${GREEN}%s${NC}\t%s${NC}\n" "OK"
-fi
