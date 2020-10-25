@@ -425,8 +425,10 @@ case "$OS_PREFIX" in
           printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_INSTALL = $BREW_INSTALL"
         } >>"$FILE_LOG"
         if [[ -z "$BREW_INSTALL" ]]; then
+          printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Installing $BREW_APP" >>"$FILE_LOG"
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$BREW_APP"
-          if ! eval "$APP_BREW" install "$BREW_ARGS" "$BREW_APP" &>/dev/null | tee -a "$FILE_LOG"; then
+          if ! eval "$APP_BREW" install "$BREW_ARGS" "$BREW_APP" 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
+            printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "brew install $BREW_APP failed" >>"$FILE_LOG"
             printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew install $BREW_APP failed"
             exit 255
           fi
@@ -437,12 +439,13 @@ case "$OS_PREFIX" in
         unset BREW_ARGS
         unset BREW_INSTALL
       done <"$FILE_BREW_APPS"
-    fi
 
-    if [[ -z "$MD5_BREW" ]]; then
-      echo "export MD5_BREW=$MD5_HASH" >>"$FILE_CHECKSUM"
-    else
-      sed -i '' "s/$MD5_BREW/$MD5_HASH/" "$FILE_CHECKSUM"
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Updating checksum" >>"$FILE_LOG"
+      if [[ -z "$MD5_BREW" ]]; then
+        echo "export MD5_BREW=$MD5_HASH" >>"$FILE_CHECKSUM"
+      else
+        sed -i '' "s/$MD5_BREW/$MD5_HASH/" "$FILE_CHECKSUM"
+      fi
     fi
   fi
 
@@ -450,7 +453,9 @@ case "$OS_PREFIX" in
   unset MD5
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
   if [[ $BREW_CLEAN == true ]]; then
-    if ! eval "$APP_BREW" cleanup &>/dev/null; then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Running $APP_BREW cleanup" >>"$FILE_LOG"
+    if ! eval "$APP_BREW" cleanup 2>&1 | tee "$FILE_LOG" >/dev/null; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "brew cleanup failed" >>"$FILE_LOG"
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew cleanup failed"
       exit 255
     fi
