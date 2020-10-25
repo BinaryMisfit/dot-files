@@ -9,8 +9,10 @@ FILE_BUSY=$HOME/.update_in_progress
 FILE_LOG=$DIR_DOT_FILES/log/update_env.log
 
 if [[ ! -d $DIR_DOT_FILES ]]; then
-  FILE_LOG="2>&1"
-elif [[ ! -f $FILE_LOG ]]; then
+  FILE_LOG="$HOME/update_installer.log"
+fi
+
+if [[ ! -f $FILE_LOG ]]; then
   touch "$FILE_LOG"
 fi
 
