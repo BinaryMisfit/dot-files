@@ -731,7 +731,12 @@ if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
   # shellcheck source=/dev/null
   source "$FILE_CHECKSUM"
   FILE_PYTHON_APPS=$HOME/.packages/python
+  {
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_PYTHON_APPS = $FILE_PYTHON_APPS"
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Check if $FILE_PYTHON_APPS exists"
+  } >>"$FILE_LOG"
   if [[ -f $FILE_PYTHON_APPS ]]; then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Processing $FILE_PYTHON_APPS" >>"$FILE_LOG"
     MD5=
     case "$OS_PREFIX" in
     "osx")
@@ -742,18 +747,25 @@ if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
       MD5=$(which md5sum | tee -a "$FILE_LOG")
       ;;
     esac
-
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5 = $MD5" >>"$FILE_LOG"
     read -r MD5_HASH < <(eval "$MD5" "$FILE_PYTHON_APPS" | cut -d ' ' -f 1)
+    {
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_HASH = $MD5_HASH"
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_PYTHON = $MD5_PYTHON"
+    } >>"$FILE_LOG"
     if [[ "$MD5_HASH" != "$MD5_PYTHON" ]]; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "$FILE_PYTHON_APPS changed" >>"$FILE_LOG"
+
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Updating checksum" >>"$FILE_LOG"
       if [[ -z "$MD5_PYTHON" ]]; then
         echo "export MD5_PYTHON=$MD5_HASH" >>"$FILE_CHECKSUM"
       else
         sed -i '' "s/$MD5_PYTHON/$MD5_HASH/" "$FILE_CHECKSUM"
       fi
-
-      unset MD5_HASH
-      unset MD5
     fi
+
+    unset MD5_HASH
+    unset MD5
   fi
 
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
@@ -823,6 +835,7 @@ unset USER_IS_SUDO
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_BREW = $MD5_BREW"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_HASH = $MD5_HASH"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_NODE = $MD5_NODE"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_PYTHON = $MD5_PYTHON"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NEED_SUDO = $NEED_SUDO"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_APP = $NODE_APP"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX = $OS_PREFIX"
