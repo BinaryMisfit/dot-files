@@ -706,7 +706,7 @@ APP_PIP3=$(which pip3 | tee -a "$FILE_LOG")
 } >>"$FILE_LOG"
 if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking for python3 outdated packages" >>"$FILE_LOG"
-  eval "$APP_PIP3" list --outdated --format freeze 2>&1 | tee "$FILE_LOG" >/dev/null | while read -r LINE; do
+  eval "$APP_PIP3" list --outdated --format freeze 2>&1 | tee -a "$FILE_LOG" | while read -r LINE; do
     PYTHON_APP="${LINE/==/=}"
     {
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "LINE = $LINE"
@@ -718,7 +718,7 @@ if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Update $PYTHON_APP"
     } >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$PYTHON_APP"
-    if ! eval "$APP_PIP3" install --upgrade "$PYTHON_APP" 2>&1 | tee "$FILE_LOG" >/dev/null; then
+    if ! eval "$APP_PIP3" install --upgrade "$PYTHON_APP" 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "pip3 install --upgrade $PYTHON_APP failed" >>"$FILE_LOG"
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "pip3 install --upgrade $PYTHON_APP failed"
       exit 255
