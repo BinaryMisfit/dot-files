@@ -5,7 +5,7 @@ COLOR_RED="\033[1;31m"
 COLOR_YELLOW="\033[1;33m"
 DIR_DOT_FILES=$HOME/.dotfiles
 FORMAT_REPLACE="\e[1A\e[K"
-FILE_BUSY=$HOME/.update_in_progress
+FILE_PID=$DIR_DOT_FILES/update_env.pid
 FILE_LOG=$DIR_DOT_FILES/log/update_env.log
 
 if [[ ! -d $DIR_DOT_FILES ]]; then
@@ -33,9 +33,9 @@ LOG_STAGE="START"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DISABLE_AUTO_UPDATE = $DISABLE_AUTO_UPDATE"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BUSY = $FILE_BUSY"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_ENV = $FILE_ENV"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_LOG = $FILE_LOG"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_PID = $FILE_PID"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "ITERM2_SQUELCH_MARK = $ITERM2_SQUELCH_MARK"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "KEYTIMEOUT = $KEYTIMEOUT"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX = $OS_PREFIX"
@@ -44,34 +44,32 @@ LOG_STAGE="START"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_ROOT = $USER_IS_ROOT"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_SUDO = $USER_IS_SUDO"
 } >>"$FILE_LOG"
-STAGE="Verifying environment"
 LOG_STAGE="ENV"
-printf "$COLOR_YELLOW - $COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
 {
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $FILE_BUSY exists"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $FILE_PID exists"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "TMUX = $TMUX"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "TERM_PROGRAM = $TERM_PROGRAM"
 } >>"$FILE_LOG"
 if [[ -n $TMUX ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "TMUX Running" >>"$FILE_LOG"
-  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "TMUX"
   exit 0
 fi
 
 if [[ "$TERM_PROGRAM" == "vscode" ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "VSCode running" >>"$FILE_LOG"
-  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "VSCODE"
   exit 0
 fi
 
-if [[ -f $FILE_BUSY ]]; then
+if [[ -f $FILE_PID ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "Already running" >>"$FILE_LOG"
-  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "RUNNING"
   exit 0
 fi
-printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Creating $FILE_BUSY" >>"$FILE_LOG"
-touch "$FILE_BUSY"
 
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Writing $$ to $FILE_PID" >>"$FILE_LOG"
+echo $$ >"$FILE_PID"
+
+STAGE="Verifying environment"
+printf "$COLOR_YELLOW - $COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
 printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if current operating system is supported ($OSTYPE)" >>"$FILE_LOG"
 OS_PREFIX=
 case "$OSTYPE" in
@@ -568,12 +566,12 @@ fi
 if [[ $NEED_SUDO == false ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Node does not require sudo or sudo enabled" >>"$FILE_LOG"
   if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
-    read -r NODE_PATH < <(eval "$USE_SUDO$APP_NPM" -g root | tee "$FILE_LOG")
+    read -r NODE_PATH < <(eval "$USE_SUDO$APP_NPM" -g root | tee -a "$FILE_LOG")
     {
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_PATH = $NODE_PATH"
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking for node outdated packages"
     } >>"$FILE_LOG"
-    eval "$USE_SUDO$APP_NPM" -g list outdated --depth=0 --parseable | tee "$FILE_LOG" | while read -r LINE; do
+    eval "$USE_SUDO$APP_NPM" -g list outdated --depth=0 --parseable | tee -a "$FILE_LOG" | while read -r LINE; do
       {
         printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "LINE = $LINE"
         printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "LINE LENGTH = ${#LINE}"
@@ -586,7 +584,7 @@ if [[ $NEED_SUDO == false ]]; then
           NODE_APP=$(echo -e "$NODE_APP" | tee -a "$FILE_LOG" | rev | cut -d '/' -f 1 | rev)
           printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Update $NODE_APP" >>"$FILE_LOG"
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$NODE_APP"
-          if ! eval "$USE_SUDO$APP_NPM" -g install --upgrade "$NODE_APP" 2>&1 | tee "$FILE_LOG" >/dev/null; then
+          if ! eval "$USE_SUDO$APP_NPM" -g install --upgrade "$NODE_APP" 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
             printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "npm -g install --upgrade $NODE_APP failed" >>"$FILE_LOG"
             printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install --upgrade $NODE_APP failed"
             exit 255
@@ -631,12 +629,12 @@ if [[ $NEED_SUDO == false ]]; then
           printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP = $APP" >>"$FILE_LOG"
           NODE_APP=$(echo "$APP" | tee -a "$FILE_LOG" | cut -d ',' -f 1)
           printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_APP = $NODE_APP" >>"$FILE_LOG"
-          read -r NODE_INSTALL < <(eval "$USE_SUDO$APP_NPM" -g list | tee "$FILE_LOG" | grep "$NODE_APP")
+          read -r NODE_INSTALL < <(eval "$USE_SUDO$APP_NPM" -g list | tee -a "$FILE_LOG" | grep "$NODE_APP")
           printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_INSTALL = $NODE_INSTALL" >>"$FILE_LOG"
           if [[ -n "$NODE_INSTALL" ]]; then
             printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
             printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Install $NODE_APP" >>"$FILE_LOG"
-            if ! eval "$USE_SUDO$APP_NPM" -g install "$NODE_APP" 2>&1 | tee "$FILE_LOG" >/dev/null; then
+            if ! eval "$USE_SUDO$APP_NPM" -g install "$NODE_APP" 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
               printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "npm -g install $NODE_APP failed" >>"$FILE_LOG"
               printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install $NODE_APP failed"
               exit 255
@@ -795,10 +793,10 @@ else
 fi
 
 unset DOT_FILES_PUSH
-eval rm "$FILE_BUSY"
+eval rm "$FILE_PID"
 unset APP_SUDO
 unset APP_GIT
-unset FILE_BUSY
+unset FILE_PID
 unset OS_PREFIX
 unset USER_IS_SUDO
 
@@ -825,10 +823,10 @@ unset USER_IS_SUDO
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BREW_APPS = $FILE_BREW_APPS"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BUSY = $FILE_BUSY"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_CHECKSUM = $FILE_CHECKSUM"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_ENV = $FILE_ENV"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_LOG = $FILE_LOG"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_PID = $FILE_PID"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "ITERM2_SQUELCH_MARK = $ITERM2_SQUELCH_MARK"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "KEYTIMEOUT = $KEYTIMEOUT"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5 = $MD5"

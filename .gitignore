@@ -5,6 +5,7 @@
 
 # Temporary  Files
 */**/*.swp
+*.pid
 
 # Secrets & Keys
 */**/authorized_keys
