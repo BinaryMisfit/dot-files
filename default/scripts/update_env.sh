@@ -312,14 +312,14 @@ if [[ $DOT_FILES_CONFIGURE == true ]]; then
   fi
 
   popd >/dev/null || return
-  unset DOT_FILES_CONFIGURE
-  unset DOT_FILES_INSTALLER
 fi
 
 printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH" >>"$FILE_LOG"
 printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 
 unset DIR_DOT_FILES
+unset DOT_FILES_CONFIGURE
+unset DOT_FILES_INSTALLER
 
 STAGE="Verifying packages"
 LOG_STAGE="PACKAGE"
@@ -382,13 +382,17 @@ case "$OS_PREFIX" in
     touch "$FILE_CHECKSUM"
   fi
 
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_CLEAN = $BREW_CLEAN" >>"$FILE_LOG"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Loading $FILE_CHECKSUM" >>"$FILE_LOG"
+  {
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_CLEAN = $BREW_CLEAN" >>"$FILE_LOG"
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Loading $FILE_CHECKSUM"
+  } >>"$FILE_LOG"
   # shellcheck source=/dev/null
   source "$FILE_CHECKSUM"
   FILE_BREW_APPS=$HOME/.packages/brew
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BREW_APPS = $FILE_BREW_APPS" >>"$FILE_LOG"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Check if $FILE_BREW_APPS exists" >>"$FILE_LOG"
+  {
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BREW_APPS = $FILE_BREW_APPS"
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Check if $FILE_BREW_APPS exists"
+  } >>"$FILE_LOG"
   if [[ -f $FILE_BREW_APPS ]]; then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Processing $FILE_BREW_APPS" >>"$FILE_LOG"
     MD5=
@@ -403,8 +407,10 @@ case "$OS_PREFIX" in
     esac
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5 = $MD5" >>"$FILE_LOG"
     read -r MD5_HASH < <(eval "$MD5" "$FILE_BREW_APPS" | tee -a "$FILE_LOG" | cut -d ' ' -f 1)
-    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_HASH = $MD5_HASH" >>"$FILE_LOG"
-    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_BREW = $MD5_BREW" >>"$FILE_LOG"
+    {
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_HASH = $MD5_HASH"
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_BREW = $MD5_BREW"
+    } >>"$FILE_LOG"
     if [[ "$MD5_HASH" != "$MD5_BREW" ]]; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "$FILE_BREW_APPS changed" >>"$FILE_LOG"
       BREW_CLEAN=true
@@ -531,10 +537,13 @@ case "$OS_PREFIX" in
 esac
 
 STAGE="Verifying node"
-printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+LOG_STAGE="NODE"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 FILE_CHECKSUM=$HOME/.packages/checksum
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_CHECKSUM = $FILE_CHECKSUM" >>"$FILE_LOG"
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $FILE_CHECKSUM exists" >>"$FILE_LOG"
 if [[ ! -f $FILE_CHECKSUM ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Creating $FILE_CHECKSUM" >>"$FILE_LOG"
   touch "$FILE_CHECKSUM"
 fi
 
@@ -548,16 +557,33 @@ elif [[ "$OS_PREFIX" == "ubuntu" ]]; then
   NEED_SUDO=true
 fi
 
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_NODE = $APP_NODE"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_NPM = $APP_NPM"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NEED_SUDO = $NEED_SUDO"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USE_SUDO = $USE_SUDO"
+} >>"$FILE_LOG"
 if [[ $NEED_SUDO == false ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Node does not require sudo or sudo enabled" >>"$FILE_LOG"
   if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
-    read -r NODE_PATH < <(eval "$USE_SUDO$APP_NPM" -g root)
-    eval "$USE_SUDO$APP_NPM" -g list outdated --depth=0 --parseable | while read -r LINE; do
+    read -r NODE_PATH < <(eval "$USE_SUDO$APP_NPM" -g root | tee "$FILE_LOG")
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_PATH = $NODE_PATH" >>"$FILE_LOG"
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking for node outdated packages" >>"$FILE_LOG"
+    eval "$USE_SUDO$APP_NPM" -g list outdated --depth=0 --parseable | tee "$FILE_LOG" | while read -r LINE; do
+      {
+        printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "LINE = $LINE"
+        printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "LINE LENGTH = ${#LINE}"
+        printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_PATH LENGTH = ${#NODE_PATH}"
+      } >>"$FILE_LOG"
       if [[ ${#LINE} -gt ${#NODE_PATH} ]]; then
         NODE_APP=${LINE/$NODE_PATH/}
+        printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_APP = $NODE_APP" >>"$FILE_LOG"
         if [[ -n "$NODE_APP" ]]; then
           NODE_APP=$(echo -e "$NODE_APP" | tee -a "$FILE_LOG" | rev | cut -d '/' -f 1 | rev)
+          printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Update $NODE_APP" >>"$FILE_LOG"
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$NODE_APP"
-          if ! eval "$USE_SUDO$APP_NPM" -g install --upgrade "$NODE_APP" &>/dev/null; then
+          if ! eval "$USE_SUDO$APP_NPM" -g install --upgrade "$NODE_APP" 2>&1 | tee "$FILE_LOG" >/dev/null; then
+            printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "npm -g install --upgrade $NODE_APP failed" >>"$FILE_LOG"
             printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install --upgrade $NODE_APP failed"
             exit 255
           fi
@@ -569,10 +595,16 @@ if [[ $NEED_SUDO == false ]]; then
     done
 
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Loading $FILE_CHECKSUM" >>"$FILE_LOG"
     # shellcheck source=/dev/null
     source "$FILE_CHECKSUM"
     FILE_NODE_APPS=$HOME/.packages/node
+    {
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_NODE_APPS = $FILE_NODE_APPS"
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Check if $FILE_NODE_APPS exists"
+    } >>"$FILE_LOG"
     if [[ -f $FILE_NODE_APPS ]]; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Processing $FILE_NODE_APPS" >>"$FILE_LOG"
       MD5=
       case "$OS_PREFIX" in
       "osx")
@@ -583,15 +615,25 @@ if [[ $NEED_SUDO == false ]]; then
         MD5=$(which md5sum | tee -a "$FILE_LOG")
         ;;
       esac
-
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5 = $MD5" >>"$FILE_LOG"
       read -r MD5_HASH < <(eval "$MD5" "$FILE_NODE_APPS" | cut -d ' ' -f 1)
+      {
+        printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_HASH = $MD5_HASH"
+        printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_NODE = $MD5_NODE"
+      } >>"$FILE_LOG"
       if [[ "$MD5_HASH" != "$MD5_NODE" ]]; then
+        printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "$FILE_NODE_APPS changed" >>"$FILE_LOG"
         while IFS="" read -r APP || [ -n "$APP" ]; do
+          printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP = $APP" >>"$FILE_LOG"
           NODE_APP=$(echo "$APP" | tee -a "$FILE_LOG" | cut -d ',' -f 1)
-          read -r NODE_INSTALL < <(eval "$USE_SUDO$APP_NPM" -g list | grep "$NODE_APP")
+          printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_APP = $NODE_APP" >>"$FILE_LOG"
+          read -r NODE_INSTALL < <(eval "$USE_SUDO$APP_NPM" -g list | tee "$FILE_LOG" | grep "$NODE_APP")
+          printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_INSTALL = $NODE_INSTALL" >>"$FILE_LOG"
           if [[ -n "$NODE_INSTALL" ]]; then
             printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
-            if ! eval "$USE_SUDO$APP_NPM" -g install "$NODE_APP" &>/dev/null; then
+            printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Install $NODE_APP" >>"$FILE_LOG"
+            if ! eval "$USE_SUDO$APP_NPM" -g install "$NODE_APP" 2>&1 | tee "$FILE_LOG" >/dev/null; then
+              printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "npm -g install $NODE_APP failed" >>"$FILE_LOG"
               printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install $NODE_APP failed"
               exit 255
             fi
@@ -602,6 +644,7 @@ if [[ $NEED_SUDO == false ]]; then
           unset NODE_INSTALL
         done <"$FILE_NODE_APPS"
 
+        printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Updating checksum" >>"$FILE_LOG"
         if [[ -z "$MD5_NODE" ]]; then
           echo "export MD5_NODE=$MD5_HASH" >>"$FILE_CHECKSUM"
         else
@@ -616,16 +659,19 @@ if [[ $NEED_SUDO == false ]]; then
     printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
   else
     if [[ -z $APP_NODE ]]; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "SKIPPING node not installed" >>"$FILE_LOG"
       printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "node not installed"
       exit 255
     fi
 
     if [[ -z $APP_NPM ]]; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "SKIPPING  not installed" >>"$FILE_LOG"
       printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "npm not installed"
       exit 255
     fi
   fi
 else
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "SKIPPING sudo required" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
 fi
 
@@ -748,16 +794,21 @@ unset USER_IS_SUDO
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_LOG = $FILE_LOG"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "ITERM2_SQUELCH_MARK = $ITERM2_SQUELCH_MARK"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "KEYTIMEOUT = $KEYTIMEOUT"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "LOG_STAGE = $LOG_STAGE"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5 = $MD5"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_BREW = $MD5_BREW"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_HASH = $MD5_HASH"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_NODE = $MD5_NODE"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NEED_SUDO = $NEED_SUDO"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_APP = $NODE_APP"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX = $OS_PREFIX"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX_UPPER = $OS_PREFIX_UPPER"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_ID = $USER_ID"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_ROOT = $USER_IS_ROOT"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_SUDO = $USER_IS_SUDO"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USE_SUDO = $USE_SUDO"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Update complete"
 } >>"$FILE_LOG"
 
+unset STAGE
+unset LOG_STAGE
 unset FILE_LOG
