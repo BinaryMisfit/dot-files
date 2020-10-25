@@ -9,7 +9,7 @@ FILE_BUSY=$HOME/.update_in_progress
 FILE_LOG=$DIR_DOT_FILES/log/update_env.log
 
 if [[ ! -d $DIR_DOT_FILES ]]; then
-  FILE_LOG=/dev/null
+  FILE_LOG="2>&1"
 elif [[ ! -f $FILE_LOG ]]; then
   touch "$FILE_LOG"
 fi
@@ -193,6 +193,7 @@ fi
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_UPDATE = $DOT_FILES_UPDATE"
 } >>"$FILE_LOG"
 if [[ "$DOT_FILES_INSTALL" == true ]]; then
+  echo -e "$DOT_FILES_INSTALL\n"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Installing $DIR_DOT_FILES" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
   if ! eval "$GIT" clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules 2>&1 | tee "$FILE_LOG" >/dev/null; then
