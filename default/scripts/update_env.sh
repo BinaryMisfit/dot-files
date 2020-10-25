@@ -24,13 +24,20 @@ LOG_STAGE="START"
 {
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "Update started"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_BREW = $APP_BREW"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_GIT = $APP_GIT"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_RUBY = $APP_RUBY"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_SUDO = $APP_SUDO"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "COLORTERM = $COLORTERM"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DEFAULT_USER = $DEFAULT_USER"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DIR_DOT_FILES = $DIR_DOT_FILES"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DISABLE_AUTO_UPDATE = $DISABLE_AUTO_UPDATE"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BUSY = $FILE_BUSY"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_ENV = $FILE_ENV"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_LOG = $FILE_LOG"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "ITERM2_SQUELCH_MARK = $ITERM2_SQUELCH_MARK"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "KEYTIMEOUT = $KEYTIMEOUT"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX = $OS_PREFIX"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX_UPPER = $OS_PREFIX_UPPER"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_ID = $USER_ID"
@@ -168,6 +175,7 @@ source "$FILE_ENV"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "KEYTIMEOUT = $KEYTIMEOUT"
 } >>"$FILE_LOG"
 unset FILE_ENV
+unset USER_ID
 unset USER_IS_ROOT
 
 OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | tee -a "$FILE_LOG" | awk '{print toupper($1)}')
@@ -331,7 +339,7 @@ case "$OS_PREFIX" in
 
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Running $APP_RUBY" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
-    if ! eval CI=1 "$APP_RUBY" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" | tee -a "$FILE_LOG" /dev/null 2>&1; then
+    if ! eval CI=1 "$APP_RUBY" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "install brew failed" >>"$FILE_LOG"
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install brew failed"
     fi
@@ -341,33 +349,48 @@ case "$OS_PREFIX" in
 
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
   APP_BREW=$(which brew | tee -a "$FILE_LOG")
-  if ! eval "$APP_BREW" update | tee -a "$FILE_LOG" &>/dev/null; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_BREW = $APP_BREW" >>"$FILE_LOG"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Run $APP_BREW update" >>"$FILE_LOG"
+  if ! eval "$APP_BREW" update 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "brew update failed" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew update failed"
     exit 255
   fi
 
-  read -r BREW_UPDATES < <(eval "$APP_BREW" outdated | tee -a "$FILE_LOG")
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Check for outdated packages" >>"$FILE_LOG"
+  read -r BREW_UPDATES < <(eval "$APP_BREW" outdated 2>&1 | tee -a "$FILE_LOG" >/dev/null)
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_UPDATES = $BREW_UPDATES" >>"$FILE_LOG"
   if [[ -n "$BREW_UPDATES" ]]; then
     BREW_CLEAN=true
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Run $APP_BREW upgrade" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPGRADE"
     if ! eval "$APP_BREW" upgrade &>/dev/null | tee -a "$FILE_LOG"; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "brew upgrade failed" >>"$FILE_LOG"
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew upgrade failed"
       exit 255
     fi
   fi
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_CLEAN = $BREW_CLEAN" >>"$FILE_LOG"
 
   unset BREW_UPDATES
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
   FILE_CHECKSUM=$HOME/.packages/checksum
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_CHECKSUM = $FILE_CHECKSUM" >>"$FILE_LOG"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Check if $FILE_CHECKSUM exists" >>"$FILE_LOG"
   if [[ ! -f $FILE_CHECKSUM ]]; then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Create $FILE_CHECKSUM" >>"$FILE_LOG"
     touch "$FILE_CHECKSUM"
   fi
 
-  BREW_CLEAN=false
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_CLEAN = $BREW_CLEAN" >>"$FILE_LOG"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Loading $FILE_CHECKSUM" >>"$FILE_LOG"
   # shellcheck source=/dev/null
   source "$FILE_CHECKSUM"
   FILE_BREW_APPS=$HOME/.packages/brew
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BREW_APPS = $FILE_BREW_APPS" >>"$FILE_LOG"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Check if $FILE_BREW_APPS exists" >>"$FILE_LOG"
   if [[ -f $FILE_BREW_APPS ]]; then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Processing $FILE_BREW_APPS" >>"$FILE_LOG"
     MD5=
     case "$OS_PREFIX" in
     "osx")
@@ -378,10 +401,14 @@ case "$OS_PREFIX" in
       MD5=$(which md5sum | tee -a "$FILE_LOG")
       ;;
     esac
-
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5 = $MD5" >>"$FILE_LOG"
     read -r MD5_HASH < <(eval "$MD5" "$FILE_BREW_APPS" | tee -a "$FILE_LOG" | cut -d ' ' -f 1)
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_HASH = $MD5_HASH" >>"$FILE_LOG"
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_BREW = $MD5_BREW" >>"$FILE_LOG"
     if [[ "$MD5_HASH" != "$MD5_BREW" ]]; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "$FILE_BREW_APPS changed" >>"$FILE_LOG"
       BREW_CLEAN=true
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_CLEAN = $BREW_CLEAN" >>"$FILE_LOG"
       while IFS="" read -r APP || [ -n "$APP" ]; do
         BREW_APP=
         BREW_ARGS=
@@ -391,6 +418,12 @@ case "$OS_PREFIX" in
         fi
 
         read -r BREW_INSTALL < <("$APP_BREW" ls --versions "$BREW_APP")
+        {
+          printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP = $APP"
+          printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_APP = $BREW_APP"
+          printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_ARGS = $BREW_ARGS"
+          printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_INSTALL = $BREW_INSTALL"
+        } >>"$FILE_LOG"
         if [[ -z "$BREW_INSTALL" ]]; then
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$BREW_APP"
           if ! eval "$APP_BREW" install "$BREW_ARGS" "$BREW_APP" &>/dev/null | tee -a "$FILE_LOG"; then
@@ -411,11 +444,10 @@ case "$OS_PREFIX" in
     else
       sed -i '' "s/$MD5_BREW/$MD5_HASH/" "$FILE_CHECKSUM"
     fi
-
-    unset MD5_HASH
-    unset MD5
   fi
 
+  unset MD5_HASH
+  unset MD5
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
   if [[ $BREW_CLEAN == true ]]; then
     if ! eval "$APP_BREW" cleanup &>/dev/null; then
@@ -592,6 +624,7 @@ else
   printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
 fi
 
+unset FILE_CHECKSUM
 unset APP_NODE
 unset APP_NPM
 unset NEED_SUDO
@@ -662,6 +695,7 @@ else
   fi
 fi
 
+unset FILE_CHECKSUM
 unset APP_PY3
 unset APP_PIP3
 
@@ -673,21 +707,46 @@ if [[ $DOT_FILES_PUSH -gt 0 ]]; then
 else
   printf "$FORMAT_REPLACE%s" ""
 fi
-unset DOT_FILES_PUSH
 
+unset DOT_FILES_PUSH
 eval rm "$FILE_BUSY"
+unset APP_SUDO
+unset APP_GIT
 unset FILE_BUSY
 unset OS_PREFIX
+unset USER_IS_SUDO
 
 {
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP = $APP"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_APT = $APP_APT"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_BREW = $APP_BREW"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_GIT = $APP_GIT"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_NODE = $APP_NODE"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_NPM = $APP_NPM"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_RUBY = $APP_RUBY"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_SUDO = $APP_SUDO"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_APP = $BREW_APP"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_ARGS = $BREW_ARGS"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_CLEAN = $BREW_CLEAN"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_INSTALL = $BREW_INSTALL"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_UPDATES = $BREW_UPDATES"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "COLORTERM = $COLORTERM"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DEFAULT_USER = $DEFAULT_USER"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DIR_DOT_FILES = $DIR_DOT_FILES"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DISABLE_AUTO_UPDATE = $DISABLE_AUTO_UPDATE"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BREW_APPS = $FILE_BREW_APPS"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BUSY = $FILE_BUSY"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_CHECKSUM = $FILE_CHECKSUM"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_ENV = $FILE_ENV"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_LOG = $FILE_LOG"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "ITERM2_SQUELCH_MARK = $ITERM2_SQUELCH_MARK"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "KEYTIMEOUT = $KEYTIMEOUT"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "LOG_STAGE = $LOG_STAGE"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5 = $MD5"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_BREW = $MD5_BREW"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "MD5_HASH = $MD5_HASH"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX = $OS_PREFIX"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX_UPPER = $OS_PREFIX_UPPER"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_ID = $USER_ID"
