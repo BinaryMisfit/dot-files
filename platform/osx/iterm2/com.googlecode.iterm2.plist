@@ -227,7 +227,11 @@
 	</dict>
 	<key>Default Bookmark Guid</key>
 	<string>E5BDEA31-5697-408D-B47F-D59567648BCF</string>
+	<key>DisableFullscreenTransparency</key>
+	<true/>
 	<key>HapticFeedbackForEsc</key>
+	<false/>
+	<key>HideTab</key>
 	<false/>
 	<key>HotkeyMigratedFromSingleToMulti</key>
 	<true/>
@@ -944,12 +948,12 @@
 		<key>screenFrame</key>
 		<string>{{0, 0}, {2560, 1080}}</string>
 		<key>topLeft</key>
-		<string>{269, 595}</string>
+		<string>{528, 788}</string>
 	</dict>
 	<key>NoSyncInstallationId</key>
 	<string>0568CD8A-EF21-4270-A9FB-16E33CBE348E</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>67</integer>
+	<integer>68</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -1731,9 +1735,13 @@
 	<false/>
 	<key>SoundForEsc</key>
 	<false/>
+	<key>TabStyleWithAutomaticOption</key>
+	<integer>6</integer>
 	<key>UseLionStyleFullscreen</key>
 	<false/>
 	<key>VisualIndicatorForEsc</key>
+	<false/>
+	<key>WindowNumber</key>
 	<false/>
 	<key>iTerm Version</key>
 	<string>3.3.12</string>
