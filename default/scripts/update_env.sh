@@ -127,7 +127,7 @@ if [[ -z $COLORTERM ]]; then
 fi
 
 if [[ $USER_IS_ROOT == false ]] && [[ -z $DEFAULT_USER ]]; then
-  echo "export DEFAULT_USER=$(whoami | tee "$FILE_LOG")" >>"$FILE_ENV"
+  echo "export DEFAULT_USER=$(whoami | tee -a "$FILE_LOG")" >>"$FILE_ENV"
 fi
 
 if [[ -z $DISABLE_AUTO_UPDATE ]]; then
@@ -155,14 +155,14 @@ source "$FILE_ENV"
 unset FILE_ENV
 unset USER_IS_ROOT
 
-OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | tee "$FILE_LOG" | awk '{print toupper($1)}')
+OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | tee -a "$FILE_LOG" | awk '{print toupper($1)}')
 printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "$OS_PREFIX_UPPER"
 unset OS_PREFIX_UPPER
 
 STAGE="Verifying dot files"
 LOG_STAGE="DOTFILE"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "RUNNING"
-APP_GIT=$(which git | tee "$FILE_LOG")
+APP_GIT=$(which git | tee -a "$FILE_LOG")
 DOT_FILES_CONFIGURE=false
 DOT_FILES_INSTALL=false
 DOT_FILES_UPDATE=false
@@ -198,7 +198,7 @@ if [[ "$DOT_FILES_INSTALL" == true ]]; then
   echo -e "$DOT_FILES_INSTALL\n"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Installing $DIR_DOT_FILES" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
-  if ! eval "$APP_GIT" clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules 2>&1 | tee "$FILE_LOG" >/dev/null; then
+  if ! eval "$APP_GIT" clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git clone failed" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git clone failed"
     exit 255
@@ -214,12 +214,12 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $DIR_DOT_FILES needs updating" >>"$FILE_LOG"
   pushd "$DIR_DOT_FILES" >/dev/null || return
   read -r CURRENT_BRANCH < <(eval "$APP_GIT" branch | tee -a "$FILE_LOG" | cut -d ' ' -f 2)
-  if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/"$CURRENT_BRANCH"^ | tee "$FILE_LOG"); then
+  if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/"$CURRENT_BRANCH"^ | tee -a "$FILE_LOG"); then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git log failed"
     exit 255
   fi
 
-  if ! read -r REMOTE_HEAD < <(eval "$APP_GIT" ls-remote origin -h refs/heads/"$CURRENT_BRANCH" | tee "$FILE_LOG" | cut -f1); then
+  if ! read -r REMOTE_HEAD < <(eval "$APP_GIT" ls-remote origin -h refs/heads/"$CURRENT_BRANCH" | tee -a "$FILE_LOG" | cut -f1); then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git ls-remote failed"
     exit 255
   fi
@@ -232,13 +232,13 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
   if [[ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]]; then
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPDATE"
     DOT_FILES_CONFIGURE=true
-    if ! eval "$APP_GIT" pull 2>&1 | tee "$FILE_LOG" >/dev/null; then
+    if ! eval "$APP_GIT" pull 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
       printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git pull failed"
       exit 255
     fi
   fi
 
-  if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | tee "$FILE_LOG" | wc -l); then
+  if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | tee -a "$FILE_LOG" | wc -l); then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git status failed"
     exit 255
   fi
@@ -264,12 +264,12 @@ if [[ $DOT_FILES_CONFIGURE == true ]]; then
   fi
 
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALLER"
-  if ! eval "$DOT_FILES_INSTALLER" 2>&1 | tee "$FILE_LOG" >/dev/null 2>&1; then
+  if ! eval "$DOT_FILES_INSTALLER" 2>&1 | tee -a "$FILE_LOG" >/dev/null 2>&1; then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script failed"
     exit 255
   fi
 
-  if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | tee "$FILE_LOG" | wc -l); then
+  if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | tee -a "$FILE_LOG" | wc -l); then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" " git status failed"
     exit 255
   fi
@@ -293,16 +293,16 @@ printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 case "$OS_PREFIX" in
 "osx")
-  APP_BREW=$(which brew | tee "$FILE_LOG")
+  APP_BREW=$(which brew | tee -a "$FILE_LOG")
   if [[ ! -x $APP_BREW ]]; then
-    APP_RUBY=$(which ruby | tee "$FILE_LOG")
+    APP_RUBY=$(which ruby | tee -a "$FILE_LOG")
     if [[ -z $APP_RUBY ]]; then
       printf "$FORMAT_REPLACE$COLOR_GREEN::: $COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "ruby missing"
       exit 255
     fi
 
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
-    if ! eval CI=1 "$APP_RUBY" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" | tee "$FILE_LOG" /dev/null 2>&1; then
+    if ! eval CI=1 "$APP_RUBY" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" | tee -a "$FILE_LOG" /dev/null 2>&1; then
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install brew failed"
     fi
 
@@ -310,17 +310,17 @@ case "$OS_PREFIX" in
   fi
 
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
-  APP_BREW=$(which brew | tee "$FILE_LOG")
-  if ! eval "$APP_BREW" update | tee "$FILE_LOG" &>/dev/null; then
+  APP_BREW=$(which brew | tee -a "$FILE_LOG")
+  if ! eval "$APP_BREW" update | tee -a "$FILE_LOG" &>/dev/null; then
     printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew update failed"
     exit 255
   fi
 
-  read -r BREW_UPDATES < <(eval "$APP_BREW" outdated | tee "$FILE_LOG")
+  read -r BREW_UPDATES < <(eval "$APP_BREW" outdated | tee -a "$FILE_LOG")
   if [[ -n "$BREW_UPDATES" ]]; then
     BREW_CLEAN=true
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPGRADE"
-    if ! eval "$APP_BREW" upgrade &>/dev/null | tee "$FILE_LOG"; then
+    if ! eval "$APP_BREW" upgrade &>/dev/null | tee -a "$FILE_LOG"; then
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew upgrade failed"
       exit 255
     fi
@@ -341,29 +341,29 @@ case "$OS_PREFIX" in
     MD5=
     case "$OS_PREFIX" in
     "osx")
-      MD5=$(which md5 | tee "$FILE_LOG")
+      MD5=$(which md5 | tee -a "$FILE_LOG")
       MD5="$MD5 -r"
       ;;
     "ubuntu")
-      MD5=$(which md5sum | tee "$FILE_LOG")
+      MD5=$(which md5sum | tee -a "$FILE_LOG")
       ;;
     esac
 
-    read -r MD5_HASH < <(eval "$MD5" "$FILE_BREW_APPS" | tee "$FILE_LOG" | cut -d ' ' -f 1)
+    read -r MD5_HASH < <(eval "$MD5" "$FILE_BREW_APPS" | tee -a "$FILE_LOG" | cut -d ' ' -f 1)
     if [[ "$MD5_HASH" != "$MD5_BREW" ]]; then
       BREW_CLEAN=true
       while IFS="" read -r APP || [ -n "$APP" ]; do
         BREW_APP=
         BREW_ARGS=
-        BREW_APP=$(echo "$APP" | tee "$FILE_LOG" | cut -d ',' -f 1)
+        BREW_APP=$(echo "$APP" | tee -a "$FILE_LOG" | cut -d ',' -f 1)
         if [[ $APP == *","* ]]; then
-          BREW_ARGS="--$(echo "$APP" | tee "$FILE_LOG" | cut -d ',' -f 2)"
+          BREW_ARGS="--$(echo "$APP" | tee -a "$FILE_LOG" | cut -d ',' -f 2)"
         fi
 
         read -r BREW_INSTALL < <("$APP_BREW" ls --versions "$BREW_APP")
         if [[ -z "$BREW_INSTALL" ]]; then
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$BREW_APP"
-          if ! eval "$APP_BREW" install "$BREW_ARGS" "$BREW_APP" &>/dev/null | tee "$FILE_LOG"; then
+          if ! eval "$APP_BREW" install "$BREW_ARGS" "$BREW_APP" &>/dev/null | tee -a "$FILE_LOG"; then
             printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew install $BREW_APP failed"
             exit 255
           fi
@@ -404,13 +404,13 @@ case "$OS_PREFIX" in
   if [[ $USER_IS_SUDO == false ]]; then
     printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
   else
-    APP_SUDO=$(which sudo | tee "$FILE_LOG")
+    APP_SUDO=$(which sudo | tee -a "$FILE_LOG")
     if [[ ! -x $APP_SUDO ]]; then
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "sudo missing"
       exit 255
     fi
 
-    APP_APT=$(which apt-get | tee "$FILE_LOG")
+    APP_APT=$(which apt-get | tee -a "$FILE_LOG")
     if [[ ! -x $APP_APT ]]; then
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get missing"
       exit 255
@@ -471,8 +471,8 @@ if [[ ! -f $FILE_CHECKSUM ]]; then
   touch "$FILE_CHECKSUM"
 fi
 
-APP_NODE=$(which node | tee "$FILE_LOG")
-APP_NPM=$(which npm | tee "$FILE_LOG")
+APP_NODE=$(which node | tee -a "$FILE_LOG")
+APP_NPM=$(which npm | tee -a "$FILE_LOG")
 NEED_SUDO=false
 USE_SUDO=
 if [[ "$OS_PREFIX" == "ubuntu" ]] && [[ $USER_IS_SUDO == true ]]; then
@@ -488,7 +488,7 @@ if [[ $NEED_SUDO == false ]]; then
       if [[ ${#LINE} -gt ${#NODE_PATH} ]]; then
         NODE_APP=${LINE/$NODE_PATH/}
         if [[ -n "$NODE_APP" ]]; then
-          NODE_APP=$(echo -e "$NODE_APP" | tee "$FILE_LOG" | rev | cut -d '/' -f 1 | rev)
+          NODE_APP=$(echo -e "$NODE_APP" | tee -a "$FILE_LOG" | rev | cut -d '/' -f 1 | rev)
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$NODE_APP"
           if ! eval "$USE_SUDO$APP_NPM" -g install --upgrade "$NODE_APP" &>/dev/null; then
             printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install --upgrade $NODE_APP failed"
@@ -509,18 +509,18 @@ if [[ $NEED_SUDO == false ]]; then
       MD5=
       case "$OS_PREFIX" in
       "osx")
-        MD5=$(which md5 | tee "$FILE_LOG")
+        MD5=$(which md5 | tee -a "$FILE_LOG")
         MD5="$MD5 -r"
         ;;
       "ubuntu")
-        MD5=$(which md5sum | tee "$FILE_LOG")
+        MD5=$(which md5sum | tee -a "$FILE_LOG")
         ;;
       esac
 
       read -r MD5_HASH < <(eval "$MD5" "$FILE_NODE_APPS" | cut -d ' ' -f 1)
       if [[ "$MD5_HASH" != "$MD5_NODE" ]]; then
         while IFS="" read -r APP || [ -n "$APP" ]; do
-          NODE_APP=$(echo "$APP" | tee "$FILE_LOG" | cut -d ',' -f 1)
+          NODE_APP=$(echo "$APP" | tee -a "$FILE_LOG" | cut -d ',' -f 1)
           read -r NODE_INSTALL < <(eval "$USE_SUDO$APP_NPM" -g list | grep "$NODE_APP")
           if [[ -n "$NODE_INSTALL" ]]; then
             printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
@@ -575,12 +575,12 @@ if [[ ! -f $FILE_CHECKSUM ]]; then
   touch "$FILE_CHECKSUM"
 fi
 
-APP_PY3=$(which python3 | tee "$FILE_LOG")
-APP_PIP3=$(which pip3 | tee "$FILE_LOG")
+APP_PY3=$(which python3 | tee -a "$FILE_LOG")
+APP_PIP3=$(which pip3 | tee -a "$FILE_LOG")
 if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
   eval "$APP_PIP3" list --outdated --format freeze 2>/dev/null | while read -r LINE; do
     PYTHON_APP="${LINE/==/=}"
-    PYTHON_APP=$(echo "$PYTHON_APP" | tee "$FILE_LOG" | cut -d '=' -f 1)
+    PYTHON_APP=$(echo "$PYTHON_APP" | tee -a "$FILE_LOG" | cut -d '=' -f 1)
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$PYTHON_APP"
     if ! eval "$APP_PIP3" install --upgrade "$PYTHON_APP" &>/dev/null; then
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "pip3 install --upgrade $PYTHON_APP failed"
@@ -598,11 +598,11 @@ if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
     MD5=
     case "$OS_PREFIX" in
     "osx")
-      MD5=$(which md5 | tee "$FILE_LOG")
+      MD5=$(which md5 | tee -a "$FILE_LOG")
       MD5="$MD5 -r"
       ;;
     "ubuntu")
-      MD5=$(which md5sum | tee "$FILE_LOG")
+      MD5=$(which md5sum | tee -a "$FILE_LOG")
       ;;
     esac
 
