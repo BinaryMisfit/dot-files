@@ -268,7 +268,7 @@ case "$OS_PREFIX" in
     esac
 
     read -r MD5_HASH < <(eval "$MD5" "$FILE_BREW_APPS" | cut -d ' ' -f 1)
-    if [[ "$MD5_HASH" != "$ND5_BREW" ]]; then
+    if [[ "$MD5_HASH" != "$MD5_BREW" ]]; then
       BREW_CLEAN=true
       while IFS="" read -r APP || [ -n "$APP" ]; do
         BREW_APP=
@@ -401,23 +401,19 @@ fi
 
 if [[ $NEED_SUDO == false ]]; then
   if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
-    echo -e "$USE_SUDO\n\n"
-    echo -e "$USE_SUDO$APP_NPM\n\n"
     read -r NODE_PATH < <(eval "$USE_SUDO$APP_NPM" -g root)
-    echo -e "$NODE_PATH\n\n"
-    eval "$USE_SUDO$APP_NPM" -g list --depth=0 --parseable
-    eval "$USE_SUDO$APP_NPM" -g list --depth=0 --parseable | while read -r LINE; do
+    eval "$USE_SUDO$APP_NPM" -g list outdated --depth=0 --parseable | while read -r LINE; do
       if [[ ${#LINE} -gt ${#NODE_PATH} ]]; then
         NODE_APP=${LINE/$NODE_PATH/}
         if [[ -n "$NODE_APP" ]]; then
           NODE_APP=$(echo -e "$NODE_APP" | rev | cut -d '/' -f 1 | rev)
           printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$NODE_APP"
-          eval "$USE_SUDO$APP_NPM" -g install --upgrade "$NODE_APP"
           if ! eval "$USE_SUDO$APP_NPM" -g install --upgrade "$NODE_APP" &>/dev/null; then
             printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install --upgrade $NODE_APP failed"
             exit 255
           fi
 
+          printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
           unset NODE_APP
         fi
       fi
@@ -440,15 +436,12 @@ if [[ $NEED_SUDO == false ]]; then
       esac
 
       read -r MD5_HASH < <(eval "$MD5" "$FILE_NODE_APPS" | cut -d ' ' -f 1)
-      if [[ "$MD5_HASH" != "$ND5_NODE" ]]; then
+      if [[ "$MD5_HASH" != "$MD5_NODE" ]]; then
         while IFS="" read -r APP || [ -n "$APP" ]; do
-          NODE_APP=
           NODE_APP=$(echo "$APP" | cut -d ',' -f 1)
-          eval "$USE_SUDO$APP_NPM" -g list | grep "$NODE_APP"
           read -r NODE_INSTALL < <(eval "$USE_SUDO$APP_NPM" -g list | grep "$NODE_APP")
           if [[ -n "$NODE_INSTALL" ]]; then
             printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
-            eval "$USE_SUDO$APP_NPM" -g install "$NODE_APP"
             if ! eval "$USE_SUDO$APP_NPM" -g install "$NODE_APP" &>/dev/null; then
               printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install $NODE_APP failed"
               exit 255
@@ -532,7 +525,7 @@ if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
     esac
 
     read -r MD5_HASH < <(eval "$MD5" "$FILE_PYTHON_APPS" | cut -d ' ' -f 1)
-    if [[ "$MD5_HASH" != "$ND5_PYTHON" ]]; then
+    if [[ "$MD5_HASH" != "$MD5_PYTHON" ]]; then
       if [[ -z "$MD5_PYTHON" ]]; then
         echo "export MD5_PYTHON=$MD5_HASH" >>"$FILE_CHECKSUM"
       else
