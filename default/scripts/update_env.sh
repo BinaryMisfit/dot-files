@@ -20,11 +20,22 @@ if [[ ! -f $FILE_LOG ]]; then
   touch "$FILE_LOG"
 fi
 
+LOG_STAGE="START"
 {
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "Update started"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "DIR_DOT_FILES = ${DIR_DOT_FILES}"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "FILE_BUSY = ${FILE_BUSY}"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "FILE_LOG = ${FILE_LOG}"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_BREW = $APP_BREW"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_RUBY = $APP_RUBY"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_SUDO = $APP_SUDO"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DIR_DOT_FILES = $DIR_DOT_FILES"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BUSY = $FILE_BUSY"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_LOG = $FILE_LOG"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX = $OS_PREFIX"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX_UPPER = $OS_PREFIX_UPPER"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_ID = $USER_ID"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_ROOT = $USER_IS_ROOT"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_SUDO = $USER_IS_SUDO"
 } >>"$FILE_LOG"
 STAGE="Verifying environment"
 LOG_STAGE="ENV"
@@ -198,7 +209,7 @@ fi
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_INSTALL = $DOT_FILES_INSTALL"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_UPDATE = $DOT_FILES_UPDATE"
 } >>"$FILE_LOG"
-if [[ "$DOT_FILES_INSTALL" == true ]]; then
+if [[ $DOT_FILES_INSTALL == true ]]; then
   echo -e "$DOT_FILES_INSTALL\n"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Installing $DIR_DOT_FILES" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
@@ -219,11 +230,13 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
   pushd "$DIR_DOT_FILES" >/dev/null || return
   read -r CURRENT_BRANCH < <(eval "$APP_GIT" branch | tee -a "$FILE_LOG" | cut -d ' ' -f 2)
   if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/"$CURRENT_BRANCH"^ | tee -a "$FILE_LOG"); then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git log failed" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git log failed"
     exit 255
   fi
 
   if ! read -r REMOTE_HEAD < <(eval "$APP_GIT" ls-remote origin -h refs/heads/"$CURRENT_BRANCH" | tee -a "$FILE_LOG" | cut -f1); then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git ls-remote failed" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git ls-remote failed"
     exit 255
   fi
@@ -234,23 +247,29 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "REMOTE_HEAD = $REMOTE_HEAD"
   } >>"$FILE_LOG"
   if [[ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]]; then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Updating $DIR_DOT_FILES" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPDATE"
     DOT_FILES_CONFIGURE=true
     if ! eval "$APP_GIT" pull 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git pull failed" >>"$FILE_LOG"
       printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git pull failed"
       exit 255
     fi
   fi
 
   if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | tee -a "$FILE_LOG" | wc -l); then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git status failed" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git status failed"
     exit 255
   fi
 
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH" >>"$FILE_LOG"
   if [[ $DOT_FILES_PUSH -gt 0 ]]; then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Reconfigure $DIR_DOT_FILES due to local changes" >>"$FILE_LOG"
     DOT_FILES_CONFIGURE=true
   fi
 
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE" >>"$FILE_LOG"
   popd >/dev/null || return
   unset CURRENT_HEAD
   unset DOT_FILES_PUSH
@@ -260,20 +279,26 @@ fi
 
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 if [[ $DOT_FILES_CONFIGURE == true ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Determining if installer can be run" >>"$FILE_LOG"
   pushd "$DIR_DOT_FILES" >/dev/null || return
   DOT_FILES_INSTALLER=$HOME/.dotfiles/install
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_INSTALLER = $DOT_FILES_INSTALLER" >>"$FILE_LOG"
   if [[ ! -x "$DOT_FILES_INSTALLER" ]]; then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "install script missing" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script missing"
     exit 255
   fi
 
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Running $DOT_FILES_INSTALLER" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALLER"
   if ! eval "$DOT_FILES_INSTALLER" 2>&1 | tee -a "$FILE_LOG" >/dev/null 2>&1; then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "install script failed" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script failed"
     exit 255
   fi
 
   if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | tee -a "$FILE_LOG" | wc -l); then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "status failed failed" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" " git status failed"
     exit 255
   fi
@@ -283,30 +308,31 @@ if [[ $DOT_FILES_CONFIGURE == true ]]; then
   unset DOT_FILES_INSTALLER
 fi
 
-if [[ $DOT_FILES_PUSH -gt 0 ]]; then
-  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\n" "PUSH"
-else
-  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
-fi
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH" >>"$FILE_LOG"
+printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
 
 unset DIR_DOT_FILES
-unset DOT_FILES_PUSH
 
 STAGE="Verifying packages"
-printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+LOG_STAGE="PACKAGE"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 case "$OS_PREFIX" in
 "osx")
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Processing operating system $OS_PREFIX" >>"$FILE_LOG"
   APP_BREW=$(which brew | tee -a "$FILE_LOG")
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_BREW = $APP_BREW" >>"$FILE_LOG"
   if [[ ! -x $APP_BREW ]]; then
     APP_RUBY=$(which ruby | tee -a "$FILE_LOG")
     if [[ -z $APP_RUBY ]]; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "SKIPPING ruby missing" >>"$FILE_LOG"
       printf "$FORMAT_REPLACE$COLOR_GREEN::: $COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "ruby missing"
       exit 255
     fi
 
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Running $APP_RUBY" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
     if ! eval CI=1 "$APP_RUBY" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" | tee -a "$FILE_LOG" /dev/null 2>&1; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "install brew failed" >>"$FILE_LOG"
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install brew failed"
     fi
 
@@ -639,6 +665,35 @@ fi
 unset APP_PY3
 unset APP_PIP3
 
+LOG_STAGE="FINISH"
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH" >>"$FILE_LOG"
+if [[ $DOT_FILES_PUSH -gt 0 ]]; then
+  STAGE="Verifying dot files"
+  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\n" "PUSH"
+else
+  printf "$FORMAT_REPLACE%s" ""
+fi
+unset DOT_FILES_PUSH
+
 eval rm "$FILE_BUSY"
 unset FILE_BUSY
+unset OS_PREFIX
+
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_BREW = $APP_BREW"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_RUBY = $APP_RUBY"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_SUDO = $APP_SUDO"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DIR_DOT_FILES = $DIR_DOT_FILES"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_BUSY = $FILE_BUSY"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_LOG = $FILE_LOG"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX = $OS_PREFIX"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX_UPPER = $OS_PREFIX_UPPER"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_ID = $USER_ID"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_ROOT = $USER_IS_ROOT"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_SUDO = $USER_IS_SUDO"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Update complete"
+} >>"$FILE_LOG"
+
 unset FILE_LOG
