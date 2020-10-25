@@ -540,8 +540,10 @@ STAGE="Verifying node"
 LOG_STAGE="NODE"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 FILE_CHECKSUM=$HOME/.packages/checksum
-printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_CHECKSUM = $FILE_CHECKSUM" >>"$FILE_LOG"
-printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $FILE_CHECKSUM exists" >>"$FILE_LOG"
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_CHECKSUM = $FILE_CHECKSUM"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $FILE_CHECKSUM exists"
+} >>"$FILE_LOG"
 if [[ ! -f $FILE_CHECKSUM ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Creating $FILE_CHECKSUM" >>"$FILE_LOG"
   touch "$FILE_CHECKSUM"
@@ -567,8 +569,10 @@ if [[ $NEED_SUDO == false ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Node does not require sudo or sudo enabled" >>"$FILE_LOG"
   if [[ -x $APP_NODE ]] && [[ -x $APP_NPM ]]; then
     read -r NODE_PATH < <(eval "$USE_SUDO$APP_NPM" -g root | tee "$FILE_LOG")
-    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_PATH = $NODE_PATH" >>"$FILE_LOG"
-    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking for node outdated packages" >>"$FILE_LOG"
+    {
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_PATH = $NODE_PATH"
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking for node outdated packages"
+    } >>"$FILE_LOG"
     eval "$USE_SUDO$APP_NPM" -g list outdated --depth=0 --parseable | tee "$FILE_LOG" | while read -r LINE; do
       {
         printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "LINE = $LINE"
@@ -682,21 +686,40 @@ unset NEED_SUDO
 unset USE_SUDO
 
 STAGE="Verifying python3"
-printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+LOG_STAGE="PYTHON3"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 FILE_CHECKSUM=$HOME/.packages/checksum
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_CHECKSUM = $FILE_CHECKSUM"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $FILE_CHECKSUM exists"
+} >>"$FILE_LOG"
 if [[ ! -f $FILE_CHECKSUM ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Create $FILE_CHECKSUM" >>"$FILE_LOG"
   touch "$FILE_CHECKSUM"
 fi
 
 APP_PY3=$(which python3 | tee -a "$FILE_LOG")
 APP_PIP3=$(which pip3 | tee -a "$FILE_LOG")
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_PY3 = $APP_PY3"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_PIP3 = $APP_PIP3"
+} >>"$FILE_LOG"
 if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
-  eval "$APP_PIP3" list --outdated --format freeze 2>/dev/null | while read -r LINE; do
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking for python3 outdated packages" >>"$FILE_LOG"
+  eval "$APP_PIP3" list --outdated --format freeze 2>&1 | tee "$FILE_LOG" >/dev/null | while read -r LINE; do
     PYTHON_APP="${LINE/==/=}"
+    {
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "LINE = $LINE"
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "PYTHON_APP = $PYTHON_APP"
+    } >>"$FILE_LOG"
     PYTHON_APP=$(echo "$PYTHON_APP" | tee -a "$FILE_LOG" | cut -d '=' -f 1)
+    {
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "PYTHON_APP = $PYTHON_APP"
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Update $PYTHON_APP"
+    } >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$PYTHON_APP"
-    if ! eval "$APP_PIP3" install --upgrade "$PYTHON_APP" &>/dev/null; then
+    if ! eval "$APP_PIP3" install --upgrade "$PYTHON_APP" 2>&1 | tee "$FILE_LOG" >/dev/null; then
+      printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "pip3 install --upgrade $PYTHON_APP failed" >>"$FILE_LOG"
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "pip3 install --upgrade $PYTHON_APP failed"
       exit 255
     fi
@@ -774,6 +797,8 @@ unset USER_IS_SUDO
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_GIT = $APP_GIT"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_NODE = $APP_NODE"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_NPM = $APP_NPM"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_PY3 = $APP_PY3"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_PIP3 = $APP_PIP3"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_RUBY = $APP_RUBY"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_SUDO = $APP_SUDO"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_APP = $BREW_APP"
