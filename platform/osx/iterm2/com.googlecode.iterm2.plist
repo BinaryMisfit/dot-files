@@ -289,7 +289,7 @@
 	<key>NSWindow Frame SUStatusFrame</key>
 	<string>760 713 400 129 0 0 1920 1080 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>0 0 2560 1080 0 0 2560 1080 </string>
+	<string>-1920 0 1920 1080 -1920 0 1920 1080 </string>
 	<key>NeverWarnAboutShortLivedSessions_E5BDEA31-5697-408D-B47F-D59567648BCF</key>
 	<true/>
 	<key>NeverWarnAboutShortLivedSessions_E5BDEA31-5697-408D-B47F-D59567648BCF_selection</key>
@@ -866,7 +866,7 @@
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>CascadiaCodeNerdFontCom-Regular 12</string>
+			<string>FuraCodeNF-Regular 12</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>
@@ -949,12 +949,12 @@
 		<key>screenFrame</key>
 		<string>{{-1920, 0}, {1920, 1080}}</string>
 		<key>topLeft</key>
-		<string>{-1096, 1023}</string>
+		<string>{-1091, 1025}</string>
 	</dict>
 	<key>NoSyncInstallationId</key>
 	<string>0568CD8A-EF21-4270-A9FB-16E33CBE348E</string>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>75</integer>
+	<integer>76</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
