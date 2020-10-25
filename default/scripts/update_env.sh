@@ -242,7 +242,7 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
     DOT_FILES_CONFIGURE=true
   fi
 
-  popd &>/dev/null || return
+  popd 2>&1 /dev/null || return
   unset CURRENT_HEAD
   unset DOT_FILES_PUSH
   unset DOT_FILES_UPDATE
@@ -251,7 +251,7 @@ fi
 
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 if [[ $DOT_FILES_CONFIGURE == true ]]; then
-  pushd "$DIR_DOT_FILES" &>/dev/null || return
+  pushd "$DIR_DOT_FILES" /dev/null 2>&1 || return
   DOT_FILES_INSTALLER=$HOME/.dotfiles/install
   if [[ ! -x "$DOT_FILES_INSTALLER" ]]; then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script missing"
@@ -259,7 +259,7 @@ if [[ $DOT_FILES_CONFIGURE == true ]]; then
   fi
 
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALLER"
-  if ! eval "$DOT_FILES_INSTALLER" | tee "$FILE_LOG" &>/dev/null; then
+  if ! eval "$DOT_FILES_INSTALLER" | tee "$FILE_LOG" /dev/null 2>&1; then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script failed"
     exit 255
   fi
@@ -269,7 +269,7 @@ if [[ $DOT_FILES_CONFIGURE == true ]]; then
     exit 255
   fi
 
-  popd &>/dev/null || return
+  popd 2>&1 /dev/null || return
   unset DOT_FILES_CONFIGURE
   unset DOT_FILES_INSTALLER
 fi
@@ -297,7 +297,7 @@ case "$OS_PREFIX" in
     fi
 
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
-    if ! eval CI=1 "$APP_RUBY" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" | tee "$FILE_LOG" &>/dev/null; then
+    if ! eval CI=1 "$APP_RUBY" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" | tee "$FILE_LOG" /dev/null 2>&1; then
       printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install brew failed"
     fi
 
