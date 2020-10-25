@@ -3,56 +3,87 @@ COLOR_GREEN="\033[1;32m"
 COLOR_NONE="\033[0m"
 COLOR_RED="\033[1;31m"
 COLOR_YELLOW="\033[1;33m"
+DIR_DOT_FILES=$HOME/.dotfiles
 FORMAT_REPLACE="\e[1A\e[K"
 FILE_BUSY=$HOME/.update_in_progress
+FILE_LOG=$DIR_DOT_FILES/log/update_env.log
+FILE_LOG_OUTPUT=$DIR_DOT_FILES/log/update_env_output.log
 
+if [[ ! -f $FILE_LOG ]]; then
+  touch "$FILE_LOG"
+fi
+if [[ ! -f $FILE_LOG_OUTPUT ]]; then
+  touch "$FILE_LOG_OUTPUT"
+fi
+
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "Update started"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "DIR_DOT_FILES = ${DIR_DOT_FILES}"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "FILE_BUSY = ${FILE_BUSY}"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "FILE_LOG = ${FILE_LOG}"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "FILE_LOG_OUTPUT = ${FILE_LOG_OUTPUT}"
+} >>"$FILE_LOG"
 STAGE="Verifying environment"
+LOG_STAGE="ENV"
 printf "$COLOR_YELLOW - $COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $FILE_BUSY exists"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "TMUX = $TMUX"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "TERM_PROGRAM = $TERM_PROGRAM"
+} >>"$FILE_LOG"
 if [[ -n $TMUX ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "TMUX Running" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "TMUX"
   exit 0
 fi
 
 if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "VSCode running" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "VSCODE"
   exit 0
 fi
 
 if [[ -f $FILE_BUSY ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "Already running" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "RUNNING"
   exit 0
 fi
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Creating $FILE_BUSY" >>"$FILE_LOG"
 touch "$FILE_BUSY"
 
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if current operating system is supported ($OSTYPE)" >>"$FILE_LOG"
 OS_PREFIX=
 case "$OSTYPE" in
 "darwin"*)
   OS_PREFIX='osx'
   ;;
 "linux-gnu")
-  OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+  OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | tee -a "$FILE_LOG_OUTPUT" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
   ;;
 esac
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Operating system is $OS_PREFIX" >>"$FILE_LOG"
 if [[ -z $OS_PREFIX ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "Unsupported operating system ($OS_PREFIX)" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "$OSTYPE"
   exit 255
 fi
 
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if user can run sudo" >>"$FILE_LOG"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "RUNNING"
-APP_SUDO=$(which sudo)
+APP_SUDO=$(which sudo | tee -a "$FILE_LOG_OUTPUT")
 USER_IS_ROOT=false
 USER_IS_SUDO=false
-USER_ID=$(id -u "$USER")
+USER_ID=$(id -u "$USER" | tee -a "$FILE_LOG_OUTPUT")
 if [[ $USER_ID == 0 ]]; then
   USER_IS_ROOT=true
   USER_IS_SUDO=true
 elif [[ -x $APP_SUDO ]]; then
   case "$OS_PREFIX" in
   "osx")
-    USER_IS_SUDO=$(groups "$USER" | grep -w admin)
+    USER_IS_SUDO=$(groups "$USER" | tee -a "$FILE_LOG_OUTPUT" | grep -w admin)
     ;;
   "ubuntu")
-    USER_IS_SUDO=$(groups "$USER" | grep -w sudo)
+    USER_IS_SUDO=$(groups "$USER" | tee -a "$FILE_LOG_OUTPUT" | grep -w sudo)
     ;;
   esac
 
@@ -61,24 +92,43 @@ elif [[ -x $APP_SUDO ]]; then
   fi
 fi
 
+FILE_ENV=$HOME/.environment.zsh
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_SUDO = $APP_SUDO"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_ID = $USER_ID"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_ROOT = $USER_IS_ROOT"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_SUDO = $USER_IS_SUDO"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_ENV = $FILE_ENV"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $FILE_ENV exists"
+} >>"$FILE_LOG"
+
 unset COLORTERM
 unset DEFAULT_USER
 unset DISABLE_AUTO_UPDATE
 unset ITERM2_SQUELCH_MARK
 unset KEYTIMEOUT
-FILE_ENV=$HOME/.environment.zsh
 if [[ ! -f $FILE_ENV ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Creating $FILE_ENV" >>"$FILE_LOG"
   touch "$FILE_ENV"
 fi
 
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Sourcing $FILE_ENV" >>"$FILE_LOG"
 # shellcheck source=/dev/null
 source "$FILE_ENV"
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "COLORTERM = $COLORTERM"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DEFAULT_USER = $DEFAULT_USER"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DISABLE_AUTO_UPDATE = $DISABLE_AUTO_UPDATE"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "ITERM2_SQUELCH_MARK = $ITERM2_SQUELCH_MARK"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "KEYTIMEOUT = $KEYTIMEOUT"
+} >>"$FILE_LOG"
+
 if [[ -z $COLORTERM ]]; then
   echo "export COLORTERM=truecolor" >>"$FILE_ENV"
 fi
 
 if [[ $USER_IS_ROOT == false ]] && [[ -z $DEFAULT_USER ]]; then
-  echo "export DEFAULT_USER=$(whoami)" >>"$FILE_ENV"
+  echo "export DEFAULT_USER=$(whoami | tee "$FILE_LOG_OUTPUT")" >>"$FILE_ENV"
 fi
 
 if [[ -z $DISABLE_AUTO_UPDATE ]]; then
@@ -93,38 +143,63 @@ if [[ -z $KEYTIMEOUT ]]; then
   echo "export KEYTIMEOUT=1" >>"$FILE_ENV"
 fi
 
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Sourcing $FILE_ENV" >>"$FILE_LOG"
 # shellcheck source=/dev/null
 source "$FILE_ENV"
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "COLORTERM = $COLORTERM"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DEFAULT_USER = $DEFAULT_USER"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DISABLE_AUTO_UPDATE = $DISABLE_AUTO_UPDATE"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "ITERM2_SQUELCH_MARK = $ITERM2_SQUELCH_MARK"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "KEYTIMEOUT = $KEYTIMEOUT"
+} >>"$FILE_LOG"
 unset FILE_ENV
 unset USER_IS_ROOT
 
-OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | awk '{print toupper($1)}')
+OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | tee "$FILE_LOG_OUTPUT" | awk '{print toupper($1)}')
 printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "$OS_PREFIX_UPPER"
 unset OS_PREFIX_UPPER
 
 STAGE="Verifying dot files"
-printf "$COLOR_YELLOW - $COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
+LOG_STAGE="DOTFILE"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "RUNNING"
-APP_GIT=$(which git)
-if [[ -z $APP_GIT ]]; then
-  DOT_FILES_UPDATE=false
-  DOT_FILES_INSTALL=false
-  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "git mising"
-fi
-
-DIR_DOT_FILES=$HOME/.dotfiles
+APP_GIT=$(which git | tee "$FILE_LOG_OUTPUT")
 DOT_FILES_CONFIGURE=false
 DOT_FILES_INSTALL=false
 DOT_FILES_UPDATE=false
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DIR_DOT_FILES = $DIR_DOT_FILES" >>"$FILE_LOG"
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Check if $DIR_DOT_FILES exists" >>"$FILE_LOG"
 if [[ -d $DIR_DOT_FILES ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Update $DIR_DOT_FILES" >>"$FILE_LOG"
   DOT_FILES_UPDATE=true
 else
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Install $DIR_DOT_FILES" >>"$FILE_LOG"
   DOT_FILES_INSTALL=true
 fi
 
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if git is installed"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_GIT = $APP_GIT"
+} >>"$FILE_LOG"
+if [[ -z $APP_GIT ]]; then
+  DOT_FILES_UPDATE=false
+  DOT_FILES_INSTALL=false
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "SKIPPED: git not installed" >>"$FILE_LOG"
+  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "git mising"
+fi
+
+{
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if git is installed"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_GIT = $APP_GIT"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_INSTALL = $DOT_FILES_INSTALL"
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_UPDATE = $DOT_FILES_UPDATE"
+} >>"$FILE_LOG"
 if [[ $DOT_FILES_INSTALL == true ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Installing $DIR_DOT_FILES" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
   if ! eval "$GIT" clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules --quiet &>/dev/null; then
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git clone failed" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git clone failed"
     exit 255
   fi
@@ -133,10 +208,12 @@ if [[ $DOT_FILES_INSTALL == true ]]; then
   unset DOT_FILES_INSTALL
 fi
 
+printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE" >>"$FILE_LOG"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 if [[ $DOT_FILES_UPDATE == true ]]; then
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $DIR_DOT_FILES needs updating" >>"$FILE_LOG"
   pushd "$DIR_DOT_FILES" &>/dev/null || return
-  read -r CURRENT_BRANCH < <(eval "$APP_GIT" branch | cut -d ' ' -f 2)
+  read -r CURRENT_BRANCH < <(eval "$APP_GIT" branch | tee -a "$FILE_LOG_OUTPUT" | cut -d ' ' -f 2)
   if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/"$CURRENT_BRANCH"^); then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git log failed"
     exit 255
@@ -147,6 +224,11 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
     exit 255
   fi
 
+  {
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "CURRENT_BRANCH = $CURRENT_BRANCH"
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "CURRENT_HEAD = $CURRENT_HEAD"
+    printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "REMOTE_HEAD = $REMOTE_HEAD"
+  } >>"$FILE_LOG"
   if [[ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]]; then
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPDATE"
     DOT_FILES_CONFIGURE=true
@@ -211,9 +293,9 @@ printf "$COLOR_YELLOW:::$COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 case "$OS_PREFIX" in
 "osx")
-  APP_BREW=$(which brew)
+  APP_BREW=$(which brew | tee "$FILE_LOG_OUTPUT")
   if [[ ! -x $APP_BREW ]]; then
-    APP_RUBY=$(which ruby)
+    APP_RUBY=$(which ruby | tee "$FILE_LOG_OUTPUT")
     if [[ -z $APP_RUBY ]]; then
       printf "$FORMAT_REPLACE$COLOR_GREEN::: $COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "ruby missing"
       exit 255
@@ -228,7 +310,7 @@ case "$OS_PREFIX" in
   fi
 
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
-  APP_BREW=$(which brew)
+  APP_BREW=$(which brew | tee "$FILE_LOG_OUTPUT")
   if ! eval "$APP_BREW" update &>/dev/null; then
     printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew update failed"
     exit 255
@@ -555,3 +637,5 @@ unset APP_PIP3
 
 eval rm "$FILE_BUSY"
 unset FILE_BUSY
+unset FILE_LOG
+unset FILE_LOG_OUTPUT
