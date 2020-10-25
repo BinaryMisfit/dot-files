@@ -8,7 +8,9 @@ FORMAT_REPLACE="\e[1A\e[K"
 FILE_BUSY=$HOME/.update_in_progress
 FILE_LOG=$DIR_DOT_FILES/log/update_env.log
 
-if [[ ! -f $FILE_LOG ]]; then
+if [[ ! -d $DIR_DOT_FILES ]]; then
+  FILE_LOG=/dev/null
+elif [[ ! -f $FILE_LOG ]]; then
   touch "$FILE_LOG"
 fi
 
@@ -207,7 +209,7 @@ printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGU
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 if [[ $DOT_FILES_UPDATE == true ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $DIR_DOT_FILES needs updating" >>"$FILE_LOG"
-  pushd "$DIR_DOT_FILES" &>/dev/null || return
+  pushd "$DIR_DOT_FILES" >/dev/null || return
   read -r CURRENT_BRANCH < <(eval "$APP_GIT" branch | tee -a "$FILE_LOG" | cut -d ' ' -f 2)
   if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/"$CURRENT_BRANCH"^ | tee "$FILE_LOG"); then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git log failed"
@@ -242,7 +244,7 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
     DOT_FILES_CONFIGURE=true
   fi
 
-  popd 2>&1 /dev/null || return
+  popd >/dev/null || return
   unset CURRENT_HEAD
   unset DOT_FILES_PUSH
   unset DOT_FILES_UPDATE
@@ -251,7 +253,7 @@ fi
 
 printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
 if [[ $DOT_FILES_CONFIGURE == true ]]; then
-  pushd "$DIR_DOT_FILES" /dev/null 2>&1 || return
+  pushd "$DIR_DOT_FILES" >/dev/null || return
   DOT_FILES_INSTALLER=$HOME/.dotfiles/install
   if [[ ! -x "$DOT_FILES_INSTALLER" ]]; then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script missing"
@@ -269,7 +271,7 @@ if [[ $DOT_FILES_CONFIGURE == true ]]; then
     exit 255
   fi
 
-  popd 2>&1 /dev/null || return
+  popd >/dev/null || return
   unset DOT_FILES_CONFIGURE
   unset DOT_FILES_INSTALLER
 fi
