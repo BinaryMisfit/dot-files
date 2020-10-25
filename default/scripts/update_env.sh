@@ -193,7 +193,7 @@ fi
 if [[ $DOT_FILES_INSTALL == true ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Installing $DIR_DOT_FILES" >>"$FILE_LOG"
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
-  if ! eval "$GIT" clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules | tee "$FILE_LOG" &>/dev/null; then
+  if ! eval "$GIT" clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules 2>&1 | tee "$FILE_LOG" >/dev/null; then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git clone failed" >>"$FILE_LOG"
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git clone failed"
     exit 255
@@ -227,7 +227,7 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
   if [[ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]]; then
     printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPDATE"
     DOT_FILES_CONFIGURE=true
-    if ! eval "$APP_GIT" pull | tee "$FILE_LOG" &>/dev/null; then
+    if ! eval "$APP_GIT" pull 2>&1 | tee "$FILE_LOG" >/dev/null; then
       printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git pull failed"
       exit 255
     fi
@@ -259,7 +259,7 @@ if [[ $DOT_FILES_CONFIGURE == true ]]; then
   fi
 
   printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALLER"
-  if ! eval "$DOT_FILES_INSTALLER" | tee "$FILE_LOG" /dev/null 2>&1; then
+  if ! eval "$DOT_FILES_INSTALLER" 2>&1 | tee "$FILE_LOG" >/dev/null 2>&1; then
     printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script failed"
     exit 255
   fi
