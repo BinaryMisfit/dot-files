@@ -16,6 +16,7 @@ export ZSH_THEME=powerlevel9k/powerlevel9k
 # Optional Variables
 test -e /usr/local/bin/mono && export MONO_GAC_PREFIX="/usr/local"
 test -e /usr/local/share/dotnet/dotnet && export MSBuildSDKsPath="/usr/local/share/dotnet/sdk/$(dotnet --version)/Sdks"
+test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
 
 # Plugins
 plugins=(
@@ -41,7 +42,9 @@ test -e /usr/local/bin/nvim && alias vi="/usr/local/bin/nvim "
 test -e /usr/local/bin/nvim && alias vim="/usr/local/bin/nvim "
 
 # Update PATH
-PATH=$HOME/.yarn/bin:$PATH
+test -e $HOME/.yarn/bin && PATH=$HOME/.yarn/bin:$PATH
+test -e $HOME/Library/Android/sdk/platform-tools && PATH=$PATH:$HOME/Library/Android/sdk/platform-tools
+test -e $HOME/Library/Android/sdk/tools/bin && PATH=$PATH:$HOME/Library/Android/sdk/tools/bin
 
 # Cleanup
 typeset -U PATH
