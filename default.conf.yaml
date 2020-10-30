@@ -5,6 +5,8 @@
       relink: true
 - clean:
     - "~"
+- create:
+    - ~/.npm_global
 - shell:
     - - git submodule update --init --recursive
       - Installing submodules

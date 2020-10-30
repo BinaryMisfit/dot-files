@@ -42,9 +42,10 @@ test -e /usr/local/bin/nvim && alias vi="/usr/local/bin/nvim "
 test -e /usr/local/bin/nvim && alias vim="/usr/local/bin/nvim "
 
 # Update PATH
-test -e $HOME/.yarn/bin && PATH=$HOME/.yarn/bin:$PATH
 test -e $HOME/Library/Android/sdk/platform-tools && PATH=$PATH:$HOME/Library/Android/sdk/platform-tools
 test -e $HOME/Library/Android/sdk/tools/bin && PATH=$PATH:$HOME/Library/Android/sdk/tools/bin
+test -e $HOME/.npm_global && PATH=$HOME/.npm_global/bin:$PATH
+test -e $HOME/.yarn/bin && PATH=$HOME/.yarn/bin:$PATH
 
 # Cleanup
 typeset -U PATH

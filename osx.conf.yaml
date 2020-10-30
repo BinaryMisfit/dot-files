@@ -29,5 +29,4 @@
     ~/.zshrc:
       path: platform/osx/zsh/.zshrc
 - shell:
-    - - ~/.iterm2/update_config.sh
-      - Configuring iTerm2
+    - ~/.iterm2/update_config.sh - Configuring iTerm2
