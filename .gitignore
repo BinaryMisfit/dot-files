@@ -20,3 +20,4 @@ log/*
 # System Folders
 default/nvim/.netrwhist
 default/nvim/autoload
+!default/nvim/autoload/plug.vim
