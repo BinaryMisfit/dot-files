@@ -1,10 +1,14 @@
+set autochdir                                           " Auto change directory to file parent
+set autoread                                            " Automatically read changed files
+set background=light                                    " Set vim background color
 set clipboard+=unnamed,unnamedplus                      " Use OS global clipboard
 set cmdheight=2                                         " Better display messages
-set colorcolumn=100                                     " Set the position of the color column
+set colorcolumn=125                                     " Set the position of the color column
 set cursorline                                          " Highlight line with cursor focus
 set expandtab                                           " Expand tabs to spaces
 set hidden                                              " Hide abandoned buffers
 set ignorecase                                          " Ignore case when searching
+set laststatus=2                                        " Always show statusbar
 set list                                                " Show hidden characters
 set nobackup                                            " Don't create backup files
 set nohlsearch                                          " Don't highlight searches
@@ -23,11 +27,11 @@ set splitbelow                                          " Always split horizonta
 set splitright                                          " Always split veritcally to the right
 set tabstop=2                                           " Set tab size to 2
 set termguicolors                                       " Enable 256color support
-set textwidth=100                                       " Set the width of text to 100 characters
+set textwidth=125                                       " Set the width of text to 100 characters
 set undofile                                            " Create file specific undo file
 set undolevels=500                                      " Remember last 500 changes
 set undoreload=1000                                     " Reload last 1000 changes
 set updatetime=100                                      " Update quicker
 set visualbell                                          " Use visual bell
 set wrap                                                " Enable wordwrapping
-set wrapmargin=100                                      " Wrap line at 100 characters
+set wrapmargin=125                                      " Wrap line at 100 characters
