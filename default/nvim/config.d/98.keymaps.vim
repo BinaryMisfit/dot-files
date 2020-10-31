@@ -1,6 +1,3 @@
-" Map the leader key to <space>
-let mapleader=' '
-
 " Use w!! to sudowrite
 cmap w!! w !sudo tee % > /dev/null<CR>
 
