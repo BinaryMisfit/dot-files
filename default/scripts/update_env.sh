@@ -5,7 +5,7 @@ COLOR_RED="\033[1;31m"
 COLOR_YELLOW="\033[1;33m"
 DIR_DOT_FILES=$HOME/.dotfiles
 FORMAT_REPLACE="\e[1A\e[K"
-FILE_PID=$DIR_DOT_FILES/update_env.pid
+FILE_PID=$HOME/.update_env.pid
 FILE_LOG=$DIR_DOT_FILES/log/update_env.log
 
 if [[ ! -d $DIR_DOT_FILES ]]; then
@@ -78,6 +78,10 @@ case "$OSTYPE" in
   OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | tee -a "$FILE_LOG" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
   ;;
 esac
+
+OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | tee -a "$FILE_LOG" | awk '{print toupper($1)}')
+printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "$OS_PREFIX_UPPER"
+
 printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Operating system is $OS_PREFIX" >>"$FILE_LOG"
 if [[ -z $OS_PREFIX ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "Unsupported operating system ($OS_PREFIX)" >>"$FILE_LOG"
@@ -86,7 +90,7 @@ if [[ -z $OS_PREFIX ]]; then
 fi
 
 printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if user can run sudo" >>"$FILE_LOG"
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "RUNNING"
+printf "$FORMAT_REPLACE$COLOR_NONE::$OS_PREFIX_UPPER::_::\t$COLOR_YELLOW$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\t::\n" "RUNNING"
 APP_SUDO=$(which sudo | tee -a "$FILE_LOG")
 USER_IS_ROOT=false
 USER_IS_SUDO=false
@@ -173,10 +177,6 @@ source "$FILE_ENV"
 unset FILE_ENV
 unset USER_ID
 unset USER_IS_ROOT
-
-OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | tee -a "$FILE_LOG" | awk '{print toupper($1)}')
-printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "$OS_PREFIX_UPPER"
-unset OS_PREFIX_UPPER
 
 STAGE="Verifying dot files"
 LOG_STAGE="DOTFILE"
@@ -797,6 +797,7 @@ unset APP_GIT
 unset FILE_PID
 unset OS_PREFIX
 unset USER_IS_SUDO
+unset OS_PREFIX_UPPER
 
 {
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP = $APP"
