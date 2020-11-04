@@ -10,9 +10,7 @@ FILE_LOG=$DIR_DOT_FILES/log/update_env.log
 
 if [[ ! -d $DIR_DOT_FILES ]]; then
   FILE_LOG="$HOME/.update_installer.log"
-fi
-
-if [[ ! -d $DIR_DOT_FILES/log ]]; then
+elif [[ ! -d $DIR_DOT_FILES/log ]]; then
   mkdir -p "$DIR_DOT_FILES/log"
 fi
 
