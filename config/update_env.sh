@@ -1,96 +1,228 @@
 #!/usr/bin/env bash
-COLOR_GREEN="\033[1;32m"
-COLOR_NONE="\033[0m"
-COLOR_RED="\033[1;31m"
-COLOR_YELLOW="\033[1;33m"
-DIR_DOT_FILES=$HOME/.dotfiles
-FORMAT_REPLACE="\e[1A\e[K"
-FILE_PID=$HOME/.update_env.pid
-FILE_LOG=$DIR_DOT_FILES/log/update_env.log
-
-if [[ ! -d $DIR_DOT_FILES ]]; then
-  FILE_LOG="$HOME/.update_installer.log"
-elif [[ ! -d $DIR_DOT_FILES/log ]]; then
-  mkdir -p "$DIR_DOT_FILES/log"
-fi
-
-if [[ ! -f $FILE_LOG ]]; then
-  touch "$FILE_LOG"
-fi
-
-LOG_STAGE="START"
-{
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "STARTUP" "Update started"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_BREW = $APP_BREW"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_GIT = $APP_GIT"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_RUBY = $APP_RUBY"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_SUDO = $APP_SUDO"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "COLORTERM = $COLORTERM"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DEFAULT_USER = $DEFAULT_USER"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DIR_DOT_FILES = $DIR_DOT_FILES"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DISABLE_AUTO_UPDATE = $DISABLE_AUTO_UPDATE"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_ENV = $FILE_ENV"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_LOG = $FILE_LOG"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_PID = $FILE_PID"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "ITERM2_SQUELCH_MARK = $ITERM2_SQUELCH_MARK"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "KEYTIMEOUT = $KEYTIMEOUT"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX = $OS_PREFIX"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "OS_PREFIX_UPPER = $OS_PREFIX_UPPER"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_ID = $USER_ID"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_ROOT = $USER_IS_ROOT"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "USER_IS_SUDO = $USER_IS_SUDO"
-} >>"$FILE_LOG"
-LOG_STAGE="ENV"
-{
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $FILE_PID exists"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "TMUX = $TMUX"
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "TERM_PROGRAM = $TERM_PROGRAM"
-} >>"$FILE_LOG"
-if [[ -n $TMUX ]]; then
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "TMUX Running" >>"$FILE_LOG"
-  exit 0
-fi
-
-if [[ "$TERM_PROGRAM" == "vscode" ]]; then
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "VSCode running" >>"$FILE_LOG"
-  exit 0
-fi
-
-if [[ -f $FILE_PID ]]; then
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "Already running" >>"$FILE_LOG"
-  exit 0
-fi
-
-printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Writing $$ to $FILE_PID" >>"$FILE_LOG"
-echo $$ >"$FILE_PID"
-
-STAGE="Verifying environment"
-printf "$COLOR_YELLOW - $COLOR_NONE%s$COLOR_NONE\n" "$STAGE"
-printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if current operating system is supported ($OSTYPE)" >>"$FILE_LOG"
+# TODO Implement check sude
+DIR_UPDATE=$HOME/.update_env
+FILE_LOG=update_env.log
+LOG=$DIR_UPDATE/log/$FILE_LOG
 OS_PREFIX=
-case "$OSTYPE" in
-"darwin"*)
-  OS_PREFIX='osx'
-  ;;
-"linux-gnu")
-  OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | tee -a "$FILE_LOG" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
-  ;;
-esac
+OS=
 
-OS_PREFIX_UPPER=$(echo "$OS_PREFIX" | tee -a "$FILE_LOG" | awk '{print toupper($1)}')
-printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "$OS_PREFIX_UPPER"
+function check_dir() {
+  local FILE_DIR=$1
+  if [[ ! -d "$FILE_DIR" ]]; then
+    mkdir -p "$FILE_DIR"
+  fi
 
-printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Operating system is $OS_PREFIX" >>"$FILE_LOG"
-if [[ -z $OS_PREFIX ]]; then
-  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "Unsupported operating system ($OS_PREFIX)" >>"$FILE_LOG"
-  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "$OSTYPE"
-  exit 255
-fi
+  return 0
+}
 
-printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if user can run sudo" >>"$FILE_LOG"
-printf "$FORMAT_REPLACE$COLOR_NONE::$OS_PREFIX_UPPER::_::\t$COLOR_YELLOW$STAGE\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\t::\n" "RUNNING"
+function check_file() {
+  local FILE_DIR=$1
+  local FILE_CHECK=$2
+  local CHECK_FILE=
+  local LOG_STG=UPDATE
+  CHECK_FILE=$FILE_DIR/$FILE_CHECK
+  if [[ ! -f "$CHECK_FILE" ]]; then
+    touch "$CHECK_FILE"
+  fi
+
+  return 0
+}
+
+function check_logfile() {
+  local FILE_DIR=$1
+  local FILE_LOG=$2
+  if check_dir "$FILE_DIR"; then
+    check_file "$FILE_DIR" "$FILE_LOG"
+  fi
+
+  return 0
+}
+
+function check_os() {
+  local OS_PREFIX=
+  case "$OSTYPE" in
+  "darwin"*)
+    OS_PREFIX='osx'
+    ;;
+  "linux-gnu")
+    OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    ;;
+  esac
+  echo "$OS_PREFIX"
+  return 0
+}
+
+function check_shell() {
+  local FILE_DIR=$2
+  local LOCK_FILE=$FILE_DIR/update_lock.pid
+  local LOG_STG=UPDATE
+  local OS_PREFIX=$1
+  if [ -f "$LOCK_FILE" ]; then
+    write_log "$LOG" "$LOG_STG" "Script is running already"
+    output_clear
+    exit 0
+  fi
+
+  if [ -z "$OS_PREFIX" ]; then
+    write_log "$LOG" "$LOG_STG" "Unsupported OS"
+    output_busy 255 "$OS_UPPER" "UNSUPPORTED OS"
+    update_cleanup "$FILE_DIR"
+    exit 255
+  fi
+
+  if [ -n "$TMUX" ]; then
+    write_log "$LOG" "$LOG_STG" "Detected TMUX"
+    update_cleanup "$FILE_DIR"
+    output_clear
+    exit 0
+  fi
+
+  if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+    write_log "$LOG" "$LOG_STG" "Detected VSCODE"
+    update_cleanup "$FILE_DIR"
+    output_clear
+    exit 0
+  fi
+}
+
+function format_arg() {
+  local ARG_LEN=
+  local ARG_PAD=$2
+  local ARG_VALUE=$1
+  local FMT_VALUE=
+  local FMT=
+  local PAD_LEFT=
+  local PAD_MIN=
+  local PAD_ODD=
+  local PAD_RIGHT=
+  FMT_VALUE=${ARG_VALUE:0:ARG_PAD}
+  ARG_LEN=${#FMT_VALUE}
+  PAD_MIN=$(("$ARG_PAD" - "$ARG_LEN"))
+  PAD_ODD=$((ARG_PAD % 2))
+  if [[ $((PAD_MIN % 2)) -eq "1" ]]; then
+    PAD_ODD=1
+  fi
+
+  PAD_LEFT=$(("$PAD_MIN" / 2))
+  PAD_RIGHT=$PAD_LEFT
+  PAD_RIGHT=$(("$PAD_RIGHT" + "$PAD_ODD"))
+  FMT=$(printf "%-${PAD_LEFT}s%s%${PAD_RIGHT}s" "" "${FMT_VALUE}" "")
+  echo "${FMT}"
+  return 0
+}
+
+function lock_update() {
+  local FILE_DIR=$1
+  local LOG_STG=UPDATE
+  local LOCK_FILE=$FILE_DIR/update_lock.pid
+  if [ ! -f "$LOCK_FILE" ]; then
+    write_log "$LOG" "$LOG_STG" "Creating lock file"
+    echo $$ >"$LOCK_FILE"
+  fi
+
+  return 0
+}
+
+function output_busy() {
+  local ARG_OS=$2
+  local ARG_PROG=$1
+  local ARG_STAGE=$3
+  local COL_CLR="\033[0m"
+  local COL_GRN="\033[1;32m"
+  local COL_MSG=
+  local COL_STG=
+  local COL_RED="\033[1;31m"
+  local COL_YLW="\033[1;33m"
+  local FMT_OS=
+  local FMT_STAGE=
+  local LINE_FMT=
+  local LINE_FMT="$LINE_REM::%10s\t:%15s::\n"
+  local LINE_IND=
+  local LINE_REM="\e[1A\e[K"
+  case $ARG_PROG in
+  0)
+    COL_MSG=$COL_GRN
+    COL_STG=$COL_GRN
+    LINE_IND=:
+    ;;
+  1)
+    COL_MSG=$COL_YLW
+    COL_STG=$COL_GRN
+    LINE_IND=-
+    ;;
+  2)
+    COL_MSG=$COL_YLW
+    COL_STG=$COL_GRN
+    LINE_IND=/
+    ;;
+  3)
+    COL_MSG=$COL_YLW
+    COL_STG=$COL_GRN
+    LINE_IND=\\
+    ;;
+  255)
+    COL_MSG=$COL_RED
+    COL_STG=$COL_RED
+    LINE_IND=!
+    ;;
+  esac
+
+  FMT_OS=$(format_arg "$ARG_OS" 12)
+  FMT_STAGE=$(format_arg "$ARG_STAGE" 20)
+  LINE_FMT="$LINE_REM$COL_CLR::$COL_MSG%c$COL_CLR:$COL_STG%s$COL_CLR:$COL_MSG%s$COL_CLR::\n"
+  #shellcheck disable=SC2059
+  printf "$LINE_FMT" "$LINE_IND" "$FMT_OS" "$FMT_STAGE"
+  return 0
+}
+
+function output_clear() {
+  local LINE_REM="\e[1A\e[K"
+  printf "$LINE_REM%s" ""
+}
+
+function update_cleanup() {
+  local CLEAN_DIR=$1
+  rm -rf "$CLEAN_DIR"
+  unset DIR_UPDATE
+  unset FILE_LOG
+  unset LOG
+  return 0
+}
+
+function write_log() {
+  local LOG_FILE=$1
+  local LOG_STAGE=$2
+  local LOG_MSG=$3
+  printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "$LOG_MSG" >>"$LOG_FILE"
+  return 0
+}
+
+function update_main() {
+  local DIR_DOT_FILES=$HOME/.dotfiles
+  local LOG_STG=UPDATE
+  local STAGE=UPDATE
+  OS=$(check_os)
+  OS_UPPER=$(echo "$OS" | awk '{print toupper($1)}')
+  output_busy 1 "$OS_UPPER" "VALIDATING"
+  check_logfile "$DIR_UPDATE/log" "$FILE_LOG"
+  write_log "$LOG" "$LOG_STG" "Update Started"
+  write_log "$LOG" "$LOG_STG" "Detected $OS_UPPER"
+  output_busy 2 "$OS_UPPER" "VALIDATE SHELL"
+  check_shell "$OS" "$DIR_UPDATE"
+  output_busy 1 "$OS_UPPER" "DETERMINE STATUS"
+  write_log "$LOG" "$LOG_STG" "Locking script"
+  lock_update "$DIR_UPDATE"
+  output_busy 2 "$OS_UPPER" "DETERMINE TASKS"
+  output_busy 0 "$OS_UPPER" "COMPLETED"
+  write_log "$LOG" "$LOG_STG" "Update Completed"
+  update_cleanup "$DIR_UPDATE"
+  output_clear
+}
+
+MAIN=update_main
+eval "$MAIN"
+exit 0
+
 APP_SUDO=$(which sudo | tee -a "$FILE_LOG")
 USER_IS_ROOT=false
 USER_IS_SUDO=false
@@ -178,9 +310,10 @@ unset FILE_ENV
 unset USER_ID
 unset USER_IS_ROOT
 
-STAGE="Verifying dot files"
+STAGE="DOT FILES"
 LOG_STAGE="DOTFILE"
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "RUNNING"
+printf "$LINE_REM$COL_CLR::$COL_GRN$OS_PREFIX_UPPER$COL_CLR:_::\t$COL_YLW%s\t$COL_CLR::\n" "$STAGE"
+exit 20
 APP_GIT=$(which git | tee -a "$FILE_LOG")
 DOT_FILES_CONFIGURE=false
 DOT_FILES_INSTALL=false
@@ -203,7 +336,7 @@ if [[ -z $APP_GIT ]]; then
   DOT_FILES_UPDATE=false
   DOT_FILES_INSTALL=false
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "SKIPPED: git not installed" >>"$FILE_LOG"
-  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "git mising"
+  printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\t%s$COL_CLR\n" "SKIPPING" "git mising"
 fi
 
 {
@@ -216,10 +349,10 @@ fi
 if [[ $DOT_FILES_INSTALL == true ]]; then
   echo -e "$DOT_FILES_INSTALL\n"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Installing $DIR_DOT_FILES" >>"$FILE_LOG"
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
+  printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "INSTALL"
   if ! eval "$APP_GIT" clone https://github.com/BinaryMisfit/dot-files.git ~/.dotfiles --recurse-submodules 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git clone failed" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git clone failed"
+    printf "$LINE_REM$COL_RED ! $COL_CLR$STAGE\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "git clone failed"
     exit 255
   fi
 
@@ -228,20 +361,20 @@ if [[ $DOT_FILES_INSTALL == true ]]; then
 fi
 
 printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_CONFIGURE = $DOT_FILES_CONFIGURE" >>"$FILE_LOG"
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
 if [[ $DOT_FILES_UPDATE == true ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Checking if $DIR_DOT_FILES needs updating" >>"$FILE_LOG"
   pushd "$DIR_DOT_FILES" >/dev/null || return
   read -r CURRENT_BRANCH < <(eval "$APP_GIT" branch | tee -a "$FILE_LOG" | cut -d ' ' -f 2)
   if ! read -r CURRENT_HEAD < <(eval "$APP_GIT" log --pretty=%H ...refs/heads/"$CURRENT_BRANCH"^ | tee -a "$FILE_LOG"); then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git log failed" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git log failed"
+    printf "$LINE_REM$COL_RED ! $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "git log failed"
     exit 255
   fi
 
   if ! read -r REMOTE_HEAD < <(eval "$APP_GIT" ls-remote origin -h refs/heads/"$CURRENT_BRANCH" | tee -a "$FILE_LOG" | cut -f1); then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git ls-remote failed" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git ls-remote failed"
+    printf "$LINE_REM$COL_RED ! $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "git ls-remote failed"
     exit 255
   fi
 
@@ -252,18 +385,18 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
   } >>"$FILE_LOG"
   if [[ "$CURRENT_HEAD" != "$REMOTE_HEAD" ]]; then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Updating $DIR_DOT_FILES" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPDATE"
+    printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "UPDATE"
     DOT_FILES_CONFIGURE=true
     if ! eval "$APP_GIT" pull 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git pull failed" >>"$FILE_LOG"
-      printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git pull failed"
+      printf "$LINE_REM$COL_RED ! $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "git pull failed"
       exit 255
     fi
   fi
 
   if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | tee -a "$FILE_LOG" | wc -l); then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "git status failed" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "git status failed"
+    printf "$LINE_REM$COL_RED ! $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "git status failed"
     exit 255
   fi
 
@@ -281,7 +414,7 @@ if [[ $DOT_FILES_UPDATE == true ]]; then
   unset REMOTE_HEAD
 fi
 
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
 if [[ $DOT_FILES_CONFIGURE == true ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Determining if installer can be run" >>"$FILE_LOG"
   pushd "$DIR_DOT_FILES" >/dev/null || return
@@ -289,21 +422,21 @@ if [[ $DOT_FILES_CONFIGURE == true ]]; then
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_INSTALLER = $DOT_FILES_INSTALLER" >>"$FILE_LOG"
   if [[ ! -x "$DOT_FILES_INSTALLER" ]]; then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "install script missing" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script missing"
+    printf "$LINE_REM$COL_RED ! $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "install script missing"
     exit 255
   fi
 
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Running $DOT_FILES_INSTALLER" >>"$FILE_LOG"
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALLER"
+  printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "INSTALLER"
   if ! eval "$DOT_FILES_INSTALLER" 2>&1 | tee -a "$FILE_LOG" >/dev/null 2>&1; then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "install script failed" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install script failed"
+    printf "$LINE_REM$COL_RED ! $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "install script failed"
     exit 255
   fi
 
   if ! read -r DOT_FILES_PUSH < <(eval "$APP_GIT" status -s | tee -a "$FILE_LOG" | wc -l); then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "status failed failed" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" " git status failed"
+    printf "$LINE_REM$COL_RED ! $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" " git status failed"
     exit 255
   fi
 
@@ -311,7 +444,7 @@ if [[ $DOT_FILES_CONFIGURE == true ]]; then
 fi
 
 printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH" >>"$FILE_LOG"
-printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\n" "OK"
 
 unset DIR_DOT_FILES
 unset DOT_FILES_CONFIGURE
@@ -319,7 +452,7 @@ unset DOT_FILES_INSTALLER
 
 STAGE="Verifying packages"
 LOG_STAGE="PACKAGE"
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
 case "$OS_PREFIX" in
 "osx")
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Processing operating system $OS_PREFIX" >>"$FILE_LOG"
@@ -329,27 +462,27 @@ case "$OS_PREFIX" in
     APP_RUBY=$(which ruby | tee -a "$FILE_LOG")
     if [[ -z $APP_RUBY ]]; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "SKIPPING ruby missing" >>"$FILE_LOG"
-      printf "$FORMAT_REPLACE$COLOR_GREEN::: $COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "ruby missing"
+      printf "$LINE_REM$COL_GRN::: $COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\t%s$COL_CLR\n" "SKIPPING" "ruby missing"
       exit 255
     fi
 
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Running $APP_RUBY" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "INSTALL"
+    printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "INSTALL"
     if ! eval CI=1 "$APP_RUBY" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "install brew failed" >>"$FILE_LOG"
-      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "install brew failed"
+      printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "install brew failed"
     fi
 
     unset APP_RUBY
   fi
 
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+  printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
   APP_BREW=$(which brew | tee -a "$FILE_LOG")
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "APP_BREW = $APP_BREW" >>"$FILE_LOG"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Run $APP_BREW update" >>"$FILE_LOG"
   if ! eval "$APP_BREW" update 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "brew update failed" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew update failed"
+    printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "brew update failed"
     exit 255
   fi
 
@@ -359,17 +492,17 @@ case "$OS_PREFIX" in
   if [[ -n "$BREW_UPDATES" ]]; then
     BREW_CLEAN=true
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Run $APP_BREW upgrade" >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "UPGRADE"
+    printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "UPGRADE"
     if ! eval "$APP_BREW" upgrade &>/dev/null | tee -a "$FILE_LOG"; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "brew upgrade failed" >>"$FILE_LOG"
-      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew upgrade failed"
+      printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "brew upgrade failed"
       exit 255
     fi
   fi
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "BREW_CLEAN = $BREW_CLEAN" >>"$FILE_LOG"
 
   unset BREW_UPDATES
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+  printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
   FILE_CHECKSUM=$HOME/.packages/checksum
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_CHECKSUM = $FILE_CHECKSUM" >>"$FILE_LOG"
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Check if $FILE_CHECKSUM exists" >>"$FILE_LOG"
@@ -428,15 +561,15 @@ case "$OS_PREFIX" in
         } >>"$FILE_LOG"
         if [[ -z "$BREW_INSTALL" ]]; then
           printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Installing $BREW_APP" >>"$FILE_LOG"
-          printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$BREW_APP"
+          printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\t%s$COL_CLR\n" "INSTALL" "$BREW_APP"
           if ! eval "$APP_BREW" install "$BREW_ARGS" "$BREW_APP" 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
             printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "brew install $BREW_APP failed" >>"$FILE_LOG"
-            printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew install $BREW_APP failed"
+            printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "brew install $BREW_APP failed"
             exit 255
           fi
         fi
 
-        printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+        printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
         unset BREW_APP
         unset BREW_ARGS
         unset BREW_INSTALL
@@ -453,17 +586,17 @@ case "$OS_PREFIX" in
 
   unset MD5_HASH
   unset MD5
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+  printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
   if [[ $BREW_CLEAN == true ]]; then
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Running $APP_BREW cleanup" >>"$FILE_LOG"
     if ! eval "$APP_BREW" cleanup 2>&1 | tee "$FILE_LOG" >/dev/null; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "brew cleanup failed" >>"$FILE_LOG"
-      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "brew cleanup failed"
+      printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "brew cleanup failed"
       exit 255
     fi
   fi
 
-  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+  printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\n" "OK"
   unset BREW_CLEAN
   unset FILE_CHECKSUM
   unset FILE_BREW_APPS
@@ -471,22 +604,22 @@ case "$OS_PREFIX" in
   ;;
 "ubuntu")
   if [[ $USER_IS_SUDO == false ]]; then
-    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
+    printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\t%s$COL_CLR\n" "SKIPPING" "sudo required"
   else
     APP_SUDO=$(which sudo | tee -a "$FILE_LOG")
     if [[ ! -x $APP_SUDO ]]; then
-      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "sudo missing"
+      printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "sudo missing"
       exit 255
     fi
 
     APP_APT=$(which apt-get | tee -a "$FILE_LOG")
     if [[ ! -x $APP_APT ]]; then
-      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get missing"
+      printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "apt-get missing"
       exit 255
     fi
 
     if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq update; then
-      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get update failed"
+      printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "apt-get update failed"
       exit 255
     fi
 
@@ -494,7 +627,7 @@ case "$OS_PREFIX" in
     if [[ -n $APT_UPDATE ]]; then
       APT_CLEAN=true
       if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq upgrade -y &>/dev/null; then
-        printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get upgrade failed"
+        printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "apt-get upgrade failed"
         exit 255
       fi
 
@@ -503,7 +636,7 @@ case "$OS_PREFIX" in
       if [[ -n $APT_UPDATE ]]; then
         APT_CLEAN=true
         if ! eval "$APP_SUDO" -E -n "$APP_APT" -qq dist-upgrade -y &>/dev/null; then
-          printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get dist-upgrade failed"
+          printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "apt-get dist-upgrade failed"
           exit 255
         fi
 
@@ -512,12 +645,12 @@ case "$OS_PREFIX" in
 
       if [[ $APT_CLEAN == true ]]; then
         if eval "$APP_SUDO" -E -n "$APP_APT" -qq autoremove -y &>/dev/null; then
-          printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get autoremove failed"
+          printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "apt-get autoremove failed"
           exit 255
         fi
 
         if eval "$APP_SUDO" -E -n "$APP_APT" -qq autoclean -y &>/dev/null; then
-          printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "apt-get autoremove failed"
+          printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "apt-get autoremove failed"
           exit 255
         fi
       fi
@@ -527,14 +660,14 @@ case "$OS_PREFIX" in
       unset APP_SUDO
     fi
 
-    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+    printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\n" "OK"
   fi
   ;;
 esac
 
 STAGE="Verifying node"
 LOG_STAGE="NODE"
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
 FILE_CHECKSUM=$HOME/.packages/checksum
 {
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_CHECKSUM = $FILE_CHECKSUM"
@@ -581,20 +714,20 @@ if [[ $NEED_SUDO == false ]]; then
         if [[ -n "$NODE_APP" ]]; then
           NODE_APP=$(echo -e "$NODE_APP" | tee -a "$FILE_LOG" | rev | cut -d '/' -f 1 | rev)
           printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Update $NODE_APP" >>"$FILE_LOG"
-          printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$NODE_APP"
+          printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\t%s$COL_CLR\n" "UPDATE" "$NODE_APP"
           if ! eval "$USE_SUDO$APP_NPM" -g install --upgrade "$NODE_APP" 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
             printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "npm -g install --upgrade $NODE_APP failed" >>"$FILE_LOG"
-            printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install --upgrade $NODE_APP failed"
+            printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "npm -g install --upgrade $NODE_APP failed"
             exit 255
           fi
 
-          printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+          printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
           unset NODE_APP
         fi
       fi
     done
 
-    printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+    printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
     printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Loading $FILE_CHECKSUM" >>"$FILE_LOG"
     # shellcheck source=/dev/null
     source "$FILE_CHECKSUM"
@@ -630,16 +763,16 @@ if [[ $NEED_SUDO == false ]]; then
           read -r NODE_INSTALL < <(eval "$USE_SUDO$APP_NPM" -g list | tee -a "$FILE_LOG" | grep "$NODE_APP")
           printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "NODE_INSTALL = $NODE_INSTALL" >>"$FILE_LOG"
           if [[ -n "$NODE_INSTALL" ]]; then
-            printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "INSTALL" "$NODE_APP"
+            printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\t%s$COL_CLR\n" "INSTALL" "$NODE_APP"
             printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Install $NODE_APP" >>"$FILE_LOG"
             if ! eval "$USE_SUDO$APP_NPM" -g install "$NODE_APP" 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
               printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "npm -g install $NODE_APP failed" >>"$FILE_LOG"
-              printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "npm -g install $NODE_APP failed"
+              printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "npm -g install $NODE_APP failed"
               exit 255
             fi
           fi
 
-          printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+          printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
           unset NODE_APP
           unset NODE_INSTALL
         done <"$FILE_NODE_APPS"
@@ -656,23 +789,23 @@ if [[ $NEED_SUDO == false ]]; then
       fi
     fi
 
-    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+    printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\n" "OK"
   else
     if [[ -z $APP_NODE ]]; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "SKIPPING node not installed" >>"$FILE_LOG"
-      printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "node not installed"
+      printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\t%s$COL_CLR\n" "SKIPPING" "node not installed"
       exit 255
     fi
 
     if [[ -z $APP_NPM ]]; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "SKIPPING  not installed" >>"$FILE_LOG"
-      printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "npm not installed"
+      printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\t%s$COL_CLR\n" "SKIPPING" "npm not installed"
       exit 255
     fi
   fi
 else
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "SKIPPING sudo required" >>"$FILE_LOG"
-  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "sudo required"
+  printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\t%s$COL_CLR\n" "SKIPPING" "sudo required"
 fi
 
 unset FILE_CHECKSUM
@@ -683,7 +816,7 @@ unset USE_SUDO
 
 STAGE="Verifying python3"
 LOG_STAGE="PYTHON3"
-printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
 FILE_CHECKSUM=$HOME/.packages/checksum
 {
   printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "FILE_CHECKSUM = $FILE_CHECKSUM"
@@ -713,17 +846,17 @@ if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "PYTHON_APP = $PYTHON_APP"
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "Update $PYTHON_APP"
     } >>"$FILE_LOG"
-    printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\t%s$COLOR_NONE\n" "UPDATE" "$PYTHON_APP"
+    printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\t%s$COL_CLR\n" "UPDATE" "$PYTHON_APP"
     if ! eval "$APP_PIP3" install --upgrade "$PYTHON_APP" 2>&1 | tee -a "$FILE_LOG" >/dev/null; then
       printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "ERROR" "pip3 install --upgrade $PYTHON_APP failed" >>"$FILE_LOG"
-      printf "$FORMAT_REPLACE$COLOR_RED !  $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\t%s$COLOR_NONE\n" "ERROR" "pip3 install --upgrade $PYTHON_APP failed"
+      printf "$LINE_REM$COL_RED !  $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\t%s$COL_CLR\n" "ERROR" "pip3 install --upgrade $PYTHON_APP failed"
       exit 255
     fi
 
     unset PYTHON_APP
   done
 
-  printf "$FORMAT_REPLACE$COLOR_YELLOW - $COLOR_NONE$STAGE\t\t$COLOR_YELLOW%s$COLOR_NONE\n" "RUNNING"
+  printf "$LINE_REM$COL_YLW - $COL_CLR$STAGE\t\t$COL_YLW%s$COL_CLR\n" "RUNNING"
   # shellcheck source=/dev/null
   source "$FILE_CHECKSUM"
   FILE_PYTHON_APPS=$HOME/.packages/python
@@ -764,15 +897,15 @@ if [[ -x $APP_PY3 ]] && [[ -x $APP_PIP3 ]]; then
     unset MD5
   fi
 
-  printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\n" "OK"
+  printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\n" "OK"
 else
   if [[ -z $APP_PY3 ]]; then
-    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "python3 not installed"
+    printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\t%s$COL_CLR\n" "SKIPPING" "python3 not installed"
     exit 255
   fi
 
   if [[ -z $APP_PIP3 ]]; then
-    printf "$FORMAT_REPLACE$COLOR_GREEN:::$COLOR_NONE$STAGE\t\t$COLOR_GREEN%s$COLOR_NONE\t%s$COLOR_NONE\n" "SKIPPING" "pip3 not installed"
+    printf "$LINE_REM$COL_GRN:::$COL_CLR$STAGE\t\t$COL_GRN%s$COL_CLR\t%s$COL_CLR\n" "SKIPPING" "pip3 not installed"
     exit 255
   fi
 fi
@@ -785,9 +918,9 @@ LOG_STAGE="FINISH"
 printf "%s\t%s\t\t%s\n" "$(date +"%Y-%m-%dT%T")" "$LOG_STAGE" "DOT_FILES_PUSH = $DOT_FILES_PUSH" >>"$FILE_LOG"
 if [[ $DOT_FILES_PUSH -gt 0 ]]; then
   STAGE="Verifying dot files"
-  printf "$FORMAT_REPLACE$COLOR_RED ! $COLOR_NONE$STAGE\t\t$COLOR_RED%s$COLOR_NONE\n" "PUSH"
+  printf "$LINE_REM$COL_RED ! $COL_CLR$STAGE\t\t$COL_RED%s$COL_CLR\n" "PUSH"
 else
-  printf "$FORMAT_REPLACE%s" ""
+  printf "$LINE_REM%s" ""
 fi
 
 unset DOT_FILES_PUSH
