@@ -1,0 +1,35 @@
+[user]
+	name = Willie Roberts
+	email = diagoza@me.com
+[core]
+  editor = nvim
+  autocrlf = input
+[filter "media"]
+  clean = git-media-clean %f
+  smudge = git-media-smudge %f
+[push]
+  default = simple
+  followTags = true
+[color]
+  ui = true
+[pull]
+  rebase = true
+[rerere]
+  enabled = true
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  process = git-lfs filter-process
+  required = true
+  smudge = git-lfs smudge -- %f
+[rebase]
+  autostash = true
+[alias]
+  ac = "!f(){ git add . && git commit -m \"$@\"; };f"
+  clr = rm -rf --cached .
+  s = status -s
+  sinit = submodule update --init --recursive
+  supdate = submodule update --init --remote
+[credential]
+	helper = osxkeychain
+[submodule]
+	recurse = true

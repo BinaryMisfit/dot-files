@@ -1,0 +1,9 @@
+git
+neovim,HEAD
+node
+openssl
+python3
+reattach-to-user-namespace
+tmux
+wget
+zsh

@@ -1,0 +1,10 @@
+Host *
+  SendEnv LC_*
+
+Host hosting
+  HostName hosting.senselesslyfoolish.com
+  User binarymisfit
+
+Host mini
+  HostName mini.digitalmisfit.net
+  User server

@@ -1,0 +1,6 @@
+Host *
+  SendEnv LC_*
+
+Host mini
+  HostName mini.misfits.best
+  User server
