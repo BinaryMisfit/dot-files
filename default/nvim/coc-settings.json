@@ -14,7 +14,12 @@
   "html.execArgv": [],
   "html.experimental.custom.attributes": [],
   "html.experimental.custom.tags": [],
-  "html.filetypes": [ "html", "handlebars", "htmldjango", "blade" ],
+  "html.filetypes": [
+    "html",
+    "handlebars",
+    "htmldjango",
+    "blade"
+  ],
   "html.format.enable": true,
   "html.format.endWithNewline": false,
   "html.format.extraLiners": "head, body, /html",

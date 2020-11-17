@@ -233,7 +233,7 @@ function deploy_prepare() {
 }
 
 DEPLOY_START=[
-  "deploy_prepare"
+"deploy_prepare"
 ]
 eval "$MAIN"
 exit 0
