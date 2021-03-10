@@ -46,6 +46,7 @@ test -e $HOME/Library/Android/sdk/platform-tools && PATH=$PATH:$HOME/Library/And
 test -e $HOME/Library/Android/sdk/tools/bin && PATH=$PATH:$HOME/Library/Android/sdk/tools/bin
 test -e $HOME/.npm_global && PATH=$HOME/.npm_global/bin:$PATH
 test -e $HOME/.yarn/bin && PATH=$HOME/.yarn/bin:$PATH
+test -e /usr/local/sbin && PATH=/usr/local/sbin:$PATH
 
 # Cleanup
 typeset -U PATH

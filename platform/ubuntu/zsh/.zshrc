@@ -13,6 +13,9 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 export ZSH_DISABLE_COMPFIX=true
 export ZSH_THEME=powerlevel9k/powerlevel9k
 
+# Optional Variables
+test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
+
 # Plugins
 plugins=(
   zsh-completions
