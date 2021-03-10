@@ -31,6 +31,9 @@ test -e ${HOME}/.acme.sh/acme.sh.env && source ${HOME}/.acme.sh/acme.sh.env
 autoload -U compinit && compinit
 unsetopt BEEP
 
+# Export tool variables
+export JAVA_HOME=/usr/lib/jvm/java-15-oracle
+
 # Export aliases
 test -e /usr/bin/nvim && alias sudoedit="sudo /usr/bin/nvim "
 test -e /usr/bin/nvim && alias vi="/usr/bin/nvim "
