@@ -32,7 +32,7 @@ autoload -U compinit && compinit
 unsetopt BEEP
 
 # Export tool variables
-export JAVA_HOME=/usr/lib/jvm/java-15-oracle
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 # Export aliases
 test -e /usr/bin/nvim && alias sudoedit="sudo /usr/bin/nvim "
