@@ -4,8 +4,8 @@ DEFAULT_CONFIG_PREFIX="default"
 INSTALL_CONFIG_PREFIX="install"
 FINAL_CONFIG_PREFIX="final"
 CONFIG_SUFFIX=".conf.yaml"
-DOTBOT_DIR="dotbot"
-DOTBOT_BIN="bin/dotbot"
+DOT_BOT_DIR="dotbot"
+DOT_BOT_BIN="bin/dotbot"
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OS_PREFIX=
 case "${OSTYPE}" in
@@ -22,8 +22,8 @@ case "${OSTYPE}" in
 esac
 
 cd "${BASEDIR}"
-git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
-git submodule update --init --recursive "${DOTBOT_DIR}"
-for conf in ${DEFAULT_CONFIG_PREFIX} ${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} ${@}; do
-  "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${conf}${CONFIG_SUFFIX}"
+git -C "${DOT_BOT_DIR}" submodule sync --quiet --recursive
+git submodule update --init --recursive "${DOT_BOT_DIR}"
+for conf in ${DEFAULT_CONFIG_PREFIX} ${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
+  "${BASEDIR}/${DOT_BOT_DIR}/${DOT_BOT_BIN}" -d "${BASEDIR}" -c "${conf}${CONFIG_SUFFIX}"
 done

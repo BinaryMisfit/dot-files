@@ -21,3 +21,6 @@ log/*
 default/nvim/.netrwhist
 default/nvim/autoload
 !default/nvim/autoload/plug.vim
+
+# IntelliJ
+**/.idea
