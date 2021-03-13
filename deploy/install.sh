@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -e
-BASE_DIR=`dirname "$0"`
-BASE_DIR=`cd "${BASE_DIR}"; pwd -P`
-BASE_DIR=`dirname "${BASE_DIR}"`
+BASE_DIR="${HOME}/.dotfiles"
 CONFIG_SUFFIX=".conf.yaml"
 DEFAULT_CONFIG_PREFIX="default"
 DEPLOY_DIR="${BASE_DIR}/deploy"
