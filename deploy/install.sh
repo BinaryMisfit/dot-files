@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 set -e
-DEFAULT_CONFIG_PREFIX="default"
-INSTALL_CONFIG_PREFIX="install"
-FINAL_CONFIG_PREFIX="final"
+BASE_DIR=`dirname "$0"`
+BASE_DIR=`cd "${BASE_DIR}"; pwd -P`
+BASE_DIR=`dirname "${BASE_DIR}"`
 CONFIG_SUFFIX=".conf.yaml"
-DOT_BOT_DIR="dotbot"
+DEFAULT_CONFIG_PREFIX="default"
+DEPLOY_DIR="${BASE_DIR}/deploy"
+DOT_BOT_DIR="${BASE_DIR}/dotbot"
 DOT_BOT_BIN="bin/dotbot"
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FINAL_CONFIG_PREFIX="final"
+INSTALL_CONFIG_PREFIX="install"
+
 OS_PREFIX=
 case "${OSTYPE}" in
 "darwin"*)
@@ -21,9 +25,11 @@ case "${OSTYPE}" in
   ;;
 esac
 
-cd "${BASEDIR}"
-git -C "${DOT_BOT_DIR}" submodule sync --quiet --recursive
-git submodule update --init --recursive "${DOT_BOT_DIR}"
-for conf in ${DEFAULT_CONFIG_PREFIX} ${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
-  "${BASEDIR}/${DOT_BOT_DIR}/${DOT_BOT_BIN}" -d "${BASEDIR}" -c "${conf}${CONFIG_SUFFIX}"
+if [ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]; then
+  git -C "${DOT_BOT_DIR}" submodule sync --recursive --quiet
+  git -C "${DOT_BOT_DIR}" submodule update --init --recursive
+fi
+
+for CONF in ${DEFAULT_CONFIG_PREFIX} ${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
+  "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -Q -d "${BASE_DIR}" -c "${DEPLOY_DIR}/${CONF}${CONFIG_SUFFIX}"
 done
