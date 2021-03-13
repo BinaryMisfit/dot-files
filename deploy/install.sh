@@ -25,7 +25,7 @@ esac
 
 if [ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]; then
   git -C "${DOT_BOT_DIR}" submodule sync --recursive --quiet
-  git -C "${DOT_BOT_DIR}" submodule update --init --recursive
+  git -C "${DOT_BOT_DIR}" submodule update --init --recursive --quiet
 fi
 
 for CONF in ${DEFAULT_CONFIG_PREFIX} ${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
