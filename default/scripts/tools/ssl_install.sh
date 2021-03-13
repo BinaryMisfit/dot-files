@@ -7,11 +7,12 @@ SERVICE_DIR="/Users/Shared/config/${SERVICE_NAME}"
 if [ -d "${SERVICE_DIR}/ssl" ]; then
   ${LE_WORK_DIR}/acme.sh --toPkcs -d ${LE_DOMAIN} --password ${SERVICE_NAME} > /dev/null
   cp "${DOMAIN_DIR}/${LE_DOMAIN}.key" "${SERVICE_DIR}/ssl"
-  cp "${DOMAIN_DIR}/${LE_DOMAIN}.pfx" "${SERVICE_DIR}/ssl/${LE_DOMAIN}"
+  cp "${DOMAIN_DIR}/${LE_DOMAIN}.cer" "${SERVICE_DIR}/ssl"
+  cp "${DOMAIN_DIR}/${LE_DOMAIN}.pfx" "${SERVICE_DIR}/ssl"
 fi
 
 USER_ID=$(id -u)
 launchctl kickstart -k gui/${USER_ID}/com.services.haproxy
-if [[ -f "${SERVICE_DIR}/ssl_install.sh" ]]; then
-  source "${SERVICE_DIR}/ssl_install.sh" 
+if [[ -x "${SERVICE_DIR}/ssl_install.sh" ]]; then
+  source "${SERVICE_DIR}/ssl_install.sh"
 fi

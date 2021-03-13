@@ -47,6 +47,8 @@ test -e $HOME/Library/Android/sdk/tools/bin && PATH=$PATH:$HOME/Library/Android/
 test -e $HOME/.npm_global && PATH=$HOME/.npm_global/bin:$PATH
 test -e $HOME/.yarn/bin && PATH=$HOME/.yarn/bin:$PATH
 test -e /usr/local/sbin && PATH=/usr/local/sbin:$PATH
+test -e /usr/local/opt/curl/bin/curl && PATH=/usr/local/opt/curl/bin:$PATH
+test -e /usr/local/opt/openssl@1.1/bin && PATH=/usr/local/opt/openssl@1.1/bin:$PATH
 
 # Cleanup
 typeset -U PATH
