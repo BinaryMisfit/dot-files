@@ -40,6 +40,8 @@ unsetopt BEEP
 test -e /usr/local/bin/nvim && alias sudoedit="sudo /usr/local/bin/nvim "
 test -e /usr/local/bin/nvim && alias vi="/usr/local/bin/nvim "
 test -e /usr/local/bin/nvim && alias vim="/usr/local/bin/nvim "
+test -e /usr/local/bin/tmux && alias tm="tmux attach || tmux new-session"
+test -e /usr/local/bin/tmux && alias tl="tmux list-sessions"
 
 # Update PATH
 test -e $HOME/Library/Android/sdk/platform-tools && PATH=$PATH:$HOME/Library/Android/sdk/platform-tools
