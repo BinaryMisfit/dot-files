@@ -41,6 +41,8 @@ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 test -e /usr/bin/nvim && alias sudoedit="sudo /usr/bin/nvim "
 test -e /usr/bin/nvim && alias vi="/usr/bin/nvim "
 test -e /usr/bin/nvim && alias vim="/usr/bin/nvim "
+test -e /usr/bin/tmux && alias tm="/usr/bin/tmux attach || /usr/bin/tmux new-session"
+test -e /usr/bin/tmux && alias tl="/usr/bin/tmux list-sessions"
 
 # Update PATH
 test -e $HOME/.npm_global && PATH=$HOME/.npm_global/bin:$PATH
