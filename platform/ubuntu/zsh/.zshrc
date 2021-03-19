@@ -15,6 +15,7 @@ export ZSH_THEME=powerlevel9k/powerlevel9k
 
 # Optional Variables
 test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
+test -e /usr/lib/android-sdk && export ANDROID_HOME=/usr/lib/android-sdk
 
 # Plugins
 plugins=(
@@ -48,6 +49,9 @@ test -e /usr/bin/tmux && alias tl="/usr/bin/tmux list-sessions"
 test -e $HOME/.npm_global && PATH=$HOME/.npm_global/bin:$PATH
 test -e $HOME/.yarn/bin && PATH=$HOME/.yarn/bin:$PATH
 test -e /usr/local/sbin && PATH=/usr/local/sbin:$PATH
+test -e /usr/lib/android-sdk/platform-tools && PATH=/usr/lib/android-sdk/platform-tools:$PATH
+test -e /usr/lib/android-sdk/cmdline-tools/tools && PATH=/usr/lib/android-sdk/cmdline-tools/tools:$PATH
+test -e /usr/lib/android-sdk/cmdline-tools/tools/bin && PATH=/usr/lib/android-sdk/cmdline-tools/tools/bin:$PATH
 
 # Cleanup
 typeset -U PATH
