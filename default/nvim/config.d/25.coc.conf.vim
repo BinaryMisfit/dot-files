@@ -6,7 +6,6 @@ if !exists('g:vscode')
         \'coc-html',
         \'coc-json',
         \'coc-marketplace',
-        \'@yaegassy/coc-nginx',
         \'coc-omnisharp',
         \'coc-powershell',
         \'coc-python',
