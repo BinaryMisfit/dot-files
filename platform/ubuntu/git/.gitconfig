@@ -1,6 +1,6 @@
 [user]
-	name = Willie Roberts
-	email = diagoza@me.com
+  name = Willie Roberts
+  email = diagoza@me.com
 [core]
   editor = nvim
   autocrlf = input
@@ -30,6 +30,6 @@
   sinit = submodule update --init --recursive
   supdate = submodule update --init --remote
 [credential]
-	helper = store
+  helper = store
 [submodule]
-	recurse = true
+  recurse = true
