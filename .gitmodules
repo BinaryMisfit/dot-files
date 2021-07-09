@@ -3,7 +3,7 @@
   url = https://github.com/anishathalye/dotbot
 [submodule "external/oh-my-zsh"]
   path = external/oh-my-zsh
-  url = https://github.com/ohmyzsh/ohmyzsh/oh-my-zsh.git
+  url = https://github.com/ohmyzsh/ohmyzsh.git
 [submodule "external/powerlevel9k"]
   path = external/powerlevel9k
   url = https://github.com/Powerlevel9k/powerlevel9k.git
