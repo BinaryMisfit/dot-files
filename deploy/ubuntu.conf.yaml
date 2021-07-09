@@ -4,12 +4,10 @@
       create: true
       relink: true
 - clean:
-    - "~"
+    - "${HOME}"
 - link:
     ~/.gitconfig:
       path: platform/ubuntu/git/.gitconfig
-    ~/.hushlogin:
-      path: platform/ubuntu/.hushlogin
     ~/.npmrc:
       path: platform/ubuntu/node/.npmrc
     ~/.oh-my-zsh/custom/themes/powerlevel9k:

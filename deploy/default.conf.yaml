@@ -8,10 +8,8 @@
 - create:
     - ${HOME}/.npm_global
 - shell:
-    - - git submodule update --init --recursive
-      - Installing submodules
-    - - git submodule update --init --remote
-      - Upgrading submodules
+    - - git pull --all 
+      - Updating
 - link:
     ~/.config/nvim:
       path: default/nvim

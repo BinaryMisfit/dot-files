@@ -4,7 +4,7 @@
       create: true
       relink: true
 - clean:
-    - "~"
+    - "${HOME}"
 - link:
     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions:
       path: external/zsh-autosuggestions
