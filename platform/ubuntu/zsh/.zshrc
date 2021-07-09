@@ -16,6 +16,8 @@ export ZSH_THEME=powerlevel9k/powerlevel9k
 # Optional Variables
 test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
 test -e /usr/lib/android-sdk && export ANDROID_HOME=/usr/lib/android-sdk
+test -e /opt/maven && export M2_HOME=/opt/maven
+test -e /opt/maven && export MAVEN_HOME=/opt/maven
 
 # Plugins
 plugins=(
@@ -52,6 +54,7 @@ test -e /usr/local/sbin && PATH=/usr/local/sbin:$PATH
 test -e /usr/lib/android-sdk/platform-tools && PATH=/usr/lib/android-sdk/platform-tools:$PATH
 test -e /usr/lib/android-sdk/cmdline-tools/tools && PATH=/usr/lib/android-sdk/cmdline-tools/tools:$PATH
 test -e /usr/lib/android-sdk/cmdline-tools/tools/bin && PATH=/usr/lib/android-sdk/cmdline-tools/tools/bin:$PATH
+test -e /opt/maven && export PATH=$M2_HOME/bin:$PATH}
 
 # Cleanup
 typeset -U PATH

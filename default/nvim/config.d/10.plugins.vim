@@ -19,6 +19,7 @@ if !exists('g:vscode')
   Plug 'vim-airline/vim-airline-themes'           " Themes for airline
   Plug 'zeekay/vimtips'                           " Usefull VIM tips and tricks
   Plug 'ryanoasis/vim-devicons'                   " Enable file type icons
+  Plug 'sheerun/vim-polyglot'                     " Syntax Highligting
 endif
 
 " Initialize plugins
