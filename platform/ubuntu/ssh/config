@@ -1,11 +1,22 @@
 Host *
   SendEnv LC_*
 
+Host router
+  HostName hub.digitalmisfit.net
+  User server
+  IdentityFile ~/.ssh/fairview
+
 Host mini
   HostName mini
+  User server
+  IdentityFile ~/.ssh/fairview
+
+Host rpirouter
+  HostName rpirouter
   User server
   IdentityFile ~/.ssh/fairview
 
 Host rpimedia
   HostName rpimedia
   User ubuntu
+  IdentityFile ~/.ssh/fairview
