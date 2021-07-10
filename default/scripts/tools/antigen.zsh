@@ -1,1 +1,0 @@
-/home/ubuntu/.dotfiles/external/antigen/antigen.zsh

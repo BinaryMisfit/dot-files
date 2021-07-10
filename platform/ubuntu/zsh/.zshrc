@@ -7,7 +7,7 @@ fi
 #test -e ${HOME}/.scripts/update_online.sh && /bin/bash ${HOME}/.scripts/update_online.sh
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
-test -e ${HOME}/.scripts/antigen.zsh && source ${HOME}/.scripts/antigen.zsh
+test -e ${HOME}/.antigen/antigen.zsh && source ${HOME}/.antigen/antigen.zsh
 test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Variables
