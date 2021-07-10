@@ -4,7 +4,7 @@
       create: true
       relink: true
 - shell:
-    - - git pull --all
-      - Updating
+    - - git clean -f
+      - Cleaning
     - - source ~/.zshrc
       - Reloading
