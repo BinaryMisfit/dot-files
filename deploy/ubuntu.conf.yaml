@@ -12,8 +12,8 @@
       path: platform/ubuntu/node/.npmrc
     ~/.oh-my-zsh/custom/themes/powerlevel10k:
       path: external/powerlevel10k
-    ~/.p9k.zsh:
-      path: platform/ubuntu/zsh/.p9k.zsh
+    ~/.p10k.zsh:
+      path: platform/ubuntu/zsh/.p10k.zsh
     ~/.packages:
       path: platform/ubuntu/packages
     ~/.papercolor.tmux.conf:
