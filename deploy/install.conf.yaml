@@ -1,11 +1,5 @@
 ---
-- defaults:
-    link:
-      create: true
-      relink: true
-- clean:
-    - "${HOME}"
-- link:
+#- link:
   #~/.tmux/plugins/tmux-prefix-highlight:
   #path: external/tmux-prefix-highlight
   #~/.tmux/plugins/tpm:

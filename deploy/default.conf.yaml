@@ -1,15 +1,13 @@
 ---
-- defaults:
-    link:
-      create: true
-      relink: true
-- clean:
-    - "${HOME}"
-- create:
-    - ${HOME}/.npm_global
 - shell:
-    - - git pull --all
-      - Updating
+    -
+      command: git pull --all
+      description: Updating configuration files
+      quiet: true
+    -
+      command: test -d ~/.npm_global || mkdir -p ~/.npm_global
+      description: Creating Node Repo
+      quiet: true
 - link:
     ~/.config/nvim:
       path: default/nvim

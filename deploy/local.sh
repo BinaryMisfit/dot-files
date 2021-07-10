@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# TODO Implement check sude
+# TODO Implement check sudo
 DEPLOY_ROOT=$HOME/.deploy
 DEPLOY_LOG_FILE=deploy.log
 DEPLOY_LOG=$DEPLOY_ROOT/log/$DEPLOY_LOG_FILE
