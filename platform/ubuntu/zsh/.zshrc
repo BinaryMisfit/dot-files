@@ -12,7 +12,7 @@ test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
-#export POWERLEVEL9K_MODE=nerdfont-complete
+export POWERLEVEL9K_MODE=nerdfont-complete
 export ZSH=${HOME}/.oh-my-zsh
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 export ZSH_DISABLE_COMPFIX=true
@@ -37,6 +37,7 @@ plugins=(
 test -e ${ZSH}/oh-my-zsh.sh && source ${ZSH}/oh-my-zsh.sh
 test -e ${HOME}/.p10k.zsh && source ${HOME}/.p10k.zsh
 test -e ${HOME}/.acme.sh/acme.sh.env && source ${HOME}/.acme.sh/acme.sh.env
+test -e ${HOME}/.scripts/antigen.zsh && source ${HOME}/.scripts/antigen.zsh
 
 # Additional setups
 autoload -U compinit && compinit

@@ -10,3 +10,7 @@
 	path = external/powerlevel10k
 	url = https://github.com/romkatv/powerlevel10k
 	shallow = true
+[submodule "external/antigen"]
+	path = external/antigen
+	url = https://github.com/zsh-users/antigen
+	shallow = true

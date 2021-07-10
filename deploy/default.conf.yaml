@@ -19,3 +19,5 @@
       path: external/oh-my-zsh
     ~/.scripts:
       path: default/scripts/tools
+    ~/.scripts/antigen.zsh:
+      path: external/antigen/antigen.zsh
