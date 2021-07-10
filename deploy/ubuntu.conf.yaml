@@ -1,11 +1,13 @@
 ---
 - defaults:
-    link:
-      create: true
-      relink: true
+  link:
+    create: true
+    relink: true
 - clean:
-    - "${HOME}"
+  - "${HOME}"
 - link:
+    ~/.antigenrc:
+      path: platform/ubuntu/zsh/.antigenrc
     ~/.gitconfig:
       path: platform/ubuntu/git/.gitconfig
     ~/.npmrc:

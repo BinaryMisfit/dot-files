@@ -6,7 +6,7 @@
 - clean:
     - "${HOME}"
 - link:
-    ~/.tmux/plugins/tmux-prefix-highlight:
-      path: external/tmux-prefix-highlight
-    ~/.tmux/plugins/tpm:
-      path: external/tpm
+  #~/.tmux/plugins/tmux-prefix-highlight:
+  #path: external/tmux-prefix-highlight
+  #~/.tmux/plugins/tpm:
+  #path: external/tpm

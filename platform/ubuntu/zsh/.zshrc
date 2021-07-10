@@ -8,20 +8,7 @@ fi
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
 test -e ${HOME}/.scripts/antigen.zsh && source ${HOME}/.scripts/antigen.zsh
-
-# Antigen Plugins
-antigen use oh-my-zsh
-antigen bundle command-not-found
-antigen bundle git
-antigen bundle lein
-antigen bundle pip
-antigen bundle zsh_reload
-antigen bundle zsh-navigation-tools
-antigen bundle zsh-users/zsh-autosuggestions
-antigen bundle zsh-users/zsh-completions
-antigen bundle zsh-users/zsh-syntax-highlighting
-antigen theme romkatv/powerlevel10k
-antigen apply
+test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Variables
 export LANG=en_US.UTF-8
