@@ -15,8 +15,6 @@
       path: default/nvim
     ~/.iterm2_shell_integration.zsh:
       path: default/scripts/shell/.iterm2_shell_integration.zsh
-    ~/.oh-my-zsh:
-      path: external/oh-my-zsh
     ~/.scripts:
       path: default/scripts/tools
     ~/.scripts/antigen.zsh:

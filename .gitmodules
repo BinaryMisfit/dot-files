@@ -2,14 +2,6 @@
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
 	shallow = true
-[submodule "external/oh-my-zsh"]
-	path = external/oh-my-zsh
-	url = https://github.com/ohmyzsh/ohmyzsh
-	shallow = true
-[submodule "external/powerlevel10k"]
-	path = external/powerlevel10k
-	url = https://github.com/romkatv/powerlevel10k
-	shallow = true
 [submodule "external/antigen"]
 	path = external/antigen
 	url = https://github.com/zsh-users/antigen

@@ -4,19 +4,30 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Load environment
-test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 #test -e ${HOME}/.scripts/update_online.sh && /bin/bash ${HOME}/.scripts/update_online.sh
+test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
+test -e ${HOME}/.scripts/antigen.zsh && source ${HOME}/.scripts/antigen.zsh
+
+# Antigen Plugins
+antigen use oh-my-zsh
+antigen bundle command-not-found
+antigen bundle git
+antigen bundle lein
+antigen bundle pip
+antigen bundle zsh_reload
+antigen bundle zsh-navigation-tools
+antigen bundle zsh-users/zsh-autosuggestions
+antigen bundle zsh-users/zsh-completions
+antigen bundle zsh-users/zsh-syntax-highlighting
+antigen theme romkatv/powerlevel10k
+antigen apply
 
 # Variables
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export POWERLEVEL9K_MODE=nerdfont-complete
-export ZSH=${HOME}/.oh-my-zsh
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
-export ZSH_DISABLE_COMPFIX=true
-export ZSH_THEME=powerlevel10k/powerlevel10k
 
 # Optional Variables
 test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
@@ -24,27 +35,13 @@ test -e /usr/lib/android-sdk && export ANDROID_HOME=/usr/lib/android-sdk
 test -e /opt/maven && export M2_HOME=/opt/maven
 test -e /opt/maven && export MAVEN_HOME=/opt/maven
 
-# Plugins
-plugins=(
-  zsh-completions
-  zsh-autosuggestions
-  zsh-navigation-tools
-  zsh_reload
-  zsh-syntax-highlighting
-)
-
 # Source config files
-test -e ${ZSH}/oh-my-zsh.sh && source ${ZSH}/oh-my-zsh.sh
 test -e ${HOME}/.p10k.zsh && source ${HOME}/.p10k.zsh
 test -e ${HOME}/.acme.sh/acme.sh.env && source ${HOME}/.acme.sh/acme.sh.env
-test -e ${HOME}/.scripts/antigen.zsh && source ${HOME}/.scripts/antigen.zsh
 
 # Additional setups
 autoload -U compinit && compinit
 unsetopt BEEP
-
-# Export tool variables
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
 # Export aliases
 test -e /usr/bin/nvim && alias sudoedit="sudo /usr/bin/nvim "

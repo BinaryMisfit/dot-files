@@ -12,8 +12,6 @@
       path: platform/osx/iterm2
     ~/.npmrc:
       path: platform/osx/node/.npmrc
-    ~/.oh-my-zsh/custom/themes/powerlevel10k:
-      path: external/powerlevel10k
     ~/.p10k.zsh:
       path: platform/osx/zsh/.p10k.zsh
     ~/.packages:
