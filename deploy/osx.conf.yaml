@@ -12,10 +12,10 @@
       path: platform/osx/iterm2
     ~/.npmrc:
       path: platform/osx/node/.npmrc
-    ~/.oh-my-zsh/custom/themes/powerlevel9k:
-      path: external/powerlevel9k
-    ~/.p9k.zsh:
-      path: platform/osx/zsh/.p9k.zsh
+    ~/.oh-my-zsh/custom/themes/powerlevel10k:
+      path: external/powerlevel10k
+    ~/.p10k.zsh:
+      path: platform/osx/zsh/.p10k.zsh
     ~/.packages:
       path: platform/osx/packages
     ~/.papercolor.tmux.conf:

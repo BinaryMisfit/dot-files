@@ -1,3 +1,8 @@
+# P10K Instant Prompt
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # Load environment
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 #test -e ${HOME}/.scripts/update_online.sh && /bin/bash ${HOME}/.scripts/update_online.sh
@@ -11,7 +16,7 @@ export POWERLEVEL9K_MODE=nerdfont-complete
 export ZSH=${HOME}/.oh-my-zsh
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 export ZSH_DISABLE_COMPFIX=true
-export ZSH_THEME=powerlevel9k/powerlevel9k
+export ZSH_THEME=powerlevel10k/powerlevel10k
 
 # Optional Variables
 test -e /usr/local/bin/mono && export MONO_GAC_PREFIX="/usr/local"
@@ -29,7 +34,7 @@ plugins=(
 
 # Source config files
 test -e ${ZSH}/oh-my-zsh.sh && source ${ZSH}/oh-my-zsh.sh
-test -e ${HOME}/.p9k.zsh && source ${HOME}/.p9k.zsh
+test -e ${HOME}/.p10k.zsh && source ${HOME}/.p10k.zsh
 test -e ${HOME}/.acme.sh/acme.sh.env && source ${HOME}/.acme.sh/acme.sh.env
 
 # Additional setups
