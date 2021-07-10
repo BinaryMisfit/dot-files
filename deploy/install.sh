@@ -32,8 +32,17 @@ if [ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]; then
     echo "Updating dotbot"
   fi
 
-  git -C "${DOT_BOT_DIR}" submodule update --init --recursive --quiet
+  git -C "${BASE_DIR}" submodule update --init --recursive --quiet
 fi
+
+if [ "${1}" == "-vv" ]; then
+  echo "Updating repository"
+fi
+
+OLD_HOME=$HOME
+unset HOME;
+git -C "${BASE_DIR}" pull --autostash --all --recurse-submodules --quiet
+HOME=$OLD_HOME
 
 for CONF in ${DEFAULT_CONFIG_PREFIX} ${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
   if [ "${CONF}" == "-vv" ]; then
