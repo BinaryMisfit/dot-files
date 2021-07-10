@@ -30,6 +30,6 @@
   sinit = submodule update --init --recursive
   supdate = submodule update --init --remote
 [credential]
-	helper = osxkeychain
+	helper = store
 [submodule]
 	recurse = true
