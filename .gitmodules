@@ -20,3 +20,7 @@
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
 	shallow = true
+[submodule "external/oh-my-zsh"]
+	path = external/oh-my-zsh
+	url = https://github.com/ohmyzsh/ohmyzsh
+	shallow = true
