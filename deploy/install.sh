@@ -27,22 +27,24 @@ if [ "${1}" == "-vv" ]; then
   echo "Found ${OS_PREFIX}"
 fi
 
+if [ ! -d "${BASE_DIR}" ]; then
+  bash -c "unset HOME; git clone --depth 1 --recurse-submodules --quiet \
+    https://github.com/BinaryMisfit/dot-files \"${BASE_DIR}\""
+fi
+
 if [ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]; then
   if [ "${1}" == "-vv" ]; then
     echo "Updating dotbot"
   fi
 
-  git -C "${BASE_DIR}" submodule update --init --recursive --quiet
+  bash -c "unset HOME; git -C \"${BASE_DIR}\" submodule update --init --recursive --quiet"
 fi
 
 if [ "${1}" == "-vv" ]; then
   echo "Updating repository"
 fi
 
-OLD_HOME=$HOME
-unset HOME;
-git -C "${BASE_DIR}" pull --autostash --all --recurse-submodules --quiet
-HOME=$OLD_HOME
+bash -c "unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --quiet"
 
 for CONF in ${DEFAULT_CONFIG_PREFIX} ${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
   if [ "${CONF}" == "-vv" ]; then
