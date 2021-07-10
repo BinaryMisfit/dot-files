@@ -17,3 +17,4 @@
       path: default/scripts/tools
     ~/.antigen/antigen.zsh:
       path: external/antigen/antigen.zsh
+      create: true
