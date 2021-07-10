@@ -19,3 +19,7 @@
 [submodule "external/tmux-prefix-highlight"]
   path = external/tmux-prefix-highlight
   url = https://github.com/tmux-plugins/tmux-prefix-highlight.git
+[submodule "dotbot"]
+	path = dotbot
+	url = https://github.com/anishathalye/dotbot
+	shallow = true
