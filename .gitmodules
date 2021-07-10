@@ -24,3 +24,7 @@
 	path = external/oh-my-zsh
 	url = https://github.com/ohmyzsh/ohmyzsh
 	shallow = true
+[submodule "external/powerlevel10k"]
+	path = external/powerlevel10k
+	url = https://github.com/romkatv/powerlevel10k
+	shallow = true

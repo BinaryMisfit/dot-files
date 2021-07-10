@@ -3,3 +3,8 @@
     link:
       create: true
       relink: true
+- shell:
+    - - git pull --all
+      - Updating
+    - - source ~/.zshrc
+      - Reloading

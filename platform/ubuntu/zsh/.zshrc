@@ -11,7 +11,7 @@ export POWERLEVEL9K_MODE=nerdfont-complete
 export ZSH=${HOME}/.oh-my-zsh
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 export ZSH_DISABLE_COMPFIX=true
-export ZSH_THEME=powerlevel9k/powerlevel9k
+export ZSH_THEME=powerlevel10k/powerlevel10k
 
 # Optional Variables
 test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"

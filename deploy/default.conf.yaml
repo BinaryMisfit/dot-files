@@ -8,7 +8,7 @@
 - create:
     - ${HOME}/.npm_global
 - shell:
-    - - git pull --all 
+    - - git pull --all
       - Updating
 - link:
     ~/.config/nvim:
