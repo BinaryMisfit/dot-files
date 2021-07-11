@@ -33,6 +33,8 @@ unsetopt BEEP
 
 # Export aliases
 test -e /usr/bin/nvim && alias sudoedit="sudo nvim "
+test -e /usr/bin/tmux && alias tm="tmux attach || tmux new-session"
+test -e /usr/bin/tmux && alias tl="tmux list-sessions"
 
 # Update PATH
 test -e $HOME/.npm_global && PATH=$HOME/.npm_global/bin:$PATH
