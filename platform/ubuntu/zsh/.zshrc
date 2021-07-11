@@ -15,6 +15,7 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export POWERLEVEL9K_MODE=nerdfont-complete
+export EDITOR=nvim
 
 # Optional Variables
 test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
@@ -31,11 +32,7 @@ autoload -U compinit && compinit
 unsetopt BEEP
 
 # Export aliases
-test -e /usr/bin/nvim && alias sudoedit="sudo /usr/bin/nvim "
-test -e /usr/bin/nvim && alias vi="/usr/bin/nvim "
-test -e /usr/bin/nvim && alias vim="/usr/bin/nvim "
-test -e /usr/bin/tmux && alias tm="/usr/bin/tmux attach || /usr/bin/tmux new-session"
-test -e /usr/bin/tmux && alias tl="/usr/bin/tmux list-sessions"
+test -e /usr/bin/nvim && alias sudoedit="sudo nvim "
 
 # Update PATH
 test -e $HOME/.npm_global && PATH=$HOME/.npm_global/bin:$PATH
