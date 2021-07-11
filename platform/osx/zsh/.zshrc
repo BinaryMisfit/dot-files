@@ -4,9 +4,12 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Load environment
+START_TMUX=false
 #test -e ${HOME}/.scripts/update_online.sh && /bin/bash ${HOME}/.scripts/update_online.sh
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
+test -e /usr/local/bin/tmux && START_TMUX=true
+[ ! -z ${TMUX} ] && START_TMUX=false
 
 # Variables
 export LANG=en_US.UTF-8
@@ -18,7 +21,8 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 export ZSH_DISABLE_COMPFIX=true
 export ZSH_THEME=powerlevel10k/powerlevel10k
 export EDITOR=nvim
-export ZSH_TMUX_AUTOSTART=true
+export ZSH_TMUX_AUTOSTART=${START_TMUX}
+export ZSH_TMUX_AUTOSTART_ONCE=true
 export ZSH_TMUX_AUTOCONNECT=true
 
 # Load Antigen
@@ -37,6 +41,7 @@ test -e ${HOME}/.acme.sh/acme.sh.env && source ${HOME}/.acme.sh/acme.sh.env
 # Additional setups
 autoload -U compinit && compinit
 unsetopt BEEP
+unset START_TMUX
 
 # Export aliases
 test -e /usr/local/bin/nvim && alias sudoedit="sudo nvim "
