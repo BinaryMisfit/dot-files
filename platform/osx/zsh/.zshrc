@@ -34,11 +34,11 @@ autoload -U compinit && compinit
 unsetopt BEEP
 
 # Export aliases
-test -e /usr/local/bin/nvim && alias sudoedit="sudo /usr/local/bin/nvim "
-test -e /usr/local/bin/nvim && alias vi="/usr/local/bin/nvim "
-test -e /usr/local/bin/nvim && alias vim="/usr/local/bin/nvim "
-test -e /usr/local/bin/tmux && alias tm="/usr/local/bin/tmux attach || /usr/local/bin/tmux new-session"
-test -e /usr/local/bin/tmux && alias tl="/usr/local/bin/tmux list-sessions"
+test -e /usr/local/bin/nvim && alias sudoedit="sudo nvim "
+test -e /usr/local/bin/nvim && alias vi="nvim "
+test -e /usr/local/bin/nvim && alias vim="nvim "
+test -e /usr/local/bin/tmux && alias tm="tmux attach || tmux new-session"
+test -e /usr/local/bin/tmux && alias tl="tmux list-sessions"
 
 # Update PATH
 test -e $HOME/Library/Android/sdk/platform-tools && PATH=$PATH:$HOME/Library/Android/sdk/platform-tools
