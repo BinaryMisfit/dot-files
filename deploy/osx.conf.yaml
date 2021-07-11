@@ -18,6 +18,8 @@
       path: platform/osx/ssh/config
     ~/.tmux.conf:
       path: platform/osx/tmux/.tmux.conf
+    ~/.tmux.conf.local:
+      path: platform/osx/tmux/.tmux.conf.local
     ~/.zshrc:
       path: platform/osx/zsh/.zshrc
 - shell:
