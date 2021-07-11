@@ -30,16 +30,16 @@ shift $((OPTIND-1))
 
 OS_PREFIX=
 case "${OSTYPE}" in
-"darwin"*)
-  OS_PREFIX='osx'
-  ;;
-"linux-gnu")
-  OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
-  ;;
-*)
-  echo "Unknown OS: ${OSTYPE}"
-  exit 1
-  ;;
+  "darwin"*)
+    OS_PREFIX='osx'
+    ;;
+  "linux-gnu")
+    OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    ;;
+  *)
+    echo "Unknown OS: ${OSTYPE}"
+    exit 1
+    ;;
 esac
 
 if [ "${VERBOSE}" == "1" ]; then
@@ -52,11 +52,11 @@ if [ ! -d "${BASE_DIR}" ]; then
   fi
 
   if [ "${VERBOSE}" == "1" ]; then
-   bash -c "unset HOME; git clone --depth 1 --recurse-submodules \
-    \"${REMOTE_REPO}\" \"${BASE_DIR}\""
-  else
-    bash -c "unset HOME; git clone --depth 1 --recurse-submodules --quiet \
+    bash -c "unset HOME; git clone --depth 1 --recurse-submodules \
       \"${REMOTE_REPO}\" \"${BASE_DIR}\""
+        else
+          bash -c "unset HOME; git clone --depth 1 --recurse-submodules --quiet \
+            \"${REMOTE_REPO}\" \"${BASE_DIR}\""
   fi
 fi
 
@@ -84,17 +84,14 @@ if [ "${UPDATE}" == "1" ]; then
   fi
 fi
 
-for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
-  if [ "${CONF}" == "-vv" ]; then
-    continue
-  fi
+ARGS=
+if [ "${VERBOSE}" == "1" ]; then
+  ARGS=-vv
+fi
 
-  if [ "${VERBOSE}" == "1" ]; then
-    echo "Applying ${CONF}"
-    "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -vv -d "${BASE_DIR}" \
-      -c "${DEPLOY_DIR}/${CONF}${CONFIG_SUFFIX}" --plugin-dir "${BASE_DIR}/${DOT_BOT_PLUG}"
-  else
-    "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -q -d "${BASE_DIR}" \
-      -c "${DEPLOY_DIR}/${CONF}${CONFIG_SUFFIX}" --plugin-dir "${BASE_DIR}/${DOT_BOT_PLUG}"
-  fi
-done
+for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
+  "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -d "${BASE_DIR}" ${ARGS} \
+    -c "${DEPLOY_DIR}/${CONF}${CONFIG_SUFFIX}" \
+    -p "${BASE_DIR}/${DOT_BOT_PLUG}/sudo/sudo.py" \
+    -p "${BASE_DIR}/${DOT_BOT_PLUG}/aptget/aptget.py"
+  done

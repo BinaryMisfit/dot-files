@@ -10,3 +10,7 @@
 	path = external/dotplugins/sudo
 	url = https://github.com/DrDynamic/dotbot-sudo
 	shallow = true
+[submodule "external/dotplugins/aptget"]
+	path = external/dotplugins/aptget
+	url = https://github.com/dein0s/dotbot_plugin_aptget
+	shallow = true

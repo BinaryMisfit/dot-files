@@ -1,6 +1,7 @@
 ---
 - sudo:
-  - shell:
-    -
-    command: ls -lha /root
+  - aptget:
+      git:
+        ppa_source: ppa:git-core/ppa
+        upgrade: true
 
