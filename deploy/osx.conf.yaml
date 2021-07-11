@@ -1,7 +1,7 @@
 ---
 - link:
     ~/.antigenrc:
-      path: platform/ubuntu/zsh/.antigenrc
+      path: platform/osx/zsh/.antigenrc
     ~/.gitconfig:
       path: platform/osx/git/.gitconfig
     ~/.iterm2:

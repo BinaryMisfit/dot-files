@@ -7,8 +7,6 @@ fi
 #test -e ${HOME}/.scripts/update_online.sh && /bin/bash ${HOME}/.scripts/update_online.sh
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
-test -e ${HOME}/.antigen/antigen.zsh && source ${HOME}/.antigen/antigen.zsh
-test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Variables
 export LANG=en_US.UTF-8
@@ -19,6 +17,13 @@ export ZSH=${HOME}/.oh-my-zsh
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
 export ZSH_DISABLE_COMPFIX=true
 export ZSH_THEME=powerlevel10k/powerlevel10k
+export EDITOR=nvim
+export ZSH_TMUX_AUTOSTART=true
+export ZSH_TMUX_AUTOCONNECT=true
+
+# Load Antigen
+test -e ${HOME}/.antigen/antigen.zsh && source ${HOME}/.antigen/antigen.zsh
+test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Optional Variables
 test -e /usr/local/bin/mono && export MONO_GAC_PREFIX="/usr/local"
