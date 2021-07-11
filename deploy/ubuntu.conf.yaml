@@ -10,11 +10,11 @@
       path: platform/ubuntu/zsh/.p10k.zsh
     ~/.packages:
       path: platform/ubuntu/packages
-    ~/.papercolor.tmux.conf:
-      path: platform/ubuntu/tmux/.papercolor.tmux.conf
     ~/.ssh/config:
       path: platform/ubuntu/ssh/config
     ~/.tmux.conf:
       path: platform/ubuntu/tmux/.tmux.conf
+    ~/.tmux.local.conf:
+      path: platform/ubuntu/tmux/.tmux.local.conf
     ~/.zshrc:
       path: platform/ubuntu/zsh/.zshrc
