@@ -7,6 +7,7 @@ DEFAULT_CONFIG_PREFIX="default"
 DEPLOY_DIR="${BASE_DIR}/deploy"
 DOT_BOT_DIR="${BASE_DIR}/dotbot"
 DOT_BOT_BIN="bin/dotbot"
+DOT_BOT_PLUG="external/dotplugins"
 FINAL_CONFIG_PREFIX="final"
 INSTALL_CONFIG_PREFIX="install"
 VERBOSE=0
@@ -83,15 +84,17 @@ if [ "${UPDATE}" == "1" ]; then
   fi
 fi
 
-for CONF in ${DEFAULT_CONFIG_PREFIX} ${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
+for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
   if [ "${CONF}" == "-vv" ]; then
     continue
   fi
 
   if [ "${VERBOSE}" == "1" ]; then
     echo "Applying ${CONF}"
-    "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -vv -d "${BASE_DIR}" -c "${DEPLOY_DIR}/${CONF}${CONFIG_SUFFIX}"
+    "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -vv -d "${BASE_DIR}" \
+      -c "${DEPLOY_DIR}/${CONF}${CONFIG_SUFFIX}" --plugin-dir "${BASE_DIR}/${DOT_BOT_PLUG}"
   else
-    "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -q -d "${BASE_DIR}" -c "${DEPLOY_DIR}/${CONF}${CONFIG_SUFFIX}"
+    "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -q -d "${BASE_DIR}" \
+      -c "${DEPLOY_DIR}/${CONF}${CONFIG_SUFFIX}" --plugin-dir "${BASE_DIR}/${DOT_BOT_PLUG}"
   fi
 done

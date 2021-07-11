@@ -1,0 +1,6 @@
+---
+- sudo:
+  - shell:
+    -
+    command: ls -lha /root
+
