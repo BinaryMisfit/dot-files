@@ -20,6 +20,7 @@ export EDITOR=nvim
 export ZSH_TMUX_AUTOSTART=${START_TMUX}
 export ZSH_TMUX_AUTOSTART_ONCE=true
 export ZSH_TMUX_AUTOCONNECT=true
+export ZSH_TMUX_AUTOQUIT=${START_TMUX}
 
 # Load Antigen
 test -e ${HOME}/.antigen/antigen.zsh && source ${HOME}/.antigen/antigen.zsh

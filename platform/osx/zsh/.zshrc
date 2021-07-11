@@ -16,14 +16,11 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export POWERLEVEL9K_MODE=nerdfont-complete
-export ZSH=${HOME}/.oh-my-zsh
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=250,underline"
-export ZSH_DISABLE_COMPFIX=true
-export ZSH_THEME=powerlevel10k/powerlevel10k
 export EDITOR=nvim
 export ZSH_TMUX_AUTOSTART=${START_TMUX}
 export ZSH_TMUX_AUTOSTART_ONCE=true
 export ZSH_TMUX_AUTOCONNECT=true
+export ZSH_TMUX_AUTOQUIT=${START_TMUX}
 
 # Load Antigen
 test -e ${HOME}/.antigen/antigen.zsh && source ${HOME}/.antigen/antigen.zsh
