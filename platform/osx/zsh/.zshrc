@@ -4,9 +4,11 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Load environment
-test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 #test -e ${HOME}/.scripts/update_online.sh && /bin/bash ${HOME}/.scripts/update_online.sh
+test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
+test -e ${HOME}/.antigen/antigen.zsh && source ${HOME}/.antigen/antigen.zsh
+test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Variables
 export LANG=en_US.UTF-8
@@ -23,17 +25,7 @@ test -e /usr/local/bin/mono && export MONO_GAC_PREFIX="/usr/local"
 test -e /usr/local/share/dotnet/dotnet && export MSBuildSDKsPath="/usr/local/share/dotnet/sdk/$(dotnet --version)/Sdks"
 test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
 
-# Plugins
-plugins=(
-    zsh-completions
-    zsh-autosuggestions
-    zsh-navigation-tools
-    zsh_reload
-    zsh-syntax-highlighting
-)
-
 # Source config files
-test -e ${ZSH}/oh-my-zsh.sh && source ${ZSH}/oh-my-zsh.sh
 test -e ${HOME}/.p10k.zsh && source ${HOME}/.p10k.zsh
 test -e ${HOME}/.acme.sh/acme.sh.env && source ${HOME}/.acme.sh/acme.sh.env
 

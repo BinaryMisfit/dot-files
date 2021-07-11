@@ -1,11 +1,7 @@
 ---
-- defaults:
-    link:
-      create: true
-      relink: true
-- clean:
-    - "${HOME}"
 - link:
+    ~/.antigenrc:
+      path: platform/ubuntu/zsh/.antigenrc
     ~/.gitconfig:
       path: platform/osx/git/.gitconfig
     ~/.iterm2:
