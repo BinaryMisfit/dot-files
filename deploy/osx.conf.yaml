@@ -24,3 +24,6 @@
       path: platform/osx/zsh/.zshrc
 - shell:
     - ~/.iterm2/update_config.sh - Configuring iTerm2
+- clean:
+    ~/:
+      recursive: false

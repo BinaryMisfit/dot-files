@@ -1,7 +1,4 @@
 ---
-- clean:
-    ~/:
-      recursive: true
 - shell:
     -
       command: git clean -f ~/.dotfiles
