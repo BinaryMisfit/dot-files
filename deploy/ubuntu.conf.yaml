@@ -14,7 +14,7 @@
       path: platform/ubuntu/ssh/config
     ~/.tmux.conf:
       path: platform/ubuntu/tmux/.tmux.conf
-    ~/.tmux.local.conf:
-      path: platform/ubuntu/tmux/.tmux.local.conf
+    ~/.tmux.conf.local:
+      path: platform/ubuntu/tmux/.tmux.conf.local
     ~/.zshrc:
       path: platform/ubuntu/zsh/.zshrc
