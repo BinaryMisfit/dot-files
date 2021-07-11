@@ -6,3 +6,7 @@
 	path = external/antigen
 	url = https://github.com/zsh-users/antigen
 	shallow = true
+[submodule "external/dotplugins/sudo"]
+	path = external/dotplugins/sudo
+	url = https://github.com/DrDynamic/dotbot-sudo
+	shallow = true
