@@ -7,8 +7,6 @@ fi
 #test -e ${HOME}/.scripts/update_online.sh && /bin/bash ${HOME}/.scripts/update_online.sh
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
-test -e ${HOME}/.antigen/antigen.zsh && source ${HOME}/.antigen/antigen.zsh
-test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Variables
 export LANG=en_US.UTF-8
@@ -16,6 +14,13 @@ export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export POWERLEVEL9K_MODE=nerdfont-complete
 export EDITOR=nvim
+export ZSH_TMUX_AUTOSTART=true
+export ZSH_TMUX_AUTOCONNECT=true
+
+# Load Antigen
+test -e ${HOME}/.antigen/antigen.zsh && source ${HOME}/.antigen/antigen.zsh
+test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
+
 
 # Optional Variables
 test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
