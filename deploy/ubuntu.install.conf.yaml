@@ -21,7 +21,8 @@
         upgrade: true
   - shell:
       - apt remove -y --purge vim
-      - npm -g install --upgrade neovim
+      - npm -g install neovim
+      - npm -g update neovim
       - curl -fsSL https://bootstrap.pypa.io/get-pip.py -o ~/get-pip.py
       - python3 ~/get-pip.py
       - python3 -m pip install --upgrade pip
