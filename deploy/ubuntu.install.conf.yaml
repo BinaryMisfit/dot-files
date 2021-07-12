@@ -1,11 +1,17 @@
 ---
 - sudo:
+  - shell:
+      - curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
   - aptget:
+      build-essential:
+        upgrade: true
       zsh:
         upgrade: true
       tmux:
         upgrade: true
       python3:
+        upgrade: true
+      nodejs:
         upgrade: true
       neovim:
         ppa_source: ppa:neovim-ppa/unstable
@@ -13,3 +19,11 @@
       git:
         ppa_source: ppa:git-core/ppa
         upgrade: true
+  - shell:
+      - npm -g install --upgrade neovim
+      - curl -fsSL https://bootstrap.pypa.io/get-pip.py -o ~/get-pip.py
+      - python3 ~/get-pip.py
+      - python3 -m pip install --upgrade pip
+      - python3 -m pip install --upgrade pynvim
+      - rm ~/get-pip.py
+      - rm -rf __pycache__

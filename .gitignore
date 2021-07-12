@@ -24,3 +24,6 @@ default/nvim/autoload
 
 # IntelliJ
 **/.idea
+
+# Python Cache
+**/__pycache__
