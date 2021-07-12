@@ -1,7 +1,12 @@
 ---
 - sudo:
-  - aptget: [tmux, zsh]
   - aptget:
+      zsh:
+        upgrade: true
+      tmux:
+        upgrade: true
+      python3:
+        upgrade: true
       neovim:
         ppa_source: ppa:neovim-ppa/unstable
         upgrade: true
