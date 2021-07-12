@@ -1,5 +1,6 @@
 Host *
   SendEnv LC_*
+  SendEnv TMUX*
 
 Host hosting
   HostName hosting.senselesslyfoolish.com
