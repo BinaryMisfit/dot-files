@@ -14,9 +14,9 @@ fi
 while getopts "v" OPT; do
   case "${OPT}" in
     v)
-      VERBOSE=1
       ARGS_APT=
       ARGS_REDIRECT=
+      VERBOSE=1
       ;;
   esac
 done
@@ -47,9 +47,9 @@ if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]]; then
 
   echo "deb https://deb.nodesource.com/node_16.x $DISTRO main" \
     > /etc/apt/sources.list.d/nodesource.list
-  echo "deb-src https://deb.nodesource.com/node_16.x $DISTRO main" \
-    >> /etc/apt/sources.list.d/nodesource.list
-  INSTALL_LIST+=("nodejs")
+      echo "deb-src https://deb.nodesource.com/node_16.x $DISTRO main" \
+        >> /etc/apt/sources.list.d/nodesource.list
+              INSTALL_LIST+=("nodejs")
 fi
 
 if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" == "" ]]; then
@@ -85,7 +85,7 @@ printf "\033[0;32m\nAll sources have been set up\033[0m"
 
 if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
   build-essential 2>/dev/null)" ]]; then
-  INSTALL_LIST+="build-essential"
+  INSTALL_LIST+=("build-essential")
 fi
 
 if [[ ! -f /usr/share/zsh-antigen/antigen.zsh ]]; then
@@ -100,6 +100,10 @@ if [[ "$(command -v node)" == "" ]] || [[ "$(command -v npm)" == "" ]]; then
   INSTALL_LIST+=("nodejs")
 fi
 
+if [[ "$(command -v nvim)" == "" ]]; then
+  INSTALL_LIST+=("neovim")
+fi
+
 if [[ "$(command -v tmux)" == "" ]]; then
   INSTALL_LIST+=("tmux")
 fi
@@ -108,24 +112,89 @@ if [[ "$(command -v zsh)" == "" ]]; then
   INSTALL_LIST+=("zsh")
 fi
 
-INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -n -u))
+INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -u))
 
 if [[ "${INSTALL_LIST}" != "" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033\n[0;31mMissing %s\033[0m" "${INSTALL_LIST[@]}"
-    printf "\033[0;34m\nRunning apt-get update\033[0m"
+    printf "\033[0;31m\nMissing %s\033[0m" "${INSTALL_LIST[@]}"
+    printf "\033[0;34m\nRunning apt-get update\033[0m\n"
   fi
 
   apt-get ${ARGS_APT} update
 
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nRunning apt-get install\033[0m"
+    printf "\033[0;34m\nRunning apt-get install\033[0m\n"
   fi
 
-  apt-get ${ARGS_APT} install -y ${INSTALL_LIST}
+  apt-get ${ARGS_APT} install -y ${INSTALL_LIST[@]}
 fi
 
-printf "\033[0;32m\nAll packages have been set up\033[0m\n"
+printf "\033[0;32m\nAll packages have been set up\033[0m"
+
+if [[ "" != "$(dpkg-query -W --showformat='${Status}\n' \
+  vim | grep "install ok installed" 2>/dev/null)" ]]; then
+  INSTALL_LIST=("vim")
+fi
+
+if [[ "" != "$(dpkg-query -W --showformat='${Status}\n' \
+  vim-tiny | grep "install ok installed" 2>/dev/null)" ]]; then
+  INSTALL_LIST+=("vim-tiny")
+fi
+
+if [[ "${INSTALL_LIST}" != "" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;31m\nRemove %s\033[0m" "${INSTALL_LIST[@]}"
+    printf "\033[0;34m\nRunning apt-get remove\033[0m\n"
+  fi
+
+  apt-get ${ARGS_APT} remove --purge -y ${INSTALL_LIST[@]}
+
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34m\nRunning apt-get autoremove\033[0m\n"
+  fi
+
+  apt-get ${ARGS_APT} autoremove -y
+fi
+
+printf "\033[0;32m\nAll packages have been removed\033[0m\n"
+
+if [[ "" == "$(npm list -g neovim)" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mInstalling neovim [global]\033[0m\n"
+  fi
+
+  npm -g install neovim@latest &>/dev/null
+fi
+
+if [[ "" == "$(sudo -i -u "${SUDO_USER}" npm list -g neovim)" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mInstalling neovim [${SUDO_USER}]\033[0m\n"
+  fi
+
+  sudo -i -u "${SUDO_USER}" npm -g install neovim@latest &>/dev/null
+fi
+
+printf "\033[0;32mAll node packages have been installed\033[0m\n"
+
+if [[ "" != "$(python3 -m pip --version | grep 'No module named')" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mInstalling pip\033[0m\n"
+  fi
+
+  curl -fsSL https://bootstrap.pypa.io/get-pip.py | python3 - &>/dev/null
+  python3 -m pip install --upgrade pip &>/dev/null
+fi
+
+if [[ "" == "$(python3 -m pip list | grep pynvim)" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mInstalling pynvim\033[0m\n"
+  fi
+
+  python3 -m pip install --upgrade pynvim &>/dev/null
+fi
+
+printf "\033[0;32mAll pip packages have been installed\033[0m\n"
+
 printf "\n\033[0;32m==> All tasks executed successfully\033[0m\n"
 
 unset ARGS_APT

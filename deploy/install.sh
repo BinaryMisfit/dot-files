@@ -91,6 +91,7 @@ fi
 printf "\033[0;32m\n\n==> All tasks executed successfully\033[0m"
 
 if [[ -x "${INSTALL_SCRIPTS}${OS_PREFIX}" ]]; then
+  printf "\033[0;32m\nApplying install\033[0m"
   bash -c "sudo \"${INSTALL_SCRIPTS}${OS_PREFIX}\" ${ARGS_INSTALL}"
 fi
 
