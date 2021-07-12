@@ -20,6 +20,7 @@
         ppa_source: ppa:git-core/ppa
         upgrade: true
   - shell:
+      - apt remove -y --purge vim
       - npm -g install --upgrade neovim
       - curl -fsSL https://bootstrap.pypa.io/get-pip.py -o ~/get-pip.py
       - python3 ~/get-pip.py
