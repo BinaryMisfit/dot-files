@@ -52,10 +52,10 @@ if [ ! -d "${BASE_DIR}" ]; then
   fi
 
   if [ "${VERBOSE}" == "1" ]; then
-    bash -c "unset HOME; git clone --depth 1 --recurse-submodules \
+    bash -c "unset HOME; git clone --depth 1 --recurse-submodules --rebase \
       \"${REMOTE_REPO}\" \"${BASE_DIR}\""
         else
-          bash -c "unset HOME; git clone --depth 1 --recurse-submodules --quiet \
+          bash -c "unset HOME; git clone --depth 1 --recurse-submodules --quiet --rebase \
             \"${REMOTE_REPO}\" \"${BASE_DIR}\""
   fi
 fi

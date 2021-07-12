@@ -1,5 +1,6 @@
 ---
 - sudo:
+  - aptget: [tmux, zsh]
   - aptget:
       neovim:
         ppa_source: ppa:neovim-ppa/unstable
@@ -7,4 +8,3 @@
       git:
         ppa_source: ppa:git-core/ppa
         upgrade: true
-
