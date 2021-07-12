@@ -2,15 +2,3 @@
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
 	shallow = true
-[submodule "external/antigen"]
-	path = external/antigen
-	url = https://github.com/zsh-users/antigen
-	shallow = true
-[submodule "external/dotplugins/sudo"]
-	path = external/dotplugins/sudo
-	url = https://github.com/DrDynamic/dotbot-sudo
-	shallow = true
-[submodule "external/dotplugins/aptget"]
-	path = external/dotplugins/aptget
-	url = https://github.com/dein0s/dotbot_plugin_aptget
-	shallow = true
