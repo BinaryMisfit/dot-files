@@ -1,11 +1,6 @@
 ---
 - shell:
     -
-      command: git clean -f ~/.dotfiles
-      description: Cleaning repository
-      quiet: true
-    -
       command: exec zsh
-      description: Reloading Environment
       quiet: true
 

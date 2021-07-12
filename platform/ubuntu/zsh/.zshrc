@@ -23,7 +23,7 @@ export ZSH_TMUX_AUTOCONNECT=true
 export ZSH_TMUX_AUTOQUIT=${START_TMUX}
 
 # Load Antigen
-test -e ${HOME}/.antigen/antigen.zsh && source ${HOME}/.antigen/antigen.zsh
+test -e /usr/share/zsh-antigen/antigen.zsh && source /usr/share/zsh-antigen/antigen.zsh
 test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Optional Variables

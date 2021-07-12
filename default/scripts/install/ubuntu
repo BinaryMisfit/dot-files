@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+ARGS_APT="-qq"
+ARGS_REDIRECT="> /dev/null 2>&1"
+DISTRO="$(lsb_release -s -c)"
+INSTALL_LIST=()
+SOURCES_ADDED=0
+VERBOSE=0
+
+if [[ "$EUID" -ne "0" ]]; then
+  printf "\033[0;31mScript needs to be run as root, aborting\033[0m\n"
+  exit 1
+fi
+
+while getopts "v" OPT; do
+  case "${OPT}" in
+    v)
+      VERBOSE=1
+      ARGS_APT=
+      ARGS_REDIRECT=
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+[[ "${1:-}" = "--" ]] && shift
+
+if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34m\nInstalling nodesource repository\033[0m"
+  fi
+
+  if [[ ! -f /usr/share/keyrings/nodesource.gpg ]]; then
+
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34m\nImporting signing key\033[0m"
+    fi
+
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
+      | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
+  fi
+
+  SOURCES_ADDED=1
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34m\nAdding repository\033[0m"
+  fi
+
+  echo "deb https://deb.nodesource.com/node_16.x $DISTRO main" \
+    > /etc/apt/sources.list.d/nodesource.list
+  echo "deb-src https://deb.nodesource.com/node_16.x $DISTRO main" \
+    >> /etc/apt/sources.list.d/nodesource.list
+  INSTALL_LIST+=("nodejs")
+fi
+
+if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" == "" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34m\nInstalling git repository\033[0m\n"
+  fi
+
+  add-apt-repository -nsy ppa:git-core/ppa ${ARGS_REDIRECT}
+  SOURCES_ADDED=1
+  INSTALL_LIST+=("git")
+fi
+
+if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" == "" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34m\nInstalling neovim repository\033[0m\n"
+  fi
+
+  add-apt-repository -nsy ppa:neovim-ppa/unstable ${ARGS_REDIRECT}
+  SOURCES_ADDED=1
+  INSTALL_LIST+=("neovim")
+fi
+
+if [[ "${SOURCES_ADDED}" == "1" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34m\nRunning apt-get update\033[0m\n"
+  fi
+
+  apt-get ${ARGS_APT} update
+fi
+
+
+printf "\033[0;32m\nAll sources have been set up\033[0m"
+
+if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
+  build-essential 2>/dev/null)" ]]; then
+  INSTALL_LIST+="build-essential"
+fi
+
+if [[ ! -f /usr/share/zsh-antigen/antigen.zsh ]]; then
+  INSTALL_LIST+=("zsh-antigen")
+fi
+
+if [[ "$(command -v python3)" == "" ]]; then
+  INSTALL_LIST+=("python3")
+fi
+
+if [[ "$(command -v node)" == "" ]] || [[ "$(command -v npm)" == "" ]]; then
+  INSTALL_LIST+=("nodejs")
+fi
+
+if [[ "$(command -v tmux)" == "" ]]; then
+  INSTALL_LIST+=("tmux")
+fi
+
+if [[ "$(command -v zsh)" == "" ]]; then
+  INSTALL_LIST+=("zsh")
+fi
+
+INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -n -u))
+
+if [[ "${INSTALL_LIST}" != "" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033\n[0;31mMissing %s\033[0m" "${INSTALL_LIST[@]}"
+    printf "\033[0;34m\nRunning apt-get update\033[0m"
+  fi
+
+  apt-get ${ARGS_APT} update
+
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34m\nRunning apt-get install\033[0m"
+  fi
+
+  apt-get ${ARGS_APT} install -y ${INSTALL_LIST}
+fi
+
+printf "\033[0;32m\nAll packages have been set up\033[0m\n"
+printf "\n\033[0;32m==> All tasks executed successfully\033[0m\n"
+
+unset ARGS_APT
+unset ARGS_REDIRECT
+unset DISTRO
+unset INSTALL_LIST
+unset SOURCES_ADDED
+unset VERBOSE

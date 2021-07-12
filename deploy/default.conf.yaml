@@ -2,7 +2,6 @@
 - shell:
     -
       command: test -d ~/.npm_global || mkdir -p ~/.npm_global
-      description: Creating Node Repo
       quiet: true
 - link:
     ~/.config/nvim:
@@ -11,6 +10,3 @@
       path: default/scripts/shell/.iterm2_shell_integration.zsh
     ~/.scripts:
       path: default/scripts/tools
-    ~/.antigen/antigen.zsh:
-      path: external/antigen/antigen.zsh
-      create: true

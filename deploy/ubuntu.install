@@ -3,14 +3,6 @@
   - shell:
       - curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
   - aptget:
-      build-essential:
-        upgrade: true
-      zsh:
-        upgrade: true
-      tmux:
-        upgrade: true
-      python3:
-        upgrade: true
       nodejs:
         upgrade: true
       neovim:
