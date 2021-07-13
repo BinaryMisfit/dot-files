@@ -273,6 +273,10 @@ if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor'
     printf "\033[0;34mUpdating editor\033[0m\n"
   fi
 
+  if [[ "" == "$(update-alternatives --display editor | grep $(which nvim))" ]]; then
+    update-alternatives --install /usr/bin/editor editor $(which nvim) 100
+  fi
+
   update-alternatives --set editor $(which nvim)
 fi
 
