@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 ARGS_APT="-qq"
 ARGS_CURL="-sS"
+ARGS_QUIET="--quiet"
 DISTRO="$(lsb_release -s -c)"
 FILE_CONTENT=
 INSTALL_LIST=()
@@ -24,6 +25,7 @@ while getopts "v" OPT; do
     v)
       ARGS_APT=
       ARGS_CURL=
+      ARGS_QUIET=
       VERBOSE=1
       ;;
   esac
@@ -273,13 +275,16 @@ if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor'
     printf "\033[0;34mUpdating editor\033[0m\n"
   fi
 
-  if [[ "" == "$(update-alternatives --display editor | grep $(which nvim))" ]]; then
-    update-alternatives --install /usr/bin/editor editor $(which nvim) 100
-    update-alternatives --install /usr/bin/vi vi $(which nvim) 100
+  if [[ "" == "$(update-alternatives --display vi | grep $(which nvim))" ]]; then
+    update-alternatives --install /usr/bin/vi vi $(which nvim) 100 ${ARGS_QUIET}
   fi
 
-  update-alternatives --set editor $(which nvim)
-  update-alternatives --set vi $(which nvim)
+  if [[ "" == "$(update-alternatives --display editor | grep $(which nvim))" ]]; then
+    update-alternatives --install /usr/bin/editor editor $(which nvim) 100 ${ARGS_QUIET}
+  fi
+
+  update-alternatives --set editor $(which nvim) ${ARGS_QUIET}
+  update-alternatives --set vi $(which nvim) ${ARGS_QUIET}
 fi
 
 printf "\033[0;32mAll commands have been executed\033[0m\n"
@@ -287,6 +292,7 @@ printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 
 unset ARGS_APT
 unset ARGS_CURL
+unset ARGS_QUIET
 unset DISTRO
 unset FILE_CONTENT
 unset INSTALL_LIST
