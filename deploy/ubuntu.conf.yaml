@@ -2,22 +2,31 @@
 - link:
     ~/.antigenrc:
       path: platform/ubuntu/zsh/.antigenrc
+      create: true
     ~/.gitconfig:
       path: platform/ubuntu/git/.gitconfig
+      create: true
     ~/.npmrc:
       path: platform/ubuntu/node/.npmrc
+      create: true
     ~/.p10k.zsh:
       path: platform/ubuntu/zsh/.p10k.zsh
+      create: true
     ~/.packages:
       path: platform/ubuntu/packages
+      create: true
     ~/.ssh/config:
       path: platform/ubuntu/ssh/config
+      create: true
     ~/.tmux.conf:
       path: platform/ubuntu/tmux/.tmux.conf
+      create: true
     ~/.tmux.conf.local:
       path: platform/ubuntu/tmux/.tmux.conf.local
+      create: true
     ~/.zshrc:
       path: platform/ubuntu/zsh/.zshrc
+      create: true
 - clean:
     ~/:
       recursive: true

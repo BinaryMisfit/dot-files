@@ -74,6 +74,11 @@ fi
 printf "\033[0;32mAll sources have been installed\033[0m\n"
 
 if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
+  coreutils 2>/dev/null)" ]]; then
+  INSTALL_LIST+=("coreutils")
+fi
+
+if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
   build-essential 2>/dev/null)" ]]; then
   INSTALL_LIST+=("build-essential")
 fi
