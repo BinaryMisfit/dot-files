@@ -264,6 +264,14 @@ if [[ "$(which zsh)" != "$(getent passwd $SUDO_USER | awk -F: '{print $NF}')" ]]
   chsh ${SUDO_USER} --shell $(which zsh)
 fi
 
+if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor' | awk '{ print $3 }')" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mUpdating editor\033[0m\n"
+  fi
+
+  update-alternatives --set editor $(which nvim)
+fi
+
 printf "\033[0;32mAll commands have been executed\033[0m\n"
 printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 
