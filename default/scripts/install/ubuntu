@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ARGS_APT="-qq"
-ARGS_REDIRECT="> /dev/null 2>&1"
+ARGS_CURL="-sS"
 DISTRO="$(lsb_release -s -c)"
 INSTALL_LIST=()
 SOURCES_ADDED=0
@@ -15,7 +15,7 @@ while getopts "v" OPT; do
   case "${OPT}" in
     v)
       ARGS_APT=
-      ARGS_REDIRECT=
+      ARGS_CURL=
       VERBOSE=1
       ;;
   esac
@@ -27,22 +27,12 @@ shift $((OPTIND-1))
 
 if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nInstalling nodesource repository\033[0m"
+    printf "\033[0;34mInstalling nodesource repository\033[0m\n"
   fi
 
   if [[ ! -f /usr/share/keyrings/nodesource.gpg ]]; then
-
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34m\nImporting signing key\033[0m"
-    fi
-
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
       | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
-  fi
-
-  SOURCES_ADDED=1
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nAdding repository\033[0m"
   fi
 
   echo "deb https://deb.nodesource.com/node_16.x $DISTRO main" \
@@ -50,38 +40,38 @@ if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]]; then
       echo "deb-src https://deb.nodesource.com/node_16.x $DISTRO main" \
         >> /etc/apt/sources.list.d/nodesource.list
               INSTALL_LIST+=("nodejs")
+  SOURCES_ADDED=1
 fi
 
 if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" == "" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nInstalling git repository\033[0m\n"
+    printf "\033[0;34mInstalling git repository\033[0m\n"
   fi
 
-  add-apt-repository -nsy ppa:git-core/ppa ${ARGS_REDIRECT}
+  add-apt-repository -nsy ppa:git-core/ppa 2>&1 > /dev/null
   SOURCES_ADDED=1
   INSTALL_LIST+=("git")
 fi
 
 if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" == "" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nInstalling neovim repository\033[0m\n"
+    printf "\033[0;34mInstalling neovim repository\033[0m\n"
   fi
 
-  add-apt-repository -nsy ppa:neovim-ppa/unstable ${ARGS_REDIRECT}
+  add-apt-repository -nsy ppa:neovim-ppa/unstable 2>&1 > /dev/null
   SOURCES_ADDED=1
   INSTALL_LIST+=("neovim")
 fi
 
 if [[ "${SOURCES_ADDED}" == "1" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nRunning apt-get update\033[0m\n"
+    printf "\033[0;34mRunning apt-get update\033[0m\n"
   fi
 
   apt-get ${ARGS_APT} update
 fi
 
-
-printf "\033[0;32m\nAll sources have been set up\033[0m"
+printf "\033[0;32mAll sources have been installed\033[0m\n"
 
 if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
   build-essential 2>/dev/null)" ]]; then
@@ -116,24 +106,25 @@ INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -u))
 
 if [[ "${INSTALL_LIST}" != "" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;31m\nMissing %s\033[0m" "${INSTALL_LIST[@]}"
-    printf "\033[0;34m\nRunning apt-get update\033[0m\n"
+    printf "\033[0;31mMissing %s\033[0m\n" "${INSTALL_LIST[@]}"
+    printf "\033[0;34mRunning apt-get update\033[0m\n"
   fi
 
   apt-get ${ARGS_APT} update
 
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nRunning apt-get install\033[0m\n"
+    printf "\033[0;34mRunning apt-get install\033[0m\n"
   fi
 
   apt-get ${ARGS_APT} install -y ${INSTALL_LIST[@]}
 fi
 
-printf "\033[0;32m\nAll packages have been set up\033[0m"
+printf "\033[0;32mAll packages have been installed\033[0m\n"
+INSTALL_LIST=()
 
 if [[ "" != "$(dpkg-query -W --showformat='${Status}\n' \
   vim | grep "install ok installed" 2>/dev/null)" ]]; then
-  INSTALL_LIST=("vim")
+  INSTALL_LIST+=("vim")
 fi
 
 if [[ "" != "$(dpkg-query -W --showformat='${Status}\n' \
@@ -143,20 +134,20 @@ fi
 
 if [[ "${INSTALL_LIST}" != "" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;31m\nRemove %s\033[0m" "${INSTALL_LIST[@]}"
-    printf "\033[0;34m\nRunning apt-get remove\033[0m\n"
+    printf "\033[0;31mRemove %s\033[0m\n" "${INSTALL_LIST[@]}"
+    printf "\033[0;34mRunning apt-get remove\033[0m\n"
   fi
 
   apt-get ${ARGS_APT} remove --purge -y ${INSTALL_LIST[@]}
 
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nRunning apt-get autoremove\033[0m\n"
+    printf "\033[0;34mRunning apt-get autoremove\033[0m\n"
   fi
 
   apt-get ${ARGS_APT} autoremove -y
 fi
 
-printf "\033[0;32m\nAll packages have been removed\033[0m\n"
+printf "\033[0;32mAll packages have been removed\033[0m\n"
 
 if [[ "" == "$(npm list -g neovim)" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
@@ -181,7 +172,7 @@ if [[ "" != "$(python3 -m pip --version | grep 'No module named')" ]]; then
     printf "\033[0;34mInstalling pip\033[0m\n"
   fi
 
-  curl -fsSL https://bootstrap.pypa.io/get-pip.py | python3 - &>/dev/null
+  curl -fL ${ARGS_CURL} https://bootstrap.pypa.io/get-pip.py | python3 - &>/dev/null
   python3 -m pip install --upgrade pip &>/dev/null
 fi
 
@@ -194,11 +185,10 @@ if [[ "" == "$(python3 -m pip list | grep pynvim)" ]]; then
 fi
 
 printf "\033[0;32mAll pip packages have been installed\033[0m\n"
-
-printf "\n\033[0;32m==> All tasks executed successfully\033[0m\n"
+printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 
 unset ARGS_APT
-unset ARGS_REDIRECT
+unset ARGS_CURL
 unset DISTRO
 unset INSTALL_LIST
 unset SOURCES_ADDED

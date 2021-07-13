@@ -2,6 +2,7 @@
 ARGS_DOTBOT="-q"
 ARGS_GIT="--quiet"
 ARGS_INSTALL=
+ARGS_REDIRECT="2>/dev/null"
 BASE_DIR="${HOME}/.dotfiles"
 CONF_SUFFIX=".conf.yaml"
 DEFAULT_CONFIG_PREFIX="default"
@@ -26,6 +27,7 @@ while getopts "Qv" OPT; do
       ARGS_DOTBOT="-vv"
       ARGS_GIT=
       ARGS_INSTALL="-v"
+      ARGS_REDIRECT=
       ;;
   esac
 done
@@ -48,7 +50,7 @@ case "${OSTYPE}" in
     ;;
 esac
 
-printf "\033[0;32m==> Found ${OS_PREFIX}\033[0m"
+printf "\033[0;32m==> Found ${OS_PREFIX}\033[0m\n"
 
 if [[ $(command -v git) == "" ]]; then
   printf "\033[0;31m\ngit not found, aborting\033[0m\n"
@@ -56,42 +58,41 @@ if [[ $(command -v git) == "" ]]; then
 fi
 
 if [[ $(command -v add-apt-repository) == "" ]]; then
-  printf "\033[0;31m\nadd-add-apt-repository not found, aborting\033[0m\n"
+  printf "\033[0;31m\nadd-apt-repository not found, aborting\033[0m\n"
   exit 1
 fi
 
 if [[ ! -d "${BASE_DIR}" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nInstalling dotfiles\033[0m"
+    printf "\033[0;34mInstalling dotfiles\033[0m\n"
   fi
 
-  bash -c "unset HOME; git clone --depth 1 --recurse-submodules ${ARGS_GIT} \
-    \"${REMOTE_REPO}\" \"${BASE_DIR}\""
+  bash -c "unset HOME; git clone --depth 1 --recurse-submodules \
+    \"${REMOTE_REPO}\" \"${BASE_DIR}\"" ${ARGS_GIT} ${ARGS_REDIRECT}
 fi
 
 if [[ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nUpdating dotbot\033[0m"
+    printf "\033[0;34mUpdating dotbot\033[0m\n"
   fi
 
-  bash -c "unset HOME; git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase ${ARGS_GIT}"
+  bash -c "unset HOME; git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase ${ARGS_GIT} ${ARGS_REDIRECT} "
 fi
-
-printf "\033[0;32m\nAll commands have been executed\033[0m"
 
 if [[ "${UPDATE}" == "1" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34m\nUpdating repository\033[0m"
+    printf "\033[0;34mUpdating repository\033[0m\n"
   fi
 
-  bash -c "unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase ${ARGS_GIT}"
-  printf "\033[0;32m\nAll files have been updated\033[0m"
+  bash -c "unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules \
+    --rebase ${ARGS_GIT} ${ARGS_REDIRECT}"
 fi
 
+printf "\033[0;32mAll dotbot updates have been executed\033[0m"
 printf "\033[0;32m\n\n==> All tasks executed successfully\033[0m"
 
 if [[ -x "${INSTALL_SCRIPTS}${OS_PREFIX}" ]]; then
-  printf "\033[0;32m\nApplying install\033[0m"
+  printf "\033[0;32m\nApplying install\033[0m\n"
   bash -c "sudo \"${INSTALL_SCRIPTS}${OS_PREFIX}\" ${ARGS_INSTALL}"
 fi
 
@@ -108,6 +109,7 @@ done
 unset ARGS_DOTBOT
 unset ARGS_GIT
 unset ARGS_INSTALL
+unset ARGS_REDIRECT
 unset BASE_DIR
 unset CONF_SUFFIX
 unset DEFAULT_CONFIG_PREFIX
