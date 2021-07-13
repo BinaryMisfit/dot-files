@@ -215,7 +215,7 @@ if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo environment\033[0m\n"
-      printf "\033[0;34mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
     echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
@@ -235,7 +235,7 @@ if [[ -f /etc/sudoers.d/90-cloud-init-users ]]; then
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo users\033[0m\n"
-      printf "\033[0;34mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
     echo ${FILE_CONTENT} > /etc/sudoers.d/90-cloud-init-users
