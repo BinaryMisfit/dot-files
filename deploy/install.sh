@@ -90,7 +90,7 @@ if [[ "${UPDATE}" == "1" ]]; then
   MD5_NEW=$(md5sum ${0} | awk '{ print $1 }')
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]] || [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     printf "\033[0;31m\n==> Update found, restarting\033[0m\n"
-    exec ${0} ${ARGS_ALL}
+    exec ${0} -Q ${ARGS_ALL}
   fi
 fi
 
