@@ -1,8 +1,4 @@
 ---
-- shell:
-    -
-      command: test -d ~/.npm_global || mkdir -p ~/.npm_global
-      quiet: true
 - link:
     ~/.config/nvim:
       path: default/nvim
