@@ -93,10 +93,6 @@ if [[ "${UPDATE}" == "1" ]]; then
     --rebase ${ARGS_GIT} ${ARGS_REDIRECT}"
   VERSION_NEW=$(git rev-parse HEAD)
   MD5_NEW=$(md5sum ${0} | awk '{ print $1 }')
-  echo ${VERSION_CURRENT}
-  echo ${VERSION_NEW}
-  echo ${MD5_CURRENT}
-  echo ${MD5_NEW}
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]] || [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     printf "\033[0;31m\n==> Update found, restarting\033[0m\n"
     exec ${0} ${ARGS_ALL}
