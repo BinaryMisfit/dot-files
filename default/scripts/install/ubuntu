@@ -25,7 +25,7 @@ shift $((OPTIND-1))
 
 [[ "${1:-}" = "--" ]] && shift
 
-if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]]; then
+if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]] || [[ ! -f /usr/share/keyrings/nodesource.gpg ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
     printf "\033[0;34mInstalling nodesource repository\033[0m\n"
   fi
