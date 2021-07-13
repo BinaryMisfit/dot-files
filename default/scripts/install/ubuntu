@@ -181,7 +181,7 @@ fi
 
 printf "\033[0;32mAll node packages have been installed\033[0m\n"
 
-if [[ "" != "$(python3 -m pip --version | grep 'No module named')" ]]; then
+if [[ "" == "$(command -v pip)" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
     printf "\033[0;34mInstalling pip\033[0m\n"
   fi
