@@ -199,6 +199,24 @@ if [[ "" == "$(python3 -m pip list | grep pynvim)" ]]; then
 fi
 
 printf "\033[0;32mAll pip packages have been installed\033[0m\n"
+
+if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mUpdating shell [$USER]\033[0m\n"
+  fi
+
+  chsh ${USER} --shell $(which zsh)
+fi
+
+if [[ "$(which zsh)" != "$(getent passwd $SUDO_USER | awk -F: '{print $NF}')" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mUpdating shell [$SUDO_USER]\033[0m\n"
+  fi
+
+  chsh ${SUDO_USER} --shell $(which zsh)
+fi
+
+printf "\033[0;32mAll commands have been executed\033[0m\n"
 printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 
 unset ARGS_APT
