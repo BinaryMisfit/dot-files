@@ -3,30 +3,39 @@
     ~/.antigenrc:
       path: platform/ubuntu/zsh/.antigenrc
       create: true
+      relink: true
     ~/.gitconfig:
       path: platform/ubuntu/git/.gitconfig
       create: true
+      relink: true
     ~/.npmrc:
       path: platform/ubuntu/node/.npmrc
       create: true
+      relink: true
     ~/.p10k.zsh:
       path: platform/ubuntu/zsh/.p10k.zsh
       create: true
+      relink: true
     ~/.packages:
       path: platform/ubuntu/packages
       create: true
+      relink: true
     ~/.ssh/config:
       path: platform/ubuntu/ssh/config
       create: true
+      relink: true
     ~/.tmux.conf:
       path: platform/ubuntu/tmux/.tmux.conf
       create: true
+      relink: true
     ~/.tmux.conf.local:
       path: platform/ubuntu/tmux/.tmux.conf.local
       create: true
+      relink: true
     ~/.zshrc:
       path: platform/ubuntu/zsh/.zshrc
       create: true
+      relink: true
 - clean:
     ~/:
       recursive: true
