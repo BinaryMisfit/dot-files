@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+FILE_CONTENT=
+INSTALL_LIST=()
+MD5_CURRENT=
+MD5_NEW=
+SOURCES_ADDED=0
+VERBOSE=0
+
+if [[ "$EUID" -ne "0" ]]; then
+  printf "\033[0;31mScript needs to be run as root, aborting\033[0m\n"
+  exit 1
+fi
+
+while getopts "v" OPT; do
+  case "${OPT}" in
+    v)
+      ARGS_APT=
+      ARGS_CURL=
+      ARGS_QUIET=
+      VERBOSE=1
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+[[ "${1:-}" = "--" ]] && shift
+
+if [[ ! -d "/home/${SUDO_USER}/.npm_global" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mCreating npm_global [${SUDO_USER}]\033[0m\n"
+  fi
+
+  mkdir -p "/home/${SUDO_USER}/.npm_global"
+  chown -R ${SUDO_USER}:${SUDO_USER} "/home/${SUDO_USER}/.npm_global"
+fi
+
+unset FILE_CONTENT
+unset INSTALL_LIST
+unset MD5_CURRENT
+unset MD5_NEW
+unset SOURCES_ADDED
+unset VERBOSE
