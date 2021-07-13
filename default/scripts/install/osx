@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+ARGS_BREW="--quiet"
 FILE_CONTENT=
 INSTALL_LIST=()
 MD5_CURRENT=
@@ -6,17 +7,16 @@ MD5_NEW=
 SOURCES_ADDED=0
 VERBOSE=0
 
-if [[ "$EUID" -ne "0" ]]; then
-  printf "\033[0;31mScript needs to be run as root, aborting\033[0m\n"
+if [[ "" == "$(command -v brew)" ]]; then
+  printf "\033[0;31mbrew not found, aborting\033[0m\n"
   exit 1
 fi
 
 while getopts "v" OPT; do
   case "${OPT}" in
     v)
-      ARGS_APT=
-      ARGS_CURL=
-      ARGS_QUIET=
+      ARGS_BREW=
+      ARGS_REDIRECT=
       VERBOSE=1
       ;;
   esac
@@ -26,16 +26,47 @@ shift $((OPTIND-1))
 
 [[ "${1:-}" = "--" ]] && shift
 
-echo ${SUDO_USER}
-if [[ ! -d "/home/${SUDO_USER}/.npm_global" ]]; then
+if [[ ! -d "/Users/${USER}/.npm_global" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mCreating npm_global [${SUDO_USER}]\033[0m\n"
+    printf "\033[0;34mCreating npm_global\033[0m\n"
   fi
 
-  mkdir -p "/home/${SUDO_USER}/.npm_global"
-  chown -R ${SUDO_USER}:staff "/home/${SUDO_USER}/.npm_global"
+  mkdir -p "/Users/${USER}/.npm_global"
+  chown -R ${USER}:staff "/Users/${USER}/.npm_global"
 fi
 
+printf "\033[0;32mAll commands have been executed\033[0m\n"
+
+if [[ "" == "$(brew ls --versions md5sha1sum)" ]]; then
+  INSTALL_LIST+=("md5sha1sum")
+fi
+
+if [[ "" == "$(brew ls --versions antigen)" ]]; then
+  INSTALL_LIST+=("antigen")
+fi
+
+INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -u))
+if [[ "${INSTALL_LIST}" != "" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;31mMissing %s\033[0m\n" "${INSTALL_LIST[@]}"
+    printf "\033[0;34mRunning brew update\033[0m\n"
+  fi
+
+  brew update ${ARGS_BREW}
+
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mRunning brew install\033[0m\n"
+  fi
+
+  brew install ${ARGS_BREW} ${INSTALL_LIST[@]}
+fi
+
+printf "\033[0;32mAll packages have been installed\033[0m\n"
+
+printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
+
+unset ARGS_BREW
+unset ARGS_REDIRECT
 unset FILE_CONTENT
 unset INSTALL_LIST
 unset MD5_CURRENT

@@ -1,3 +1,4 @@
+ZSH_DISABLE_COMPFIX=true
 # P10K Instant Prompt
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
@@ -23,7 +24,7 @@ export ZSH_TMUX_AUTOCONNECT=true
 export ZSH_TMUX_AUTOQUIT=${START_TMUX}
 
 # Load Antigen
-test -e ${HOME}/.antigen/antigen.zsh && source ${HOME}/.antigen/antigen.zsh
+test -e /usr/local/share/antigen/antigen.zsh && source /usr/local/share/antigen/antigen.zsh
 test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Optional Variables

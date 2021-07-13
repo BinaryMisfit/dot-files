@@ -99,7 +99,11 @@ printf "\033[0;32m\n\n==> All tasks executed successfully\033[0m"
 
 if [[ -x "${INSTALL_SCRIPTS}${OS_PREFIX}" ]]; then
   printf "\033[0;32m\nApplying install\033[0m\n"
-  bash -c "sudo \"${INSTALL_SCRIPTS}${OS_PREFIX}\" ${ARGS_INSTALL}"
+  if [[ "${OS_PREFIX}" == "osx" ]]; then
+    bash -c "${INSTALL_SCRIPTS}${OS_PREFIX} ${ARGS_INSTALL}"
+  else
+    bash -c "sudo \"${INSTALL_SCRIPTS}${OS_PREFIX}\" ${ARGS_INSTALL}"
+  fi
 fi
 
 for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
