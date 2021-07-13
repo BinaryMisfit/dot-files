@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+ARGS_ALL=${@}
 ARGS_DOTBOT="-q"
 ARGS_GIT="--quiet"
 ARGS_INSTALL=
@@ -16,6 +17,8 @@ OPTIND=1
 REMOTE_REPO=https://github.com/BinaryMisfit/dot-files
 UPDATE=1
 VERBOSE=0
+VERSION_CURRENT=$(git rev-parse HEAD)
+VERSION_NEW=$(git rev-parse HEAD)
 
 while getopts "Qv" OPT; do
   case "${OPT}" in
@@ -86,6 +89,13 @@ if [[ "${UPDATE}" == "1" ]]; then
 
   bash -c "unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules \
     --rebase ${ARGS_GIT} ${ARGS_REDIRECT}"
+  VERSION_NEW=$(git rev-parse HEAD)
+  echo ${VERSION_CURRENT}
+  echo ${VERSION_NEW}
+  if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
+    printf "\033[0;31m\n==> Update found, restarting\033[0m\n"
+    exec ${0} ${ARGS_ALL}
+  fi
 fi
 
 printf "\033[0;32mAll dotbot updates have been executed\033[0m"
@@ -106,6 +116,7 @@ for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_
     -c "${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}"
 done
 
+unset ARGS_ALL
 unset ARGS_DOTBOT
 unset ARGS_GIT
 unset ARGS_INSTALL
@@ -123,3 +134,5 @@ unset OPTIND
 unset REMOTE_REPO
 unset UPDATE
 unset VERBOSE
+unset VERSION_CURRENT
+unset VERSION_NEW
