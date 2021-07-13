@@ -13,6 +13,8 @@ DOT_BOT_DIR="${BASE_DIR}/dotbot"
 FINAL_CONFIG_PREFIX="final"
 INSTALL_CONFIG_PREFIX="install"
 INSTALL_SCRIPTS="${BASE_DIR}/default/scripts/install/"
+MD5_CURRENT=$(md5sum ${0} | awk '{ print $1 }')
+MD5_NEW=$(md5sum ${0} | awk '{ print $1 }')
 OPTIND=1
 REMOTE_REPO=https://github.com/BinaryMisfit/dot-files
 UPDATE=1
@@ -90,9 +92,12 @@ if [[ "${UPDATE}" == "1" ]]; then
   bash -c "unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules \
     --rebase ${ARGS_GIT} ${ARGS_REDIRECT}"
   VERSION_NEW=$(git rev-parse HEAD)
+  MD5_NEW=$(md5sum ${0} | awk '{ print $1 }')
   echo ${VERSION_CURRENT}
   echo ${VERSION_NEW}
-  if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
+  echo ${MD5_CURRENT}
+  echo ${MD5_NEW}
+  if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]] || [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     printf "\033[0;31m\n==> Update found, restarting\033[0m\n"
     exec ${0} ${ARGS_ALL}
   fi
