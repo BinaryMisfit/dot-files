@@ -35,12 +35,12 @@ if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]] || [[ ! -f /usr/share/keyr
       | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
   fi
 
-  echo "deb https://deb.nodesource.com/node_16.x $DISTRO main" \
+  echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main" \
     > /etc/apt/sources.list.d/nodesource.list
-      echo "deb-src https://deb.nodesource.com/node_16.x $DISTRO main" \
+      echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main" \
         >> /etc/apt/sources.list.d/nodesource.list
               INSTALL_LIST+=("nodejs")
-  SOURCES_ADDED=1
+              SOURCES_ADDED=1
 fi
 
 if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" == "" ]]; then
