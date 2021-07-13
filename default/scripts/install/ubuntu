@@ -208,23 +208,44 @@ fi
 
 printf "\033[0;32mAll pip packages have been installed\033[0m\n"
 
+FILE_CONTENT="Defaults env_keep += \"TMUX\""
 if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
-  FILE_CONTENT="Defaults env_keep += \"TMUX\""
   MD5_CURRENT=$(md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
   MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mUpdating sudo\033[0m\n"
+      printf "\033[0;34mUpdating sudo environment\033[0m\n"
+      printf "\033[0;34mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
     echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
   fi
 else
   if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mUpdating sudo\033[0m\n"
+    printf "\033[0;34mUpdating sudo environment\033[0m\n"
   fi
 
   echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
+fi
+
+FILE_CONTENT="${SUDO_USER} ALL=(ALL) NOPASSWD: ALL"
+if [[ -f /etc/sudoers.d/90-cloud-init-users ]]; then
+  MD5_CURRENT=$(md5sum /etc/sudoers.d/90-cloud-init-users | awk '{ print $1 }')
+  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mUpdating sudo users\033[0m\n"
+      printf "\033[0;34mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+    fi
+
+    echo ${FILE_CONTENT} > /etc/sudoers.d/90-cloud-init-users
+  fi
+else
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mUpdating sudo users\033[0m\n"
+  fi
+
+  echo ${FILE_CONTENT} > /etc/sudoers.d/90-cloud-init-users
 fi
 
 if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
@@ -251,7 +272,7 @@ unset ARGS_CURL
 unset DISTRO
 unset FILE_CONTENT
 unset INSTALL_LIST
-unset MD5_CURRENT=
-unset MD5_NEW=
+unset MD5_CURRENT
+unset MD5_NEW
 unset SOURCES_ADDED
 unset VERBOSE
