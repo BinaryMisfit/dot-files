@@ -45,6 +45,26 @@ if [[ "" == "$(brew ls --versions antigen)" ]]; then
   INSTALL_LIST+=("antigen")
 fi
 
+if [[ "" == "$(brew ls --versions python3)" ]]; then
+  INSTALL_LIST+=("python3")
+fi
+
+if [[ "" == "$(brew ls --versions neovim)" ]]; then
+  INSTALL_LIST+=("neovim")
+fi
+
+if [[ "" == "$(brew ls --versions nodejs)" ]]; then
+  INSTALL_LIST+=("nodejs")
+fi
+
+if [[ "" == "$(brew ls --versions tmux)" ]]; then
+  INSTALL_LIST+=("tmux")
+fi
+
+if [[ "" == "$(brew ls --versions zsh)" ]]; then
+  INSTALL_LIST+=("zsh")
+fi
+
 INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -u))
 if [[ "${INSTALL_LIST}" != "" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
@@ -63,6 +83,77 @@ fi
 
 printf "\033[0;32mAll packages have been installed\033[0m\n"
 
+if [[ "" == "$(npm list -g neovim)" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mInstalling neovim [global]\033[0m\n"
+  fi
+
+  npm -g install neovim@latest &>/dev/null
+fi
+
+printf "\033[0;32mAll node packages have been installed\033[0m\n"
+
+if [[ "" == "$(python3 -m pip list | grep pynvim)" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mInstalling pynvim\033[0m\n"
+  fi
+
+  python3 -m pip install --upgrade pynvim &>/dev/null
+fi
+
+printf "\033[0;32mAll pip packages have been installed\033[0m\n"
+
+FILE_CONTENT="${USER} ALL=(ALL) NOPASSWD: ALL"
+if [[ -f /etc/sudoers.d/90-${USER}-nopasswd ]]; then
+  MD5_CURRENT=$(md5sum /etc/sudoers.d/90-${USER}-nopasswd | awk '{ print $1 }')
+  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mUpdating sudo users\033[0m\n"
+      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+    fi
+
+    sudo echo ${FILE_CONTENT} > /etc/sudoers.d/90-${USER}-nopasswd
+  fi
+else
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mUpdating sudo users\033[0m\n"
+  fi
+
+  sudo echo ${FILE_CONTENT} > /etc/sudoers.d/90-${USER}-nopasswd
+fi
+
+FILE_CONTENT="Defaults env_keep += \"TMUX\""
+if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
+  MD5_CURRENT=$(md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
+  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mUpdating sudo environment\033[0m\n"
+      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+    fi
+
+    sudo echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
+  fi
+else
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mUpdating sudo environment\033[0m\n"
+  fi
+
+  sudo echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
+fi
+
+if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mUpdating shell [$USER]\033[0m\n"
+  fi
+
+  sudo chsh ${USER} --shell $(which zsh)
+fi
+
+sudo chmod -R 440 /etc/sudoers.d/*
+
+printf "\033[0;32mAll commands have been executed\033[0m\n"
 printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 
 unset ARGS_BREW

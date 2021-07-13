@@ -110,12 +110,12 @@ if [[ "$(command -v python3)" == "" ]]; then
   INSTALL_LIST+=("python3")
 fi
 
-if [[ "$(command -v node)" == "" ]] || [[ "$(command -v npm)" == "" ]]; then
-  INSTALL_LIST+=("nodejs")
-fi
-
 if [[ "$(command -v nvim)" == "" ]]; then
   INSTALL_LIST+=("neovim")
+fi
+
+if [[ "$(command -v node)" == "" ]] || [[ "$(command -v npm)" == "" ]]; then
+  INSTALL_LIST+=("nodejs")
 fi
 
 if [[ "$(command -v tmux)" == "" ]]; then
