@@ -62,11 +62,6 @@ if [[ $(command -v git) == "" ]]; then
   exit 1
 fi
 
-if [[ $(command -v add-apt-repository) == "" ]]; then
-  printf "\033[0;31m\nadd-apt-repository not found, aborting\033[0m\n"
-  exit 1
-fi
-
 if [[ ! -d "${BASE_DIR}" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
     printf "\033[0;34mInstalling dotfiles\033[0m\n"
