@@ -275,9 +275,11 @@ if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor'
 
   if [[ "" == "$(update-alternatives --display editor | grep $(which nvim))" ]]; then
     update-alternatives --install /usr/bin/editor editor $(which nvim) 100
+    update-alternatives --install /usr/bin/vi vi $(which nvim) 100
   fi
 
   update-alternatives --set editor $(which nvim)
+  update-alternatives --set vi $(which nvim)
 fi
 
 printf "\033[0;32mAll commands have been executed\033[0m\n"
