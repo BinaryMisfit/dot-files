@@ -228,9 +228,13 @@ else
   echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
 fi
 
-FILE_CONTENT="${SUDO_USER} ALL=(ALL) NOPASSWD: ALL"
 if [[ -f /etc/sudoers.d/90-cloud-init-users ]]; then
-  MD5_CURRENT=$(md5sum /etc/sudoers.d/90-cloud-init-users | awk '{ print $1 }')
+  rm /etc/sudoers.d/90-cloud-init-users
+fi
+
+FILE_CONTENT="${SUDO_USER} ALL=(ALL) NOPASSWD: ALL"
+if [[ -f /etc/sudoers.d/90-${SUDO_USER}-nopasswd ]]; then
+  MD5_CURRENT=$(md5sum /etc/sudoers.d/90-${SUDO_USER}-nopasswd | awk '{ print $1 }')
   MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
@@ -238,14 +242,14 @@ if [[ -f /etc/sudoers.d/90-cloud-init-users ]]; then
       printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
-    echo ${FILE_CONTENT} > /etc/sudoers.d/90-cloud-init-users
+    echo ${FILE_CONTENT} > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
   fi
 else
   if [[ "${VERBOSE}" == "1" ]]; then
     printf "\033[0;34mUpdating sudo users\033[0m\n"
   fi
 
-  echo ${FILE_CONTENT} > /etc/sudoers.d/90-cloud-init-users
+  echo ${FILE_CONTENT} > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
 fi
 
 if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
