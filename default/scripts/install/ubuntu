@@ -2,7 +2,10 @@
 ARGS_APT="-qq"
 ARGS_CURL="-sS"
 DISTRO="$(lsb_release -s -c)"
+FILE_CONTENT=
 INSTALL_LIST=()
+MD5_CURRENT=
+MD5_NEW=
 SOURCES_ADDED=0
 VERBOSE=0
 
@@ -205,6 +208,25 @@ fi
 
 printf "\033[0;32mAll pip packages have been installed\033[0m\n"
 
+if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
+  FILE_CONTENT="Defaults env_keep += \"TMUX\""
+  MD5_CURRENT=$(md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
+  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mUpdating sudo\033[0m\n"
+    fi
+
+    echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
+  fi
+else
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mUpdating sudo\033[0m\n"
+  fi
+
+  echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
+fi
+
 if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
   if [[ "${VERBOSE}" == "1" ]]; then
     printf "\033[0;34mUpdating shell [$USER]\033[0m\n"
@@ -227,6 +249,9 @@ printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 unset ARGS_APT
 unset ARGS_CURL
 unset DISTRO
+unset FILE_CONTENT
 unset INSTALL_LIST
+unset MD5_CURRENT=
+unset MD5_NEW=
 unset SOURCES_ADDED
 unset VERBOSE
