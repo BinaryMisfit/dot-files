@@ -20,10 +20,6 @@
       path: platform/osx/zsh/.p10k.zsh
       create: true
       relink: true
-    ~/.packages:
-      path: platform/osx/packages
-      create: true
-      relink: true
     ~/.ssh/config:
       path: platform/osx/ssh/config
       create: true
@@ -33,11 +29,11 @@
       create: true
       relink: true
     ~/.tmux.conf.base:
-      path: platform/osx/tmux/.tmux.conf.base  
+      path: platform/osx/tmux/.tmux.conf.base
       create: true
       relink: true
     ~/.zshrc:
-      path: platform/osx/zsh/.zshrc    
+      path: platform/osx/zsh/.zshrc
       create: true
       relink: true
 - shell:
