@@ -7,7 +7,7 @@ if [[ -d "${BASE_DIR}" ]]; then
   VERSION_NEW=$(git rev-parse HEAD)
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
     printf "\033[0;31mConfig installed ${VERSION_CURRENT}, online: ${VERSION_NEW}, updating\033[0m\n"
-    install -Q
+    ./install -Q
   else
     printf "\033[0;32mConfig installed: ${VERSION_CURRENT}, online: ${VERSION_NEW}, up-to-date\033[0m\n"
   fi
