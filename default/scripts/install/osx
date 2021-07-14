@@ -105,7 +105,7 @@ printf "\033[0;32mAll pip packages have been installed\033[0m\n"
 
 FILE_CONTENT="${USER} ALL=(ALL) NOPASSWD: ALL"
 if [[ -f /etc/sudoers.d/90-${USER}-nopasswd ]]; then
-  MD5_CURRENT=$(md5sum /etc/sudoers.d/90-${USER}-nopasswd | awk '{ print $1 }')
+  MD5_CURRENT=$(sudo md5sum /etc/sudoers.d/90-${USER}-nopasswd | awk '{ print $1 }')
   MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
@@ -125,7 +125,7 @@ fi
 
 FILE_CONTENT="Defaults env_keep += \"TMUX\""
 if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
-  MD5_CURRENT=$(md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
+  MD5_CURRENT=$(sudo md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
   MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then

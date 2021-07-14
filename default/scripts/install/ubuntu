@@ -225,28 +225,28 @@ fi
 
 printf "\033[0;32mAll pip packages have been installed\033[0m\n"
 
+if [[ -f /etc/sudoers.d/90-cloud-init-users ]]; then
+  rm /etc/sudoers.d/90-cloud-init-users
+fi
+
 FILE_CONTENT="Defaults env_keep += \"TMUX\""
 if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
   MD5_CURRENT=$(md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
-  MD5_NEW=$(echo "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
+  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo environment\033[0m\n"
       printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
-    echo "${FILE_CONTENT}" > /etc/sudoers.d/50-keep-environment
+    sudo echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
   fi
 else
   if [[ "${VERBOSE}" == "1" ]]; then
     printf "\033[0;34mUpdating sudo environment\033[0m\n"
   fi
 
-  echo "${FILE_CONTENT}" > /etc/sudoers.d/50-keep-environment
-fi
-
-if [[ -f /etc/sudoers.d/90-cloud-init-users ]]; then
-  rm /etc/sudoers.d/90-cloud-init-users
+  sudo echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
 fi
 
 FILE_CONTENT="${SUDO_USER} ALL=(ALL) NOPASSWD: ALL"
@@ -300,28 +300,6 @@ if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor'
 
   update-alternatives --set editor $(which nvim) ${ARGS_QUIET}
   update-alternatives --set vi $(which nvim) ${ARGS_QUIET}
-fi
-
-FILE_CONTENT="AcceptEnv TMUX*"
-if [[ -f /etc/ssh/sshd_config.d/90-keep-environment ]]; then
-  MD5_CURRENT=$(md5sum /etc/ssh/sshd_config.d/90-keep-environment | awk '{ print $1 }')
-  MD5_NEW=$(echo "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
-  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mUpdating ssh\033[0m\n"
-      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
-    fi
-
-    echo "${FILE_CONTENT}" > /etc/ssh/sshd_config.d/90-keep-environment
-    systemctl restart sshd
-  fi
-else
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mUpdating ssh\033[0m\n"
-  fi
-
-  echo "${FILE_CONTENT}" > /etc/ssh/sshd_config.d/90-keep-environment
-  systemctl restart sshd
 fi
 
 chmod -R 440 /etc/sudoers.d/*
