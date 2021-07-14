@@ -47,14 +47,12 @@ if [[ ! -d "/home/${SUDO_USER}/.npm_global" ]]; then
   chown -R ${SUDO_USER}:${SUDO_USER} "/home/${SUDO_USER}/.npm_global"
 fi
 
-FILE_CONTENT="deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main"
+FILE_CONTENT="\
+deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
+deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
 if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
   MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
-  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mInstalling nodesource repository\033[0m\n"
-  fi
-
+  MD5_NEW=$(echo -en "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
   if [[ ! -f /usr/share/keyrings/nodesource.gpg ]]; then
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
       | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
@@ -62,16 +60,19 @@ if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
 
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mUpdating sudo environment\033[0m\n"
+      printf "\033[0;34mInstalling nodesource repository\033[0m\n"
+    fi
+
+    if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
-    echo "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
+    echo -en "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
     INSTALL_LIST+=("nodejs")
     SOURCES_ADDED=1
   fi
 else
-    echo "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
+    echo -en "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
     INSTALL_LIST+=("nodejs")
     SOURCES_ADDED=1
 fi
@@ -317,7 +318,32 @@ if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor'
 fi
 
 chmod -R 444 /etc/sudoers.d
+FILE_CONTENT="\
+#!/bin/bash
+\nneofetch --config /etc/neofetch/config.conf\n"
+if [[ -f /etc/update-motd.d/01-neofetch ]]; then
+  MD5_CURRENT=$(md5sum /etc/update-motd.d/01-neofetch | awk '{ print $1 }')
+  MD5_NEW=$(echo -en ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mUpdating sudo environment\033[0m\n"
+      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+    fi
+
+    sudo echo -en ${FILE_CONTENT} > /etc/update-motd.d/01-neofetch
+  fi
+else
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\033[0;34mUpdating sudo environment\033[0m\n"
+  fi
+
+  sudo echo -en ${FILE_CONTENT} > /etc/update-motd.d/01-neofetch
+fi
+
 chmod -R 444 /etc/update-motd.d
+chmod -R 555 /etc/update-motd.d/01-neofetch
+chmod -R 555 /etc/update-motd.d/9?-*
+
 
 if [[ "${VERBOSE}" != "-1" ]]; then
   printf "\033[0;32mAll commands have been executed\033[0m\n"
