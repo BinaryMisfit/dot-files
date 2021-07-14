@@ -7,7 +7,7 @@ BASE_DIR="${HOME}/.dotfiles"
 if [[ -d "${BASE_DIR}" ]]; then
   BRANCH=$(git -C "${BASE_DIR}" name-rev --name-only HEAD)
   VERSION_CURRENT=$(git -C "${BASE_DIR}" rev-parse HEAD)
-  VERSION_NEW=$(git -C "${BASE_DIR}" rev-parse origin/${BRANCH})
+  VERSION_NEW=$(git ls-remote https://github.com/BinaryMisfit/dot-files HEAD | awk '{ print $1 }')
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
     bash -c "unset HOME; git -C "${BASE_DIR}" pull --autostash --all --recurse-submodules --rebase --quiet 2>&1 > /dev/null"
     printf "\033[0;31mConfig installed ${VERSION_CURRENT}, online: ${VERSION_NEW}, updating\033[0m\n"
