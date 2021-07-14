@@ -1,6 +1,10 @@
 Host *
   SendEnv LC_*
   SendEnv TMUX*
+  ForwardX11 yes
+  ForwardX11Trusted yes
+
+Include ~/.ssh/*.local
 
 Host hosting
   HostName hosting.senselesslyfoolish.com
@@ -17,10 +21,10 @@ Host mini
   User server
   IdentityFile ~/.ssh/fairview
 
-Host router
-  HostName hub.digitalmisfit.net
-  User server
-  IdentityFile ~/.ssh/fairview
+  #Host router
+  #HostName hub.digitalmisfit.net
+  #User server
+  #IdentityFile ~/.ssh/fairview
 
 Host rpirouter
   HostName rpirouter

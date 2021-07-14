@@ -27,3 +27,6 @@ default/nvim/autoload
 
 # Python Cache
 **/__pycache__
+
+# Local Configs
+*/**/*.local
