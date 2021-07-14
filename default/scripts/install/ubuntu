@@ -316,7 +316,8 @@ if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor'
   update-alternatives --set vi $(which nvim) ${ARGS_QUIET}
 fi
 
-chmod -R 440 /etc/sudoers.d/*
+chmod -R 444 /etc/sudoers.d
+chmod -R 444 /etc/update-motd.d
 
 if [[ "${VERBOSE}" != "-1" ]]; then
   printf "\033[0;32mAll commands have been executed\033[0m\n"
