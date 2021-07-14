@@ -11,8 +11,7 @@ if [[ -d "${BASE_DIR}" ]]; then
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
     bash -c "unset HOME; git -C "${BASE_DIR}" pull --autostash --all --recurse-submodules --rebase --quiet 2>&1 > /dev/null"
     printf "\033[0;31mConfig installed ${VERSION_CURRENT}, online: ${VERSION_NEW}, updating\033[0m\n"
-    pushd > /dev/null
-    cd "${BASE_DIR}"
+    pushd "${BASE_DIR}" > /dev/null
     . "${BASE_DIR}/install" -Q
     popd > /dev/null
   else
