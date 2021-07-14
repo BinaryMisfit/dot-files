@@ -44,9 +44,7 @@ if [[ ! -d "/home/${SUDO_USER}/.npm_global" ]]; then
   chown -R ${SUDO_USER}:${SUDO_USER} "/home/${SUDO_USER}/.npm_global"
 fi
 
-read -r -d '' FILE_CONTENT << EOF
-deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
-EOF
+FILE_CONTENT="deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main"
 if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
   MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
   MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
@@ -121,6 +119,10 @@ fi
 
 if [[ "$(command -v python3)" == "" ]]; then
   INSTALL_LIST+=("python3")
+fi
+
+if [[ "$(command -v neofetch)" == "" ]]; then
+  INSTALL_LIST+=("neofetch")
 fi
 
 if [[ "$(command -v nvim)" == "" ]]; then
