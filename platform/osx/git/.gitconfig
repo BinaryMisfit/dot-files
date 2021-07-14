@@ -1,35 +1,47 @@
 [user]
-	name = Willie Roberts
-	email = diagoza@me.com
+  name = Willie Roberts
+  email = diagoza@me.com
 [core]
   editor = nvim
   autocrlf = input
-[filter "media"]
-  clean = git-media-clean %f
-  smudge = git-media-smudge %f
 [push]
   default = simple
   followTags = true
+  recurseSubmodules = on-demand
 [color]
   ui = true
 [pull]
   rebase = true
 [rerere]
   enabled = true
-[filter "lfs"]
-  clean = git-lfs clean -- %f
-  process = git-lfs filter-process
-  required = true
-  smudge = git-lfs smudge -- %f
 [rebase]
   autostash = true
-[alias]
-  ac = "!f(){ git add . && git commit -m \"$@\"; };f"
-  clr = rm -rf --cached .
-  s = status -s
-  sinit = submodule update --init --recursive
-  supdate = submodule update --init --remote
-[credential]
-	helper = store
+[fetch]
+  prune = true
+[gc]
+  autoDetach = false
+[commit]
+  gpgSign = false
+[gui]
+  pruneduringfetch = true
+  encoding = UTF-8
 [submodule]
-	recurse = true
+  recurse = true
+[alias]
+  s = status -s
+  clr = rm -rf --cached .
+  ac = "!f(){ git add . && git commit -m \"$@\"; };f"
+  sac = "!f(){ git submodule foreach --recursive git add . && git submodule foreach --recursive git commit -m \"$@\" && git add . && git commit -m \"$@\"; };f"
+  spull = "!f(){ git submodule foreach --recursive git pull && git pull; };f"
+  spush = "!f(){ git submodule foreach --recursive git push && git push; };f"
+  upd = "!f(){ git pull --all --prune; git merge origin/master -X theirs; git push; };f"
+[credential]
+  helper = store
+[filter "media"]
+  clean = git-media-clean %f
+  smudge = git-media-smudge %f
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
