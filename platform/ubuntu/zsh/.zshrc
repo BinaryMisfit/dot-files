@@ -2,8 +2,8 @@
 test -e ${HOME}/.dotfiles/deploy/update_online.sh && /bin/bash ${HOME}/.dotfiles/deploy/update_online.sh
 
 # P10K Instant Prompt
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # Load environment
@@ -22,14 +22,10 @@ test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Optional Variables
 test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
-test -e /usr/lib/android-sdk && export ANDROID_HOME=/usr/lib/android-sdk
-test -e /opt/maven && export M2_HOME=/opt/maven
-test -e /opt/maven && export MAVEN_HOME=/opt/maven
-test -e /usr/bin/nbim && export EDITOR=$(which nvim)
+test -e /usr/bin/nvim && export EDITOR=$(which nvim)
 
 # Source config files
 test -e ${HOME}/.p10k.zsh && source ${HOME}/.p10k.zsh
-test -e ${HOME}/.acme.sh/acme.sh.env && source ${HOME}/.acme.sh/acme.sh.env
 
 # Additional setups
 autoload -U compinit && compinit
@@ -39,13 +35,11 @@ unsetopt BEEP
 test -e /usr/bin/nvim && alias sudoedit="sudo nvim "
 
 # Update PATH
-test -e $HOME/.npm_global && PATH=$HOME/.npm_global/bin:$PATH
-test -e $HOME/.yarn/bin && PATH=$HOME/.yarn/bin:$PATH
+test -e ${HOME}/.npm_global && PATH=${HOME}/.npm_global/bin:$PATH
+test -e ${HOME}/.yarn/bin && PATH=${HOME}/.yarn/bin:$PATH
 test -e /usr/local/sbin && PATH=/usr/local/sbin:$PATH
-test -e /usr/lib/android-sdk/platform-tools && PATH=/usr/lib/android-sdk/platform-tools:$PATH
-test -e /usr/lib/android-sdk/cmdline-tools/tools && PATH=/usr/lib/android-sdk/cmdline-tools/tools:$PATH
-test -e /usr/lib/android-sdk/cmdline-tools/tools/bin && PATH=/usr/lib/android-sdk/cmdline-tools/tools/bin:$PATH
-test -e /opt/maven && export PATH=$M2_HOME/bin:$PATH}
+
+test -e ${HOME}/.zshrc.local && source ${HOME}/.zshrc.local
 
 # Cleanup
 typeset -U PATH
