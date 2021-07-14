@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+if [[ ! -z ${TMUX} ]]; then
+  exit 0
+fi
+
 BASE_DIR="${HOME}/.dotfiles"
 if [[ -d "${BASE_DIR}" ]]; then
   BRANCH=$(git -C "${BASE_DIR}" name-rev --name-only HEAD)
