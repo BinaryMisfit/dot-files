@@ -6,10 +6,9 @@ if [[ -d "${BASE_DIR}" ]]; then
   VERSION_NEW=$(git -C "${BASE_DIR}" rev-parse HEAD)
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
     printf "\033[0;31mConfig installed ${VERSION_CURRENT}, online: ${VERSION_NEW}, updating\033[0m\n"
-    pushd -q
-    cd "${BASE_DIR}"
+    pushd "${BASE_DIR}" > /dev/null
     install -Q
-    popd -q
+    popd > /dev/null
   else
     printf "\033[0;32mConfig installed: ${VERSION_CURRENT}, online: ${VERSION_NEW}, up-to-date\033[0m\n"
   fi
