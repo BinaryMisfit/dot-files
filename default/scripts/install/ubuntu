@@ -44,7 +44,12 @@ if [[ ! -d "/home/${SUDO_USER}/.npm_global" ]]; then
   chown -R ${SUDO_USER}:${SUDO_USER} "/home/${SUDO_USER}/.npm_global"
 fi
 
-if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]] || [[ ! -f /usr/share/keyrings/nodesource.gpg ]]; then
+read -r -d '' FILE_CONTENT << EOF
+deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
+EOF
+if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
+  MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
+  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
   if [[ "${VERBOSE}" == "1" ]]; then
     printf "\033[0;34mInstalling nodesource repository\033[0m\n"
   fi
@@ -54,12 +59,20 @@ if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]] || [[ ! -f /usr/share/keyr
       | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
   fi
 
-  echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main" \
-    > /etc/apt/sources.list.d/nodesource.list
-      echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main" \
-        >> /etc/apt/sources.list.d/nodesource.list
-              INSTALL_LIST+=("nodejs")
-              SOURCES_ADDED=1
+  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mUpdating sudo environment\033[0m\n"
+      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+    fi
+
+    echo "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
+    INSTALL_LIST+=("nodejs")
+    SOURCES_ADDED=1
+  fi
+else
+    echo "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
+    INSTALL_LIST+=("nodejs")
+    SOURCES_ADDED=1
 fi
 
 if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" == "" ]]; then
@@ -213,21 +226,21 @@ printf "\033[0;32mAll pip packages have been installed\033[0m\n"
 FILE_CONTENT="Defaults env_keep += \"TMUX\""
 if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
   MD5_CURRENT=$(md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
-  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+  MD5_NEW=$(echo "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo environment\033[0m\n"
       printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
-    echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
+    echo "${FILE_CONTENT}" > /etc/sudoers.d/50-keep-environment
   fi
 else
   if [[ "${VERBOSE}" == "1" ]]; then
     printf "\033[0;34mUpdating sudo environment\033[0m\n"
   fi
 
-  echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
+  echo "${FILE_CONTENT}" > /etc/sudoers.d/50-keep-environment
 fi
 
 if [[ -f /etc/sudoers.d/90-cloud-init-users ]]; then
@@ -237,21 +250,21 @@ fi
 FILE_CONTENT="${SUDO_USER} ALL=(ALL) NOPASSWD: ALL"
 if [[ -f /etc/sudoers.d/90-${SUDO_USER}-nopasswd ]]; then
   MD5_CURRENT=$(md5sum /etc/sudoers.d/90-${SUDO_USER}-nopasswd | awk '{ print $1 }')
-  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+  MD5_NEW=$(echo "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo users\033[0m\n"
       printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
-    echo ${FILE_CONTENT} > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
+    echo "${FILE_CONTENT}" > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
   fi
 else
   if [[ "${VERBOSE}" == "1" ]]; then
     printf "\033[0;34mUpdating sudo users\033[0m\n"
   fi
 
-  echo ${FILE_CONTENT} > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
+  echo "${FILE_CONTENT}" > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
 fi
 
 if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
@@ -290,14 +303,14 @@ fi
 FILE_CONTENT="AcceptEnv TMUX*"
 if [[ -f /etc/ssh/sshd_config.d/90-keep-environment ]]; then
   MD5_CURRENT=$(md5sum /etc/ssh/sshd_config.d/90-keep-environment | awk '{ print $1 }')
-  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+  MD5_NEW=$(echo "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
   if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating ssh\033[0m\n"
       printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
-    echo ${FILE_CONTENT} > /etc/ssh/sshd_config.d/90-keep-environment
+    echo "${FILE_CONTENT}" > /etc/ssh/sshd_config.d/90-keep-environment
     systemctl restart sshd
   fi
 else
@@ -305,7 +318,7 @@ else
     printf "\033[0;34mUpdating ssh\033[0m\n"
   fi
 
-  echo ${FILE_CONTENT} > /etc/ssh/sshd_config.d/90-keep-environment
+  echo "${FILE_CONTENT}" > /etc/ssh/sshd_config.d/90-keep-environment
   systemctl restart sshd
 fi
 
