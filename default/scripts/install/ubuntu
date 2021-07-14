@@ -340,10 +340,13 @@ else
   sudo echo -en ${FILE_CONTENT} > /etc/update-motd.d/01-neofetch
 fi
 
+if [[ -d "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" ]]; then
+  cp -R "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" /etc
+fi
+
 chmod -R 444 /etc/update-motd.d
 chmod -R 555 /etc/update-motd.d/01-neofetch
 chmod -R 555 /etc/update-motd.d/9?-*
-
 
 if [[ "${VERBOSE}" != "-1" ]]; then
   printf "\033[0;32mAll commands have been executed\033[0m\n"
