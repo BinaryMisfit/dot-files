@@ -3,4 +3,3 @@
     -
       command: exec zsh
       quiet: true
-

@@ -2,26 +2,44 @@
 - link:
     ~/.antigenrc:
       path: platform/osx/zsh/.antigenrc
+      create: true
+      relink: true
     ~/.gitconfig:
       path: platform/osx/git/.gitconfig
+      create: true
+      relink: true
     ~/.iterm2:
       path: platform/osx/iterm2
+      create: true
+      relink: true
     ~/.npmrc:
       path: platform/osx/node/.npmrc
+      create: true
+      relink: true
     ~/.p10k.zsh:
       path: platform/osx/zsh/.p10k.zsh
+      create: true
+      relink: true
     ~/.packages:
       path: platform/osx/packages
-    ~/.papercolor.tmux.conf:
-      path: platform/osx/tmux/.papercolor.tmux.conf
+      create: true
+      relink: true
     ~/.ssh/config:
       path: platform/osx/ssh/config
+      create: true
+      relink: true
     ~/.tmux.conf:
       path: platform/osx/tmux/.tmux.conf
-    ~/.tmux.conf.local:
-      path: platform/osx/tmux/.tmux.conf.local
+      create: true
+      relink: true
+    ~/.tmux.conf.base:
+      path: platform/osx/tmux/.tmux.conf.base  
+      create: true
+      relink: true
     ~/.zshrc:
-      path: platform/osx/zsh/.zshrc
+      path: platform/osx/zsh/.zshrc    
+      create: true
+      relink: true
 - shell:
     - ~/.iterm2/update_config.sh
 - clean:
