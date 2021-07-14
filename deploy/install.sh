@@ -22,10 +22,15 @@ VERBOSE=0
 VERSION_CURRENT=$(git rev-parse HEAD)
 VERSION_NEW=$(git rev-parse HEAD)
 
-while getopts "Qv" OPT; do
+while getopts "Qsv" OPT; do
   case "${OPT}" in
     Q)
       UPDATE=0
+      ;;
+    s)
+      VERBOSE=-1
+      ARGS_DOTBOT="-Q"
+      ARGS_INSTALL="-s"
       ;;
     v)
       VERBOSE=1
@@ -55,7 +60,9 @@ case "${OSTYPE}" in
     ;;
 esac
 
-printf "\033[0;32m==> Found ${OS_PREFIX}\033[0m\n"
+if [[ "${VERBOSE}" != "-1" ]]; then
+  printf "\033[0;32m==> Found ${OS_PREFIX}\033[0m\n"
+fi
 
 if [[ $(command -v git) == "" ]]; then
   printf "\033[0;31m\ngit not found, aborting\033[0m\n"
@@ -94,11 +101,17 @@ if [[ "${UPDATE}" == "1" ]]; then
   fi
 fi
 
-printf "\033[0;32mAll dotbot updates have been executed\033[0m"
-printf "\033[0;32m\n\n==> All tasks executed successfully\033[0m"
+if [[ "${VERBOSE}" != "-1" ]]; then
+  printf "\033[0;32mAll dotbot updates have been executed\033[0m"
+  printf "\033[0;32m\n\n==> All tasks executed successfully\033[0m"
+fi
 
 if [[ -x "${INSTALL_SCRIPTS}${OS_PREFIX}" ]]; then
-  printf "\033[0;32m\nApplying install\033[0m\n"
+
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\033[0;32m\nApplying install\033[0m\n"
+  fi
+
   if [[ "${OS_PREFIX}" == "osx" ]]; then
     bash -c "${INSTALL_SCRIPTS}${OS_PREFIX} ${ARGS_INSTALL}"
   else
@@ -111,7 +124,10 @@ for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_
     continue
   fi
 
-  printf "\033[0;32mApplying ${CONF}\033[0m\n"
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\033[0;32mApplying ${CONF}\033[0m\n"
+  fi
+
   "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -d "${BASE_DIR}" ${ARGS_DOTBOT} \
     -c "${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}"
 done
