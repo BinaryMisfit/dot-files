@@ -1,22 +1,18 @@
 if !exists('g:vscode')
   let g:startify_bookmarks= [
-        \ stdpath('config') . '/config.d/00.init.vim',
-        \ stdpath('config') . '/config.d/10.plugins.vim',
-        \ stdpath('config') . '/config.d/98.keymaps.vim',
         \ expand('~') . '/.zshrc',
+        \ stdpath('config') . '/config.d'
         \ ]                                                   " Specify fixed bookmark list
   let g:startify_commands = [
-        \ [ 'Check', ':checkhealth' ],
-        \ [ 'Update', ':PlugUpdate' ],
-        \ [ 'Upgrade', ':PlugUpgrade' ],
-        \ [ 'Help', ':help reference' ],
-        \ [ 'Tips', ':help vimtips' ]
+        \ [ 'Check Health', ':checkhealth' ],
+        \ [ 'Update COC', ':CocUpdate' ],
+        \ [ 'Update Plugins', ':PlugUpdate' ],
+        \ [ 'Upgrade VimPlug', ':PlugUpgrade' ],
         \ ]                                                   " Specify common commands
   let g:startify_files_number=5                               " Limit to 5 files
   let g:startify_fortune_use_unicode=1                        " Use unicode image
   let g:startify_lists = [
         \ { 'type': 'sessions',   'header': [''] },
-        \ { 'type': 'dir',        'header': ['  Current Directory: ' . getcwd()] },
         \ { 'type': 'files',      'header': ['  Recent Files'] },
         \ { 'type': 'commands',   'header': ['  Commands'] },
         \ { 'type': 'bookmarks',  'header': ['  Quick List'] }
