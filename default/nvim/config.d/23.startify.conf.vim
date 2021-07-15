@@ -7,7 +7,6 @@ if !exists('g:vscode')
         \ [ 'Check Health', ':checkhealth' ],
         \ [ 'Update COC', ':CocUpdate' ],
         \ [ 'Update Plugins', ':PlugUpdate' ],
-        \ [ 'Upgrade VimPlug', ':PlugUpgrade' ],
         \ ]                                                   " Specify common commands
   let g:startify_files_number=5                               " Limit to 5 files
   let g:startify_fortune_use_unicode=1                        " Use unicode image
