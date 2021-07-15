@@ -39,6 +39,7 @@ test -e ${HOME}/.npm_global && PATH=${HOME}/.npm_global/bin:$PATH
 test -e ${HOME}/.yarn/bin && PATH=${HOME}/.yarn/bin:$PATH
 test -e /usr/local/sbin && PATH=/usr/local/sbin:$PATH
 
+# Run local config
 test -e ${HOME}/.zshrc.local && source ${HOME}/.zshrc.local
 
 # Cleanup
