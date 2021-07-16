@@ -24,6 +24,10 @@
       path: platform/osx/ssh/config
       create: true
       relink: true
+    ~/.scripts:
+      path: platform/osx/scripts
+      create: true
+      relink: true
     ~/.tmux.conf:
       path: platform/osx/tmux/.tmux.conf
       create: true
