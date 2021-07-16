@@ -1,3 +1,8 @@
+" Set colors
+if (has('termguicolors'))
+  set termguicolors
+endif
+
 " Check if host os
 let host_os='none'
 if has('win32')
