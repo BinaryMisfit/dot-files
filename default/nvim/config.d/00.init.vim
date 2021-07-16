@@ -10,7 +10,7 @@ endif
 
 " Configure the plugin path
 let plugins_path=stdpath('data') . '/plugged'
-let plugin_loader=stdpath('data') . '/autoload/plug.vim'
+let plugin_loader=stdpath('config') . '/autoload/plug.vim'
 
 " Download vim-plug if not found
 if host_os==#'osx'
