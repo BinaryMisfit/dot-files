@@ -110,33 +110,37 @@ if [[ "${VERBOSE}" != "-1" ]]; then
 fi
 
 if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
-  coreutils 2>/dev/null)" ]]; then
-  INSTALL_LIST+=("coreutils")
-fi
-
-if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
   build-essential 2>/dev/null)" ]]; then
   INSTALL_LIST+=("build-essential")
 fi
 
-if [[ ! -f /usr/share/zsh-antigen/antigen.zsh ]]; then
-  INSTALL_LIST+=("zsh-antigen")
+if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
+  coreutils 2>/dev/null)" ]]; then
+  INSTALL_LIST+=("coreutils")
 fi
 
-if [[ "$(command -v python3)" == "" ]]; then
-  INSTALL_LIST+=("python3")
+if [[ "$(command -v curl)" == "" ]]; then
+  INSTALL_LIST+=("curl")
 fi
 
 if [[ "$(command -v neofetch)" == "" ]]; then
   INSTALL_LIST+=("neofetch")
 fi
 
+if [[ "$(command -v node)" == "" ]]; then
+  INSTALL_LIST+=("nodejs")
+fi
+
 if [[ "$(command -v nvim)" == "" ]]; then
   INSTALL_LIST+=("neovim")
 fi
 
-if [[ "$(command -v node)" == "" ]] || [[ "$(command -v npm)" == "" ]]; then
-  INSTALL_LIST+=("nodejs")
+if [[ "$(command -v python3)" == "" ]]; then
+  INSTALL_LIST+=("python3")
+fi
+
+if [[ "$(command -v socat)" == "" ]]; then
+  INSTALL_LIST+=("socat")
 fi
 
 if [[ "$(command -v tmux)" == "" ]]; then
@@ -145,6 +149,10 @@ fi
 
 if [[ "$(command -v zsh)" == "" ]]; then
   INSTALL_LIST+=("zsh")
+fi
+
+if [[ ! -f /usr/share/zsh-antigen/antigen.zsh ]]; then
+  INSTALL_LIST+=("zsh-antigen")
 fi
 
 INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -u))
