@@ -8,7 +8,7 @@ if !exists('g:vscode')
         \ [ 'Update COC', ':CocUpdate' ],
         \ [ 'Update Plugins', ':PlugUpdate' ],
         \ ]                                                   " Specify common commands
-  let g:startify_files_number=5                               " Limit to 5 files
+  let g:startify_files_number=7                               " Limit to 7 files
   let g:startify_fortune_use_unicode=1                        " Use unicode image
   let g:startify_lists = [
         \ { 'type': 'sessions',   'header': [''] },
