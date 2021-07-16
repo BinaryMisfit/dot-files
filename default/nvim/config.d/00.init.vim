@@ -9,13 +9,8 @@ elseif has('unix')
 endif
 
 " Configure the plugin path
-if host_os==#'osx'
-  let plugins_path=stdpath('data') . '/plugged'
-  let plugin_loader=stdpath('data') . '/autoload/plug.vim'
-elseif host_os==#'unix'
-  let plugins_path=stdpath('data') . '/plugged'
-  let plugin_loader=stdpath('data') . '/autoload/plug.vim'
-endif
+let plugins_path=stdpath('data') . '/plugged'
+let plugin_loader=stdpath('data') . '/autoload/plug.vim'
 
 " Download vim-plug if not found
 if host_os==#'osx'
@@ -37,3 +32,9 @@ elseif host_os==#'unix'
     augroup END
   endif
 endif
+
+" Update missing plugins
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \| PlugInstall --sync | execute 'source ' . stdpath('config')
+            \ . '/config.d/10.plugins.vim'
+\| endif
