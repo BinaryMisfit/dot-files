@@ -20,6 +20,10 @@
       path: platform/ubuntu/ssh/config
       create: true
       relink: true
+    ~/.scripts:
+      path: platform/ubuntu/scripts
+      create: true
+      relink: true
     ~/.tmux.conf:
       path: platform/ubuntu/tmux/.tmux.conf
       create: true

@@ -7,7 +7,3 @@
     ~/.iterm2_shell_integration.zsh:
       path: default/scripts/shell/.iterm2_shell_integration.zsh
       relink: true
-    ~/.scripts:
-      path: default/scripts/tools
-      create: true
-      relink: true
