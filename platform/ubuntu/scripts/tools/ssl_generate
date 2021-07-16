@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+VERBOSE=0
+
+while getopts "v" OPT; do
+  case "${OPT}" in
+    s)
+      VERBOSE=-1
+      ;;
+    v)
+      VERBOSE=1
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+[[ "${1:-}" = "--" ]] && shift
+
+if [[ "${VERBOSE}" != "-1" ]]; then
+  printf "\033[0;32m==> Found acme.sh\033[0m\n"
+fi
+
+unset VERBOSE
+
+exec bash

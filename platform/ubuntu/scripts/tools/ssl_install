@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+VERBOSE=0
+LE_DOMAIN=${Le_Domain}
+LE_WORK_DIR=${LE_WORKING_DIR}
+DOMAIN_DIR="${LE_WORK_DIR}/${LE_DOMAIN}"
+SERVICE_NAME=$(echo ${LE_DOMAIN} | cut -d"." -f1)
+
+while getopts "v" OPT; do
+  case "${OPT}" in
+    s)
+      VERBOSE=-1
+      ;;
+    v)
+      VERBOSE=1
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+[[ "${1:-}" = "--" ]] && shift
+
+printf "${LE_DOMAIN}"
+printf "${LE_WORK_DIR}"
+printf "${DOMAIN_DIR}"
+printf "${SERVICE_NAME}"
+
+unset VERBOSE
+unset LE_DOMAIN
+unset DOMAIN_DIR
+unset SERVICE_NAME
