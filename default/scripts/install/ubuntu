@@ -119,6 +119,10 @@ if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
   INSTALL_LIST+=("coreutils")
 fi
 
+if [[ "$(command -v cron)" == "" ]]; then
+  INSTALL_LIST+=("cron")
+fi
+
 if [[ "$(command -v curl)" == "" ]]; then
   INSTALL_LIST+=("curl")
 fi
