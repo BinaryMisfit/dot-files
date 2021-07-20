@@ -1,12 +1,44 @@
 #!/usr/bin/env bash
+export CLOUDNS_SUB_AUTH_ID=4719
+export CLOUDNS_AUTH_PASSWORD=gRbcyKv7a7QWe7YLfL8n
+export LE_WORKING_DIR="/opt/acme"
+export LE_CONFIG_HOME="/etc/acme"
+
+ARGS_RELOAD="-s"
+DEBUG=
+LOG=
+TEST=
 VERBOSE=0
 
-while getopts "v" OPT; do
+if [[ "$EUID" -ne "0" ]]; then
+  printf "\033[0;31mScript needs to be run as root, aborting\033[0m\n"
+  exit 1
+fi
+
+if [[ ! -d /opt/acme ]] || [[ ! -x /opt/acme/acme.sh ]]; then
+  printf "\033[0;31macme.sh not found, aborting\033[0m\n"
+  exit 1
+fi
+
+while getopts "dlstv" OPT; do
   case "${OPT}" in
+    d)
+      ARGS_RELOAD="-v"
+      DEBUG="--debug "
+      ;;
+    l)
+      ARGS_RELOAD="-v"
+      LOG="--log "
+      ;;
     s)
+      ARGS_RELOAD="-s"
       VERBOSE=-1
       ;;
+    t)
+      TEST="--staging --no-cron "
+      ;;
     v)
+      ARGS_RELOAD="-v"
       VERBOSE=1
       ;;
   esac
@@ -16,10 +48,25 @@ shift $((OPTIND-1))
 
 [[ "${1:-}" = "--" ]] && shift
 
+/opt/acme/acme.sh \
+  --config-home "${LE_CONFIG_HOME}" \
+  --issue \
+  --dns dns_cloudns \
+  --ecc \
+  ${TEST}\
+  ${DEBUG}\
+  ${LOG}\
+  --reloadcmd "${HOME}/.scripts/tools/ssl/reload ${ARGS_RELOAD}" \
+  --domain ${@}
+
 if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;32m==> Found acme.sh\033[0m\n"
+  printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 fi
 
+unset CLOUDNS_SUB_AUTH_ID
+unset CLOUDNS_AUTH_PASSWORD
+unset DEBUG
+unset LE_WORKING_DIR
+unset LE_CONFIG_HOME
+unset TEST
 unset VERBOSE
-
-exec bash
