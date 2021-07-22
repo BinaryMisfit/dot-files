@@ -115,7 +115,11 @@ if [[ -x "${INSTALL_SCRIPTS}${OS_PREFIX}" ]]; then
   if [[ "${OS_PREFIX}" == "osx" ]]; then
     bash -c "${INSTALL_SCRIPTS}${OS_PREFIX} ${ARGS_INSTALL}"
   else
-    bash -c "sudo \"${INSTALL_SCRIPTS}${OS_PREFIX}\" ${ARGS_INSTALL}"
+    if [[ "${EUID}" == 0 ]]; then
+      bash -c "sudo \"${INSTALL_SCRIPTS}${OS_PREFIX}\" ${ARGS_INSTALL}"
+    else
+      bash -c "\"${INSTALL_SCRIPTS}${OS_PREFIX}\" ${ARGS_INSTALL}"
+    fi
   fi
 fi
 
