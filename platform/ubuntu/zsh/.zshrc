@@ -21,7 +21,7 @@ test -e /usr/share/zsh-antigen/antigen.zsh && source /usr/share/zsh-antigen/anti
 test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Optional Variables
-test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
+test -e $(which java) && export JAVA_HOME="$($(which java) -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home'  | awk '{ print $3 }')"
 test -e /usr/bin/nvim && export EDITOR=$(which nvim)
 
 # Source config files
