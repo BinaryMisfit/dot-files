@@ -7,17 +7,22 @@ FILE_CONTENT=
 INSTALL_LIST=()
 MD5_CURRENT=
 MD5_NEW=
+SUDO=1
 SOURCES_ADDED=0
 VERBOSE=0
 
-if [[ "$EUID" -ne "0" ]]; then
-  printf "\033[0;31mScript needs to be run as root, aborting\033[0m\n"
+if [[ "$(command -v add-apt-repository)" == "" ]]; then
+  printf "\033[0;31m\nadd-apt-repository not found, aborting\033[0m\n"
   exit 1
 fi
 
-if [[ $(command -v add-apt-repository) == "" ]]; then
-  printf "\033[0;31m\nadd-apt-repository not found, aborting\033[0m\n"
-  exit 1
+if [[ "$(groups | grep sudo)" == "" ]] && [[ "${USER}" != "root" ]]; then
+  printf "\033[0;31m\nUser ${USER} not a sudoer\033[0m\n"
+  SUDO=0
+fi
+
+if [[ "${EUID}" != 0 ]]; then
+  SUDO=0
 fi
 
 while getopts "sv" OPT; do
@@ -38,177 +43,194 @@ shift $((OPTIND-1))
 
 [[ "${1:-}" = "--" ]] && shift
 
-if [[ ! -d "/home/${SUDO_USER}/.npm_global" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mCreating npm_global [${SUDO_USER}]\033[0m\n"
-  fi
-
-  mkdir -p "/home/${SUDO_USER}/.npm_global"
-  chown -R ${SUDO_USER}:${SUDO_USER} "/home/${SUDO_USER}/.npm_global"
-fi
-
-FILE_CONTENT="\
-deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
-deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
-if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
-  MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
-  MD5_NEW=$(echo -en "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
-  if [[ ! -f /usr/share/keyrings/nodesource.gpg ]]; then
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
-      | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
-  fi
-
-  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
+  if [[ ! -d "/home/${SUDO_USER}/.npm_global" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mInstalling nodesource repository\033[0m\n"
+      printf "\033[0;34mCreating npm_global [${SUDO_USER}]\033[0m\n"
     fi
 
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
-    fi
-
-    echo -en "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
-    INSTALL_LIST+=("nodejs")
-    SOURCES_ADDED=1
+    mkdir -p "/home/${SUDO_USER}/.npm_global"
+    chown -R ${SUDO_USER}:${SUDO_USER} "/home/${SUDO_USER}/.npm_global"
   fi
 else
-    echo -en "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
-    INSTALL_LIST+=("nodejs")
+  if [[ ! -d "/home/${USER}/.npm_global" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mCreating npm_global [${USER}]\033[0m\n"
+    fi
+
+    mkdir -p "/home/${USER}/.npm_global"
+    chown -R ${USER}:${USER} "/home/${USER}/.npm_global"
+  fi
+fi
+
+if [[ "${SUDO}" == "1" ]]; then
+  FILE_CONTENT="\
+  deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
+  deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
+  if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
+    MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
+    MD5_NEW=$(echo -en "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
+    if [[ ! -f /usr/share/keyrings/nodesource.gpg ]]; then
+      curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
+        | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
+    fi
+
+    if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+      if [[ "${VERBOSE}" == "1" ]]; then
+        printf "\033[0;34mInstalling nodesource repository\033[0m\n"
+      fi
+
+      if [[ "${VERBOSE}" == "1" ]]; then
+        printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+      fi
+
+      echo -en "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
+      INSTALL_LIST+=("nodejs")
+      SOURCES_ADDED=1
+    fi
+  else
+      echo -en "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
+      INSTALL_LIST+=("nodejs")
+      SOURCES_ADDED=1
+  fi
+fi
+
+if [[ "${SUDO}" == "1" ]]; then
+  if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" == "" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mInstalling git repository\033[0m\n"
+    fi
+
+    add-apt-repository -nsy ppa:git-core/ppa 2>&1 > /dev/null
     SOURCES_ADDED=1
-fi
-
-if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" == "" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mInstalling git repository\033[0m\n"
+    INSTALL_LIST+=("git")
   fi
 
-  add-apt-repository -nsy ppa:git-core/ppa 2>&1 > /dev/null
-  SOURCES_ADDED=1
-  INSTALL_LIST+=("git")
-fi
+  if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" == "" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mInstalling neovim repository\033[0m\n"
+    fi
 
-if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" == "" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mInstalling neovim repository\033[0m\n"
+    add-apt-repository -nsy ppa:neovim-ppa/unstable 2>&1 > /dev/null
+    SOURCES_ADDED=1
+    INSTALL_LIST+=("neovim")
   fi
 
-  add-apt-repository -nsy ppa:neovim-ppa/unstable 2>&1 > /dev/null
-  SOURCES_ADDED=1
-  INSTALL_LIST+=("neovim")
-fi
+  if [[ "${SOURCES_ADDED}" == "1" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mRunning apt-get update\033[0m\n"
+    fi
 
-if [[ "${SOURCES_ADDED}" == "1" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mRunning apt-get update\033[0m\n"
+    apt-get ${ARGS_APT} update
   fi
 
-  apt-get ${ARGS_APT} update
-fi
-
-if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;32mAll sources have been installed\033[0m\n"
-fi
-
-if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
-  build-essential 2>/dev/null)" ]]; then
-  INSTALL_LIST+=("build-essential")
-fi
-
-if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
-  coreutils 2>/dev/null)" ]]; then
-  INSTALL_LIST+=("coreutils")
-fi
-
-if [[ "$(command -v cron)" == "" ]]; then
-  INSTALL_LIST+=("cron")
-fi
-
-if [[ "$(command -v curl)" == "" ]]; then
-  INSTALL_LIST+=("curl")
-fi
-
-if [[ "$(command -v neofetch)" == "" ]]; then
-  INSTALL_LIST+=("neofetch")
-fi
-
-if [[ "$(command -v node)" == "" ]]; then
-  INSTALL_LIST+=("nodejs")
-fi
-
-if [[ "$(command -v nvim)" == "" ]]; then
-  INSTALL_LIST+=("neovim")
-fi
-
-if [[ "$(command -v python3)" == "" ]]; then
-  INSTALL_LIST+=("python3")
-fi
-
-if [[ "$(command -v socat)" == "" ]]; then
-  INSTALL_LIST+=("socat")
-fi
-
-if [[ "$(command -v tmux)" == "" ]]; then
-  INSTALL_LIST+=("tmux")
-fi
-
-if [[ "$(command -v zsh)" == "" ]]; then
-  INSTALL_LIST+=("zsh")
-fi
-
-if [[ ! -f /usr/share/zsh-antigen/antigen.zsh ]]; then
-  INSTALL_LIST+=("zsh-antigen")
-fi
-
-INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -u))
-
-if [[ "${INSTALL_LIST}" != "" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;31mMissing %s\033[0m\n" "${INSTALL_LIST[@]}"
-    printf "\033[0;34mRunning apt-get update\033[0m\n"
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\033[0;32mAll sources have been installed\033[0m\n"
   fi
 
-  apt-get ${ARGS_APT} update
-
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mRunning apt-get install\033[0m\n"
+  if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
+    build-essential 2>/dev/null)" ]]; then
+    INSTALL_LIST+=("build-essential")
   fi
 
-  apt-get ${ARGS_APT} install -y ${INSTALL_LIST[@]}
-fi
+  if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
+    coreutils 2>/dev/null)" ]]; then
+    INSTALL_LIST+=("coreutils")
+  fi
 
-if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;32mAll packages have been installed\033[0m\n"
+  if [[ "$(command -v cron)" == "" ]]; then
+    INSTALL_LIST+=("cron")
+  fi
+
+  if [[ "$(command -v curl)" == "" ]]; then
+    INSTALL_LIST+=("curl")
+  fi
+
+  if [[ "$(command -v neofetch)" == "" ]]; then
+    INSTALL_LIST+=("neofetch")
+  fi
+
+  if [[ "$(command -v node)" == "" ]]; then
+    INSTALL_LIST+=("nodejs")
+  fi
+
+  if [[ "$(command -v nvim)" == "" ]]; then
+    INSTALL_LIST+=("neovim")
+  fi
+
+  if [[ "$(command -v python3)" == "" ]]; then
+    INSTALL_LIST+=("python3")
+  fi
+
+  if [[ "$(command -v socat)" == "" ]]; then
+    INSTALL_LIST+=("socat")
+  fi
+
+  if [[ "$(command -v tmux)" == "" ]]; then
+    INSTALL_LIST+=("tmux")
+  fi
+
+  if [[ "$(command -v zsh)" == "" ]]; then
+    INSTALL_LIST+=("zsh")
+  fi
+
+  if [[ ! -f /usr/share/zsh-antigen/antigen.zsh ]]; then
+    INSTALL_LIST+=("zsh-antigen")
+  fi
+
+  INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -u))
+
+  if [[ "${INSTALL_LIST}" != "" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;31mMissing %s\033[0m\n" "${INSTALL_LIST[@]}"
+      printf "\033[0;34mRunning apt-get update\033[0m\n"
+    fi
+
+    apt-get ${ARGS_APT} update
+
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mRunning apt-get install\033[0m\n"
+    fi
+
+    apt-get ${ARGS_APT} install -y ${INSTALL_LIST[@]}
+  fi
+
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\033[0;32mAll packages have been installed\033[0m\n"
+  fi
 fi
 
 INSTALL_LIST=()
 
-if [[ "" != "$(dpkg-query -W --showformat='${Status}\n' \
-  vim | grep "install ok installed" 2>/dev/null)" ]]; then
-  INSTALL_LIST+=("vim")
-fi
-
-if [[ "" != "$(dpkg-query -W --showformat='${Status}\n' \
-  vim-tiny | grep "install ok installed" 2>/dev/null)" ]]; then
-  INSTALL_LIST+=("vim-tiny")
-fi
-
-if [[ "${INSTALL_LIST}" != "" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;31mRemove %s\033[0m\n" "${INSTALL_LIST[@]}"
-    printf "\033[0;34mRunning apt-get remove\033[0m\n"
+if [[ "${SUDO}" == "1" ]]; then
+  if [[ "" != "$(dpkg-query -W --showformat='${Status}\n' \
+    vim | grep "install ok installed" 2>/dev/null)" ]]; then
+    INSTALL_LIST+=("vim")
   fi
 
-  apt-get ${ARGS_APT} remove --purge -y ${INSTALL_LIST[@]}
-
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mRunning apt-get autoremove\033[0m\n"
+  if [[ "" != "$(dpkg-query -W --showformat='${Status}\n' \
+    vim-tiny | grep "install ok installed" 2>/dev/null)" ]]; then
+    INSTALL_LIST+=("vim-tiny")
   fi
 
-  apt-get ${ARGS_APT} autoremove -y
-fi
+  if [[ "${INSTALL_LIST}" != "" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;31mRemove %s\033[0m\n" "${INSTALL_LIST[@]}"
+      printf "\033[0;34mRunning apt-get remove\033[0m\n"
+    fi
 
-if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;32mAll packages have been removed\033[0m\n"
+    apt-get ${ARGS_APT} remove --purge -y ${INSTALL_LIST[@]}
+
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mRunning apt-get autoremove\033[0m\n"
+    fi
+
+    apt-get ${ARGS_APT} autoremove -y
+  fi
+
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\033[0;32mAll packages have been removed\033[0m\n"
+  fi
 fi
 
 if [[ "" == "$(npm list -g neovim)" ]]; then
@@ -219,97 +241,110 @@ if [[ "" == "$(npm list -g neovim)" ]]; then
   npm -g install neovim@latest &>/dev/null
 fi
 
-if [[ "" == "$(sudo -i -u "${SUDO_USER}" npm list -g neovim)" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mInstalling neovim [${SUDO_USER}]\033[0m\n"
-  fi
+if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
+  if [[ "" == "$(sudo -i -u "${SUDO_USER}" npm list -g neovim)" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mInstalling neovim [${SUDO_USER}]\033[0m\n"
+    fi
 
-  sudo -i -u "${SUDO_USER}" npm -g install neovim@latest &>/dev/null
+    sudo -i -u "${SUDO_USER}" npm -g install neovim@latest &>/dev/null
+  fi
 fi
 
 if [[ "${VERBOSE}" != "-1" ]]; then
   printf "\033[0;32mAll node packages have been installed\033[0m\n"
 fi
 
-if [[ "" == "$(command -v pip)" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mInstalling pip\033[0m\n"
+if [[ "${SUDO}" == "1" ]]; then
+  if [[ "" == "$(command -v pip)" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mInstalling pip\033[0m\n"
+    fi
+
+    curl -fL ${ARGS_CURL} https://bootstrap.pypa.io/get-pip.py | python3 - &>/dev/null
+    python3 -m pip install --upgrade pip &>/dev/null
+  fi
+fi
+
+if [[ "${SUDO}" == "1" ]]; then
+  if [[ "" == "$(python3 -m pip list | grep pynvim)" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mInstalling pynvim\033[0m\n"
+    fi
+
+    python3 -m pip install --upgrade pynvim &>/dev/null
   fi
 
-  curl -fL ${ARGS_CURL} https://bootstrap.pypa.io/get-pip.py | python3 - &>/dev/null
-  python3 -m pip install --upgrade pip &>/dev/null
-fi
-
-if [[ "" == "$(python3 -m pip list | grep pynvim)" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mInstalling pynvim\033[0m\n"
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\033[0;32mAll pip packages have been installed\033[0m\n"
   fi
 
-  python3 -m pip install --upgrade pynvim &>/dev/null
-fi
+  if [[ -f /etc/sudoers.d/90-cloud-init-users ]]; then
+    rm /etc/sudoers.d/90-cloud-init-users
+  fi
 
-if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;32mAll pip packages have been installed\033[0m\n"
-fi
+  FILE_CONTENT="Defaults env_keep += \"TMUX\""
+  if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
+    MD5_CURRENT=$(md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
+    MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+    if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+      if [[ "${VERBOSE}" == "1" ]]; then
+        printf "\033[0;34mUpdating sudo environment\033[0m\n"
+        printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+      fi
 
-if [[ -f /etc/sudoers.d/90-cloud-init-users ]]; then
-  rm /etc/sudoers.d/90-cloud-init-users
-fi
-
-FILE_CONTENT="Defaults env_keep += \"TMUX\""
-if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
-  MD5_CURRENT=$(md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
-  MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
-  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+      sudo echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
+    fi
+  else
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo environment\033[0m\n"
-      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
     sudo echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
   fi
-else
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mUpdating sudo environment\033[0m\n"
-  fi
-
-  sudo echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
 fi
 
-FILE_CONTENT="${SUDO_USER} ALL=(ALL) NOPASSWD: ALL"
-if [[ -f /etc/sudoers.d/90-${SUDO_USER}-nopasswd ]]; then
-  MD5_CURRENT=$(md5sum /etc/sudoers.d/90-${SUDO_USER}-nopasswd | awk '{ print $1 }')
-  MD5_NEW=$(echo "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
-  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
+  FILE_CONTENT="${SUDO_USER} ALL=(ALL) NOPASSWD: ALL"
+  if [[ -f /etc/sudoers.d/90-${SUDO_USER}-nopasswd ]]; then
+    MD5_CURRENT=$(md5sum /etc/sudoers.d/90-${SUDO_USER}-nopasswd | awk '{ print $1 }')
+    MD5_NEW=$(echo "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
+    if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+      if [[ "${VERBOSE}" == "1" ]]; then
+        printf "\033[0;34mUpdating sudo users\033[0m\n"
+        printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+      fi
+
+      echo "${FILE_CONTENT}" > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
+    fi
+  else
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo users\033[0m\n"
-      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
     echo "${FILE_CONTENT}" > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
   fi
-else
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mUpdating sudo users\033[0m\n"
-  fi
-
-  echo "${FILE_CONTENT}" > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
 fi
 
-if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mUpdating shell [$USER]\033[0m\n"
-  fi
 
-  chsh ${USER} --shell $(which zsh)
+if [[ "${SUDO}" == "1" ]]; then
+  if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mUpdating shell [$USER]\033[0m\n"
+    fi
+
+    chsh ${USER} --shell $(which zsh)
+  fi
 fi
 
-if [[ "$(which zsh)" != "$(getent passwd $SUDO_USER | awk -F: '{print $NF}')" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mUpdating shell [$SUDO_USER]\033[0m\n"
-  fi
+if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
+  if [[ "$(which zsh)" != "$(getent passwd $SUDO_USER | awk -F: '{print $NF}')" ]]; then
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\033[0;34mUpdating shell [$SUDO_USER]\033[0m\n"
+    fi
 
-  chsh ${SUDO_USER} --shell $(which zsh)
+    chsh ${SUDO_USER} --shell $(which zsh)
+  fi
 fi
 
 if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor' | awk '{ print $3 }')" ]]; then
@@ -327,41 +362,47 @@ if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor'
 
   update-alternatives --set editor $(which nvim) ${ARGS_QUIET}
   update-alternatives --set vi $(which nvim) ${ARGS_QUIET}
-fi
 
 chmod -R 444 /etc/sudoers.d
-FILE_CONTENT="\
-#!/bin/bash
-\nneofetch --config /etc/neofetch/config.conf\n"
-if [[ -f /etc/update-motd.d/01-neofetch ]]; then
-  MD5_CURRENT=$(md5sum /etc/update-motd.d/01-neofetch | awk '{ print $1 }')
-  MD5_NEW=$(echo -en ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
-  if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+fi
+
+if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
+  FILE_CONTENT="\
+  #!/bin/bash
+  \nneofetch --config /etc/neofetch/config.conf\n"
+  if [[ -f /etc/update-motd.d/01-neofetch ]]; then
+    MD5_CURRENT=$(md5sum /etc/update-motd.d/01-neofetch | awk '{ print $1 }')
+    MD5_NEW=$(echo -en ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+    if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+      if [[ "${VERBOSE}" == "1" ]]; then
+        printf "\033[0;34mUpdating sudo environment\033[0m\n"
+        printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
+      fi
+
+      sudo echo -en ${FILE_CONTENT} > /etc/update-motd.d/01-neofetch
+    fi
+  else
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo environment\033[0m\n"
-      printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
     fi
 
     sudo echo -en ${FILE_CONTENT} > /etc/update-motd.d/01-neofetch
   fi
-else
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mUpdating sudo environment\033[0m\n"
+
+  if [[ -d "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" ]]; then
+    cp -R "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" /etc
   fi
 
-  sudo echo -en ${FILE_CONTENT} > /etc/update-motd.d/01-neofetch
+  chmod -R 444 /etc/update-motd.d
+  chmod -R 555 /etc/update-motd.d/01-neofetch
+  chmod -R 555 /etc/update-motd.d/9?-*
 fi
-
-if [[ -d "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" ]]; then
-  cp -R "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" /etc
-fi
-
-chmod -R 444 /etc/update-motd.d
-chmod -R 555 /etc/update-motd.d/01-neofetch
-chmod -R 555 /etc/update-motd.d/9?-*
 
 if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;32mAll commands have been executed\033[0m\n"
+  if [[ "${SUDO}" == "1" ]]; then
+    printf "\033[0;32mAll commands have been executed\033[0m\n"
+  fi
+
   printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 fi
 
@@ -374,4 +415,5 @@ unset INSTALL_LIST
 unset MD5_CURRENT
 unset MD5_NEW
 unset SOURCES_ADDED
+unset SUDO
 unset VERBOSE
