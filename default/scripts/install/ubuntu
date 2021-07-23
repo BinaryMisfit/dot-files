@@ -17,7 +17,6 @@ if [[ "$(command -v add-apt-repository)" == "" ]]; then
 fi
 
 if [[ "$(groups | grep sudo)" == "" ]] && [[ "${USER}" != "root" ]]; then
-  printf "\033[0;31m\nUser ${USER} not a sudoer\033[0m\n"
   SUDO=0
 fi
 
