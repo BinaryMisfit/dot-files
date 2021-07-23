@@ -1,6 +1,6 @@
 # Run local config
-test -e ${HOME}/.zshrc.local && source ${HOME}/.zshrc.local
 test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
+test -e ${HOME}/.zshrc.local && source ${HOME}/.zshrc.local
 
 # Check for updates
 test -e ${HOME}/.dotfiles/deploy/update_online.sh && /bin/bash ${HOME}/.dotfiles/deploy/update_online.sh
