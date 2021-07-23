@@ -1,3 +1,7 @@
+# Run local config
+test -e ${HOME}/.zshrc.local && source ${HOME}/.zshrc.local
+test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
+
 # Check for updates
 test -e ${HOME}/.dotfiles/deploy/update_online.sh && /bin/bash ${HOME}/.dotfiles/deploy/update_online.sh
 
@@ -8,7 +12,6 @@ fi
 
 # Load environment
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
-test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
 
 # Variables
 export LANG=en_US.UTF-8
@@ -39,8 +42,6 @@ test -e ${HOME}/.npm_global && PATH=${HOME}/.npm_global/bin:$PATH
 test -e ${HOME}/.yarn/bin && PATH=${HOME}/.yarn/bin:$PATH
 test -e /usr/local/sbin && PATH=/usr/local/sbin:$PATH
 
-# Run local config
-test -e ${HOME}/.zshrc.local && source ${HOME}/.zshrc.local
 
 # Cleanup
 typeset -U PATH
