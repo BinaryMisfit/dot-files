@@ -11,6 +11,7 @@ DEPLOY_DIR="${BASE_DIR}/deploy"
 DOT_BOT_BIN="bin/dotbot"
 DOT_BOT_DIR="${BASE_DIR}/dotbot"
 FINAL_CONFIG_PREFIX="final"
+FORCE=0
 INSTALL_CONFIG_PREFIX="install"
 INSTALL_SCRIPTS="${BASE_DIR}/default/scripts/install/"
 MD5_CURRENT=$(md5sum ${0} | awk '{ print $1 }')
@@ -22,8 +23,17 @@ VERBOSE=0
 VERSION_CURRENT=$(git rev-parse HEAD)
 VERSION_NEW=$(git rev-parse HEAD)
 
-while getopts "Qsv" OPT; do
+while getopts "fQsv" OPT; do
   case "${OPT}" in
+    f)
+      ARGS_DOTBOT="-vv"
+      ARGS_GIT=
+      ARGS_INSTALL="-v"
+      ARGS_REDIRECT=
+      FORCE=1
+      UPDATE=0
+      VERBOSE=1
+      ;;
     Q)
       UPDATE=0
       ;;
@@ -64,7 +74,7 @@ case "${OSTYPE}" in
 esac
 
 if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;32m==> Found ${OS_PREFIX}\033[0m\n"
+  printf "\033[0;94m==> Found ${OS_PREFIX}\033[0m\n"
 fi
 
 if [[ $(command -v git) == "" ]]; then
@@ -105,7 +115,7 @@ if [[ "${UPDATE}" == "1" ]]; then
 fi
 
 if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;32mAll dotbot updates have been executed\033[0m"
+  printf "\033[0;92mAll dotbot updates have been executed\033[0m"
   printf "\033[0;32m\n\n==> All tasks executed successfully\033[0m"
 fi
 
@@ -152,6 +162,7 @@ unset DOT_BOT_BIN
 unset DOT_BOT_DIR
 unset DOT_BOT_PLUG
 unset FINAL_CONFIG_PREFIX
+unset FORCE
 unset INSTALL_CONFIG_PREFIX
 unset OPTIND
 unset REMOTE_REPO

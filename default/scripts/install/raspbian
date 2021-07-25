@@ -4,6 +4,7 @@ ARGS_CURL="-sS"
 ARGS_QUIET="--quiet"
 DISTRO="$(lsb_release -s -c)"
 FILE_CONTENT=
+FORCE=0
 INSTALL_LIST=()
 MD5_CURRENT=
 MD5_NEW=
@@ -12,7 +13,7 @@ SOURCES_ADDED=0
 VERBOSE=0
 
 if [[ "$(command -v add-apt-repository)" == "" ]]; then
-  printf "\033[0;31m\nadd-apt-repository not found, aborting\033[0m\n"
+  printf "\033[0;91m\nadd-apt-repository not found, aborting\033[0m\n"
   exit 1
 fi
 
@@ -24,8 +25,15 @@ if [[ "${EUID}" != 0 ]]; then
   SUDO=0
 fi
 
-while getopts "sv" OPT; do
+while getopts "fsv" OPT; do
   case "${OPT}" in
+    f)
+      FORCE=1
+      ARGS_APT=
+      ARGS_CURL=
+      ARGS_QUIET=
+      VERBOSE=1
+      ;;
     s)
       VERBOSE=-1
       ;;
@@ -42,10 +50,18 @@ shift $((OPTIND-1))
 
 [[ "${1:-}" = "--" ]] && shift
 
+if [[ "${FORCE}" == "1" ]] || [[ "${VERBOSE}" == "1" ]]; then
+  printf "\033[0;93m==> Command line parameters\033[0m\n"
+  printf "\033[0;93m    User:\t\033[0m${USER}\033[0m\n"
+  printf "\033[0;93m    Force:\t\033[0m${FORCE}\033[0m\n"
+  printf "\033[0;93m    SUDO User:\t\033[0m${SUDO_USER}\033[0m\n"
+  printf "\033[0;93m    Verbose:\t\033[0m${VERBOSE}\033[0m\n"
+fi
+
 if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
   if [[ ! -d "/home/${SUDO_USER}/.npm_global" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mCreating npm_global [${SUDO_USER}]\033[0m\n"
+      printf "\033[0;94mCreating npm_global [${SUDO_USER}]\033[0m\n"
     fi
 
     mkdir -p "/home/${SUDO_USER}/.npm_global"
@@ -54,7 +70,7 @@ if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
 else
   if [[ ! -d "/home/${USER}/.npm_global" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mCreating npm_global [${USER}]\033[0m\n"
+      printf "\033[0;94mCreating npm_global [${USER}]\033[0m\n"
     fi
 
     mkdir -p "/home/${USER}/.npm_global"
@@ -410,6 +426,7 @@ unset ARGS_CURL
 unset ARGS_QUIET
 unset DISTRO
 unset FILE_CONTENT
+unset FORCE
 unset INSTALL_LIST
 unset MD5_CURRENT
 unset MD5_NEW

@@ -1,39 +1,43 @@
 ---
 - link:
     ~/.antigenrc:
-      path: platform/ubuntu/zsh/.antigenrc
+      path: platform/raspbian/zsh/.antigenrc
       create: true
       relink: true
     ~/.gitconfig:
-      path: platform/ubuntu/git/.gitconfig
+      path: platform/raspbian/git/.gitconfig
       create: true
       relink: true
     ~/.npmrc:
-      path: platform/ubuntu/node/.npmrc
+      path: platform/raspbian/node/.npmrc
       create: true
       relink: true
     ~/.p10k.zsh:
-      path: platform/ubuntu/zsh/.p10k.zsh
+      path: platform/raspbian/zsh/.p10k.zsh
       create: true
       relink: true
     ~/.ssh/config:
-      path: platform/ubuntu/ssh/config
+      path: platform/raspbian/ssh/config
       create: true
       relink: true
     ~/.scripts:
-      path: platform/ubuntu/scripts
+      path: platform/raspbian/scripts
       create: true
       relink: true
     ~/.tmux.conf:
-      path: platform/ubuntu/tmux/.tmux.conf
+      path: platform/raspbian/tmux/.tmux.conf
       create: true
       relink: true
     ~/.tmux.conf.base:
-      path: platform/ubuntu/tmux/.tmux.conf.base
+      path: platform/raspbian/tmux/.tmux.conf.base
       create: true
       relink: true
     ~/.zshrc:
-      path: platform/ubuntu/zsh/.zshrc
+      path: platform/raspbian/zsh/.zshrc
+      create: true
+      relink: true
+    ~/.config/nvim/config.d/21.airline.conf.vim:
+      path: platform/raspbian/nvim/config.d/21.airline.conf.vim
       create: true
       relink: true
 - clean:
