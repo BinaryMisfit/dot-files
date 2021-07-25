@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+VERBOSE=0
+LE_DOMAIN=${Le_Domain}
+DOMAIN_DIR="${PWD}"
+MERGED_CERT="${DOMAIN_DIR}/${LE_DOMAIN}.pem"
+SERVICE_NAME=$(echo ${LE_DOMAIN} | cut -d"." -f1)
+
+while getopts "sv" OPT; do
+  case "${OPT}" in
+    s)
+      VERBOSE=-1
+      ;;
+    v)
+      VERBOSE=1
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+[[ "${1:-}" = "--" ]] && shift
+
+if [[ ${VERBOSE} != "-1" ]]; then
+  printf "\033[0;32m==> Reloading ${LE_DOMAIN}\033[0m\n"
+fi
+
+
+if [[ ${VERBOSE} == "1" ]]; then
+  printf "\033[0;34mMerging certificates\033[0m\n"
+  printf "\033[0;31mDirectory ${DOMAIN_DIR}\033[0m\n"
+  printf "\033[0;31mKey ${CERT_FULLCHAIN_PATH}\033[0m\n"
+  printf "\033[0;31mFull Chain ${CERT_KEY_PATH}\033[0m\n"
+  printf "\033[0;31mMerged Chain ${MERGED_CERT}\033[0m\n"
+  cat "${CERT_FULLCHAIN_PATH}" "${CERT_KEY_PATH}" > "${MERGED_CERT}"
+fi
+
+if [[ ${VERBOSE} != "-1" ]]; then
+  printf "\033[0;32mAll commands have been executed\033[0m\n"
+fi
+
+if [[ -x /usr/sbin/haproxy ]]; then
+  if [[ ${VERBOSE} == "1" ]]; then
+    printf "\033[0;34mRestarting haproxy\033[0m\n"
+  fi
+
+  systemctl restart haproxy
+fi
+
+if [[ ${VERBOSE} != "-1" ]]; then
+  printf "\033[0;32mAll services have been restarted\033[0m\n"
+fi
+
+unset VERBOSE
+unset LE_DOMAIN
+unset DOMAIN_DIR
+unset SERVICE_NAME

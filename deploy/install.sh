@@ -132,7 +132,7 @@ for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_
   fi
 
   if [[ "${VERBOSE}" != "-1" ]]; then
-    printf "\033[0;32mApplying ${CONF}\033[0m\n"
+    printf "\033[0;32m\nApplying ${CONF}\n\033[0m"
   fi
 
   "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -d "${BASE_DIR}" ${ARGS_DOTBOT} \
