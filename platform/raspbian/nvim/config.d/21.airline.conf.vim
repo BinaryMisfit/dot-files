@@ -15,5 +15,5 @@ if !exists('g:vscode')
   let g:airline#extensions#tabline#show_tab_type=0            " Don't show tab types
   let g:airline_detect_spelllang=0                            " Hide spelling language
   let g:airline_powerline_fonts=0                             " Enable powerline fonts
-  let g:airline_theme='material'                            " Set theme to match global theme
+  let g:airline_theme='material'                              " Set theme to match global theme
 endif

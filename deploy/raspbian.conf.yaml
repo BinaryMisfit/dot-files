@@ -8,10 +8,6 @@
       path: platform/raspbian/git/.gitconfig
       create: true
       relink: true
-    ~/.npmrc:
-      path: platform/raspbian/node/.npmrc
-      create: true
-      relink: true
     ~/.p10k.zsh:
       path: platform/raspbian/zsh/.p10k.zsh
       create: true
