@@ -54,6 +54,9 @@ case "${OSTYPE}" in
   "linux-gnu")
     OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
     ;;
+  "linux-gnueabihf")
+    OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    ;;
   *)
     printf "\033[0;31mUnknown OS: ${OSTYPE}, aborting\n"
     exit 1
