@@ -5,6 +5,15 @@ test -e ${HOME}/.zshrc.local && source ${HOME}/.zshrc.local
 # Check for updates
 test -e ${HOME}/.dotfiles/deploy/update_online.sh && /bin/bash ${HOME}/.dotfiles/deploy/update_online.sh
 
+# P10K Instant Prompt
+if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
+    printf "\033[3;93m\n==> Instant prompt enabled\033[0m\n"
+  fi
+
+  source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # Load environment
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 if [[ "${VERBOSE_LOGIN}" == "1" ]] && [[ "${ITERM_SHELL_INTEGRATION_INSTALLED}" == "Yes" ]]; then
@@ -31,15 +40,6 @@ test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 # Source p10k files
 test -e ${HOME}/.p10k.zsh && source ${HOME}/.p10k.zsh
-
-# P10K Instant Prompt
-if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-    printf "\033[3;93m\n==> Instant prompt enabled\033[0m\n"
-  fi
-
-  source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
 
 # Additional variables
 test -e $(which java) && export JAVA_HOME="$($(which java) -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home'  | awk '{ print $3 }')"
