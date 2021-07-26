@@ -10,12 +10,12 @@ if [[ -d "${BASE_DIR}" ]]; then
   VERSION_NEW=$(git ls-remote https://github.com/BinaryMisfit/dot-files HEAD | awk '{ print $1 }')
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
     bash -c "unset HOME; git -C "${BASE_DIR}" pull --autostash --all --recurse-submodules --rebase --quiet 2>&1 > /dev/null"
-    printf "\033[0;31mConfig installed ${VERSION_CURRENT}, online: ${VERSION_NEW}, updating\033[0m\n"
+    printf "\033[3;91mConfig installed ${VERSION_CURRENT}, online: ${VERSION_NEW}, updating\033[0m\n"
     pushd ${BASE_DIR} > /dev/null
     . "${BASE_DIR}/install" -Qs
     popd > /dev/null
   else
-    printf "\033[0;32mConfig installed: ${VERSION_CURRENT}, online: ${VERSION_NEW}, up-to-date\033[0m\n"
+    printf "\033[3;92mConfig installed: ${VERSION_CURRENT}, online: ${VERSION_NEW}, up-to-date\033[0m\n"
   fi
   unset BRANCH
   unset VERSION_CURRENT
