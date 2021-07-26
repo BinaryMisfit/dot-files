@@ -9,8 +9,9 @@
       create: true
       relink: true
     ~/.config/nvim/config.d:
-      path: default/nvim/config.d
+      path: default/nvim/config.d/*.vim
       create: true
+      glob: true
       relink: true
     ~/.iterm2_shell_integration.zsh:
       path: default/scripts/shell/.iterm2_shell_integration.zsh
