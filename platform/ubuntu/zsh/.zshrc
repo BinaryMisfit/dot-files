@@ -22,9 +22,10 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export POWERLEVEL9K_MODE=nerdfont-complete
-printf "\033[3;93m    LANG\t\033[3;97m${LANG}\033[0m\n"
-printf "\033[3;93m    LANGUAGE\t\033[3;97m${LANGUAGE}\033[0m\n"
-printf "\033[3;93m    LC_CT\t\033[3;97m${LC_CTYPE}\033[0m\n"
+printf "\033[3;93m    LANG\t\t\033[3;97m${LANG}\033[0m\n"
+printf "\033[3;93m    LANGUAGE\t\t\033[3;97m${LANGUAGE}\033[0m\n"
+printf "\033[3;93m    LC_CTYPE\t\t\033[3;97m${LC_CTYPE}\033[0m\n"
+printf "\033[3;93m    POWERLEVEL9K_MODE\t\t\033[3;97m${POWERLEVEL9K_MODE}\033[0m\n"
 
 # Load Antigen
 test -e /usr/share/zsh-antigen/antigen.zsh && source /usr/share/zsh-antigen/antigen.zsh
