@@ -36,6 +36,10 @@
       path: platform/ubuntu/zsh/.zshrc
       create: true
       relink: true
+    ~/.config/nvim/config.d/21.airline.conf.vim:
+      path: platform/ubuntu/nvim/config.d/21.airline.conf.vim
+      create: true
+      relink: true
 - clean:
     ~/:
       recursive: true

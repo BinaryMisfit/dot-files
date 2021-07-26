@@ -1,1 +1,1 @@
-/home/pi/.dotfiles/platform/raspbian/nvim/config.d/21.airline.conf.vim
+/home/wirob/.dotfiles/platform/ubuntu/nvim/config.d/21.airline.conf.vim
