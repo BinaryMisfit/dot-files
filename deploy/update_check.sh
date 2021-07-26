@@ -15,7 +15,7 @@ if [[ -d "${BASE_DIR}" ]]; then
     . "${BASE_DIR}/install" -Qs
     popd > /dev/null
   else
-    printf "\033[3;92mConfig installed: ${VERSION_CURRENT}, online: ${VERSION_NEW}, up-to-date\033[0m\n"
+    printf "\033[3;93mConfig installed: ${VERSION_CURRENT}, online: ${VERSION_NEW}, up-to-date\033[0m\n"
   fi
   unset BRANCH
   unset VERSION_CURRENT
