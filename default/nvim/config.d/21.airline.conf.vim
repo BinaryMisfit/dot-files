@@ -1,1 +1,0 @@
-/home/wirob/.dotfiles/platform/ubuntu/nvim/config.d/21.airline.conf.vim
