@@ -4,8 +4,10 @@ export CLOUDNS_AUTH_PASSWORD=gRbcyKv7a7QWe7YLfL8n
 export LE_WORKING_DIR="/opt/acme"
 export LE_CONFIG_HOME="/etc/acme"
 
+ARGS_DOMAINS=()
 ARGS_RELOAD="-s"
 DEBUG=
+FILE_SOURCE="0"
 LOG=
 TEST=
 VERBOSE=0
@@ -20,11 +22,15 @@ if [[ ! -d /opt/acme ]] || [[ ! -x /opt/acme/acme.sh ]]; then
   exit 1
 fi
 
-while getopts "dlstv" OPT; do
+while getopts "dflstv" OPT; do
   case "${OPT}" in
     d)
       ARGS_RELOAD="-v"
       DEBUG="--debug "
+      VERBOSE=1
+      ;;
+    f)
+      FILE_SOURCE=1
       ;;
     l)
       ARGS_RELOAD="-v"
@@ -48,25 +54,52 @@ shift $((OPTIND-1))
 
 [[ "${1:-}" = "--" ]] && shift
 
-/opt/acme/acme.sh \
-  --config-home "${LE_CONFIG_HOME}" \
-  --issue \
-  --dns dns_cloudns \
-  --ecc \
-  ${TEST}\
-  ${DEBUG}\
-  ${LOG}\
-  --reloadcmd "${HOME}/.scripts/tools/ssl/reload ${ARGS_RELOAD}" \
-  --domain ${@}
+if [[ "${VERBOSE}" != "-1" ]]; then
+  printf "\033[0;34mRequesting certificates\033[0m\n"
+fi
+
+if [[ "${FILE_SOURCE}" == "1" ]]; then
+  while IFS="=": read -r DOMAIN; do
+    if [[ "${DOMAIN}" != "" ]]; then
+      if [[ "${VERBOSE}" == "1" ]]; then
+        printf "\033[0;34mAdding ${DOMAIN}\033[0m\n"
+      fi
+      ARGS_DOMAINS+=("${DOMAIN}")
+    fi
+  done < "${@}"
+else
+  ARGS_DOMAINS+=("${@}")
+fi
+
+for DOMAIN in "${ARGS_DOMAINS[@]}"; do
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\033[0;34mRequesting ${DOMAIN}\033[0m\n"
+  fi
+
+  /opt/acme/acme.sh \
+    --config-home "${LE_CONFIG_HOME}" \
+    --issue \
+    --dns dns_cloudns \
+    --ecc \
+    ${TEST}\
+    ${DEBUG}\
+    ${LOG}\
+    --reloadcmd "${HOME}/.scripts/tools/ssl/reload ${ARGS_RELOAD}" \
+    --domain ${DOMAIN}
+done
 
 if [[ "${VERBOSE}" != "-1" ]]; then
   printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 fi
 
+unset ARGS_DOMAINS
+unset ARGS_RELOAD
 unset CLOUDNS_SUB_AUTH_ID
 unset CLOUDNS_AUTH_PASSWORD
 unset DEBUG
+unset FILE_SOURCE
 unset LE_WORKING_DIR
 unset LE_CONFIG_HOME
+unset LOG
 unset TEST
 unset VERBOSE
