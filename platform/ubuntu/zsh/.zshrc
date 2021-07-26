@@ -7,17 +7,24 @@ test -e ${HOME}/.dotfiles/deploy/update_online.sh && /bin/bash ${HOME}/.dotfiles
 
 # P10K Instant Prompt
 if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  if [[ "${VERBOSE_LOGIN}" ]]; then
+    printf "\033[3;93m\n==> Instant prompt enabled\033[0m\n"
+  fi
   source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # Load environment
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
+printf "\033[3;93m    iTerm Integrated\t\033[3;97m${ITERM_SHELL_INTEGRATION_INSTALLED}\033[0m\n"
 
 # Variables
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export POWERLEVEL9K_MODE=nerdfont-complete
+printf "\033[3;93m    LANG\t\033[3;97m${LANG}\033[0m\n"
+printf "\033[3;93m    LANGUAGE\t\033[3;97m${LANGUAGE}\033[0m\n"
+printf "\033[3;93m    LC_CT\t\033[3;97m${LC_CTYPE}\033[0m\n"
 
 # Load Antigen
 test -e /usr/share/zsh-antigen/antigen.zsh && source /usr/share/zsh-antigen/antigen.zsh
