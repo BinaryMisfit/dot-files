@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+printf "\033[0;92m[  ..  ]\033[0m Online update\033[0m"
 if [[ ! -z ${TMUX} ]]; then
   exit 0
 fi

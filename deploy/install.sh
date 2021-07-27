@@ -63,11 +63,11 @@ if [[ "${VERBOSE}" == "1" ]]; then
   printf "\n\033[0;94m[ INFO ] Base directory ${BASE_DIR}\033[0m"
   printf "\n\033[0;94m[ INFO ] Deploy directory ${DEPLOY_DIR}\033[0m"
   printf "\n\033[0;94m[ INFO ] dotbot directory ${DOT_BOT_DIR}\033[0m"
-  printf "\n\033[0;94m[ INFO ] Script path ${0}\033[0m"
+  printf "\n\033[0;94m[ INFO ] Script path ${0}\033[0m\n"
 fi
 
 if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\n\033[0;92m[  ..  ]\033[0m OS detection\033[0m"
+  printf "\033[0;92m[  ..  ]\033[0m OS detection\033[0m"
 fi
 
 OS_PREFIX=
@@ -146,7 +146,10 @@ if [[ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
   if [[ "${?}" != "0" ]]; then
     printf "\r\033[0;91m[FAILED]\033[0m Locating dotbot\033[0m"
     if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+      if [[ "${COMMAND}" != "" ]]; then
+        printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+      fi
+
       if [[ "${OUTPUT}" != "" ]]; then
         printf "\n\033[0;94m[OUTPUT] %s\033[0m" "${OUTPUT[@]}"
       fi
@@ -195,8 +198,11 @@ if [[ "${UPDATE}" == "1" ]]; then
 
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]] || [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     printf "\r\033[0;93m[REBOOT]\033[0m Updating repository\033[0m"
-    if [[ "${VERBOSE}" == "1" ]] && [[ "${COMMAND}" != "" ]]; then
-      printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+    if [[ "${VERBOSE}" == "1" ]]; then
+      if [[ "${COMMAND}" != "" ]]; then
+        printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+      fi
+
       if [[ "${OUTPUT}" != "" ]]; then
         printf "\n\033[0;94m[OUTPUT] %s\033[0m" "${OUTPUT[@]}"
       fi
@@ -216,11 +222,12 @@ if [[ "${UPDATE}" == "1" ]]; then
     exec ${0} -Q ${ARGS_ALL}
   fi
 else
-  printf "\r\033[0;93m[ SKIP ]\033[0m Updating repository\033[0m"
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\r\033[0;93m[ SKIP ]\033[0m Updating repository\033[0m"
+  fi
 fi
 
 if [[ "${VERBOSE}" != "-1" ]]; then
-
   if [[ "${VERBOSE}" == "1" ]]; then
     printf "\n\033[0;94m[ INFO ] Local  ${VERSION_CURRENT}\033[0m"
     printf "\n\033[0;94m[ INFO ] Script ${MD5_CURRENT}\033[0m"
@@ -251,18 +258,16 @@ fi
 
 if [[ "${VERBOSE}" != "-1" ]]; then
   printf "\r\033[0;92m[  OK  ]\033[0m Running install script\033[0m"
-  if [[ "${VERBOSE}" == "1" ]] && [[ "${COMMAND}" != "" ]]; then
-    printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+  if [[ "${VERBOSE}" == "1" ]]; then
+    if [[ "${COMMAND}" != "" ]]; then
+      printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+    fi
+
     if [[ "${OUTPUT}" != "" ]]; then
       printf "\n\033[0;94m[OUTPUT] %s\033[0m" "${OUTPUT[@]}"
     fi
   fi
-
-  printf "\n\033[0;92m[  ..  ]\033[0m Running dotbot\033[0m"
 fi
-
-printf "\n"
-exit 1
 
 for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
   if [[ ! -f "${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}" ]]; then
@@ -270,12 +275,43 @@ for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_
   fi
 
   if [[ "${VERBOSE}" != "-1" ]]; then
-    printf "\033[0;32m\nApplying ${CONF}\n\033[0m"
+    printf "\n\033[0;93m[UPDATE]\033[0m Running $CONF\033[0m"
   fi
 
-  "${DOT_BOT_DIR}/${DOT_BOT_BIN}" -d "${BASE_DIR}" ${ARGS_DOTBOT} \
-    -c "${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}"
+  COMMAND="${DOT_BOT_DIR}/${DOT_BOT_BIN} -d \"${BASE_DIR}\" -c \"${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}\""
+  OUTPUT=$(bash -c "${COMMAND}" 2>&1)
+  readarray -t OUTPUT <<< "${OUTPUT}"
+
+  if [[ "${?}" != "0" ]]; then
+    printf "\r\033[0;91m[FAILED]\033[0m Running $CONF\033[0m"
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+      if [[ "${OUTPUT}" != "" ]]; then
+        printf "\n\033[0;94m[OUTPUT] %s\033[0m" "${OUTPUT[@]}"
+      fi
+    fi
+
+    printf "\n"
+    exit 1
+  fi
+
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\r\033[0;92m[  OK  ]\033[0m Running $CONF\033[0m"
+    if [[ "${VERBOSE}" == "1" ]]; then
+      if [[ "${COMMAND}" != "" ]]; then
+        printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+      fi
+
+      if [[ "${OUTPUT}" != "" ]]; then
+        printf "\n\033[0;94m[OUTPUT] %s\033[0m" "${OUTPUT[@]}"
+      fi
+    fi
+  fi
 done
+
+if [[ "${VERBOSE}" != "-1" ]]; then
+  printf "\n"
+fi
 
 unset ARGS_ALL
 unset ARGS_INSTALL
