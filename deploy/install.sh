@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 ARGS_ALL=${@}
-ARGS_DOTBOT="-q"
-ARGS_GIT="--quiet"
 ARGS_INSTALL=
-ARGS_REDIRECT="2>/dev/null"
 BASE_DIR="${HOME}/.dotfiles"
+COMMAND=
 CONF_SUFFIX=".conf.yaml"
 DEFAULT_CONFIG_PREFIX="default"
 DEPLOY_DIR="${BASE_DIR}/deploy"
@@ -15,21 +13,19 @@ FORCE=0
 INSTALL_CONFIG_PREFIX="install"
 INSTALL_SCRIPTS="${BASE_DIR}/default/scripts/install/"
 MD5_CURRENT=$(md5sum ${0} | awk '{ print $1 }')
-MD5_NEW=$(md5sum ${0} | awk '{ print $1 }')
+MD5_NEW=
 OPTIND=1
+OUTPUT=
 REMOTE_REPO=https://github.com/BinaryMisfit/dot-files
 UPDATE=1
 VERBOSE=0
-VERSION_CURRENT=$(git rev-parse HEAD)
-VERSION_NEW=$(git rev-parse HEAD)
+VERSION_CURRENT=
+VERSION_NEW=
 
 while getopts "fQsv" OPT; do
   case "${OPT}" in
     f)
-      ARGS_DOTBOT="-vv"
-      ARGS_GIT=
-      ARGS_INSTALL="-v"
-      ARGS_REDIRECT=
+      ARGS_INSTALL="-f"
       FORCE=1
       UPDATE=0
       VERBOSE=1
@@ -38,16 +34,12 @@ while getopts "fQsv" OPT; do
       UPDATE=0
       ;;
     s)
-      VERBOSE=-1
-      ARGS_DOTBOT="-Q"
       ARGS_INSTALL="-s"
+      VERBOSE=-1
       ;;
     v)
-      VERBOSE=1
-      ARGS_DOTBOT="-vv"
-      ARGS_GIT=
       ARGS_INSTALL="-v"
-      ARGS_REDIRECT=
+      VERBOSE=1
       ;;
   esac
 done
@@ -55,6 +47,28 @@ done
 shift $((OPTIND-1))
 
 [[ "${1:-}" = "--" ]] && shift
+
+if [[ "${SUDO_USER}"  != "" ]]; then
+  BASE_DIR="/home/${SUDO_USER}/.dotfiles"
+  DEPLOY_DIR="${BASE_DIR}/deploy"
+  DOT_BOT_DIR="${BASE_DIR}/dotbot"
+  INSTALL_SCRIPTS="${BASE_DIR}/default/scripts/install/"
+fi
+
+if [[ "${VERBOSE}" == "1" ]]; then
+  printf "\033[0;94m[ INFO ] Arguments ${ARGS_ALL}\033[0m"
+  printf "\n\033[0;94m[ INFO ] Install arguments ${ARGS_INSTALL}\033[0m"
+  printf "\n\033[0;94m[ INFO ] User ${USER}\033[0m"
+  printf "\n\033[0;94m[ INFO ] SUDO user ${SUDO_USER}\033[0m"
+  printf "\n\033[0;94m[ INFO ] Base directory ${BASE_DIR}\033[0m"
+  printf "\n\033[0;94m[ INFO ] Deploy directory ${DEPLOY_DIR}\033[0m"
+  printf "\n\033[0;94m[ INFO ] dotbot directory ${DOT_BOT_DIR}\033[0m"
+  printf "\n\033[0;94m[ INFO ] Script path ${0}\033[0m"
+fi
+
+if [[ "${VERBOSE}" != "-1" ]]; then
+  printf "\n\033[0;92m[  ..  ]\033[0m OS detection\033[0m"
+fi
 
 OS_PREFIX=
 case "${OSTYPE}" in
@@ -68,73 +82,187 @@ case "${OSTYPE}" in
     OS_PREFIX=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
     ;;
   *)
-    printf "\033[0;31mUnknown OS: ${OSTYPE}, aborting\n"
+    printf "\r\033[0;91m[FAILED]\033[0m OS detected ${OSTYPE}\033[0m"
+    printf "\n"
     exit 1
     ;;
 esac
 
 if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;94m==> Found ${OS_PREFIX}\033[0m\n"
+  printf "\r\033[0;92m[  OK  ]\033[0m OS detected ${OS_PREFIX}\033[0m"
+  printf "\n\033[0;92m[  ..  ]\033[0m Locating git\033[0m"
 fi
 
 if [[ $(command -v git) == "" ]]; then
-  printf "\033[0;31m\ngit not found, aborting\033[0m\n"
+  printf "\r\033[0;91m[FAILED]\033[0m Locating git\033[0m"
+  printf "\n"
   exit 1
 fi
 
+if [[ "${VERBOSE}" != "-1" ]]; then
+  printf "\r\033[0;92m[  OK  ]\033[0m Locating git\033[0m"
+  printf "\n\033[0;92m[  ..  ]\033[0m Locating dotfiles\033[0m"
+fi
+
 if [[ ! -d "${BASE_DIR}" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mInstalling dotfiles\033[0m\n"
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\r\033[0;93m[UPDATE]\033[0m Locating dotfiles\033[0m"
   fi
 
-  bash -c "unset HOME; git clone --depth 1 --recurse-submodules \
-    \"${REMOTE_REPO}\" \"${BASE_DIR}\"" ${ARGS_GIT} ${ARGS_REDIRECT}
-fi
+  COMMAND="unset HOME; git clone --depth 1 --recurse-submodules \"${REMOTE_REPO}\" \"${BASE_DIR}\""
+  OUTPUT=$(bash -c "${COMMAND}" 2>&1)
+  readarray -t OUTPUT <<< "${OUTPUT}"
+  if [[ "${?}" != "0" ]]; then
+    printf "\r\033[0;91m[FAILED]\033[0m Locating dotfiles\033[0m"
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+      if [[ "${OUTPUT}" != "" ]]; then
+        printf "\n\033[0;94m[OUTPUT] %s\033[0m" "${OUTPUT[@]}"
+      fi
+    fi
 
-if [[ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mUpdating dotbot\033[0m\n"
-  fi
-
-  bash -c "unset HOME; git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase ${ARGS_GIT} ${ARGS_REDIRECT} "
-fi
-
-if [[ "${UPDATE}" == "1" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mUpdating repository\033[0m\n"
-  fi
-
-  bash -c "unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules \
-    --rebase ${ARGS_GIT} ${ARGS_REDIRECT}"
-  VERSION_NEW=$(git rev-parse HEAD)
-  MD5_NEW=$(md5sum ${0} | awk '{ print $1 }')
-  if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]] || [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
-    printf "\033[0;31m\n==> Update found, restarting\033[0m\n"
-    exec ${0} -Q ${ARGS_ALL}
+    printf "\n"
+    exit 1
   fi
 fi
 
 if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;92mAll dotbot updates have been executed\033[0m"
-  printf "\033[0;32m\n\n==> All tasks executed successfully\033[0m"
+  printf "\r\033[0;92m[  OK  ]\033[0m Locating dotfiles\033[0m"
+  if [[ "${VERBOSE}" == "1" ]] && [[ "${COMMAND}" != "" ]]; then
+    printf "\n\033[0;93m[SCRIPT]\033[0m ${COMMAND}\033[0m"
+    if [[ "${OUTPUT}" != "" ]]; then
+      printf "\033[0;94m[OUTPUT]\033[0m %s\n\033[0m" "${OUTPUT[@]}"
+    fi
+  fi
+
+  printf "\n\033[0;92m[  ..  ]\033[0m Locating dotbot\033[0m"
+fi
+
+if [[ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
+  printf "\033[0;93m\r[UPDATE]\033[0m Locating dotbot\033[0m"
+  COMMAND="unset HOME; git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase"
+  OUTPUT=$(bash -c "${COMMAND}" 2>&1)
+  readarray -t OUTPUT <<< "${OUTPUT}"
+  if [[ "${?}" != "0" ]]; then
+    printf "\r\033[0;91m[FAILED]\033[0m Locating dotbot\033[0m"
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+      if [[ "${OUTPUT}" != "" ]]; then
+        printf "\n\033[0;94m[OUTPUT] %s\033[0m" "${OUTPUT[@]}"
+      fi
+    fi
+
+    printf "\n"
+    exit 1
+  fi
+fi
+
+if [[ "${VERBOSE}" != "-1" ]]; then
+  printf "\r\033[0;92m[  OK  ]\033[0m Locating dotbot\033[0m"
+  if [[ "${VERBOSE}" == "1" ]]; then
+    if [[ "${COMMAND}" != "" ]]; then
+      printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+    fi
+
+    if [[ "${OUTPUT}" != "" ]]; then
+      printf "\n\033[0;94m[OUTPUT] %s\033[0m" "${OUTPUT[@]}"
+    fi
+
+    printf "\n\033[0;94m[ INFO ] Update parameter set ${UPDATE}\033[0m"
+  fi
+
+  printf "\n\033[0;92m[  ..  ]\033[0m Updating repository\033[0m"
+fi
+
+VERSION_CURRENT=$(git -C ${BASE_DIR} rev-parse HEAD)
+if [[ "${UPDATE}" == "1" ]]; then
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\033[0;93m\r[UPDATE]\033[0m Updating repository\033[0m"
+  fi
+
+  COMMAND="unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase"
+  OUTPUT=$(bash -c "${COMMAND}" 2>&1)
+  readarray -t OUTPUT <<< "${OUTPUT}"
+  VERSION_NEW=$(git -C ${BASE_DIR} rev-parse HEAD)
+  MD5_NEW=$(md5sum ${0} | awk '{ print $1 }')
+  if [[ "${SUDO_USER}" != "" ]]; then
+    sudo chown -R "${SUDO_USER}":"${SUDO_USER}" "${BASE_DIR}"
+  fi
+
+  if [[ "${VERBOSE}" != "-1" ]]; then
+    printf "\r\033[0;92m[  OK  ]\033[0m Updating repository\033[0m"
+  fi
+
+  if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]] || [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+    printf "\r\033[0;93m[REBOOT]\033[0m Updating repository\033[0m"
+    if [[ "${VERBOSE}" == "1" ]] && [[ "${COMMAND}" != "" ]]; then
+      printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+      if [[ "${OUTPUT}" != "" ]]; then
+        printf "\n\033[0;94m[OUTPUT] %s\033[0m" "${OUTPUT[@]}"
+      fi
+    fi
+
+    if [[ "${VERBOSE}" == "1" ]]; then
+      printf "\n\033[0;94m[ INFO ] Local  ${VERSION_CURRENT}\033[0m"
+      printf "\n\033[0;94m[ INFO ] Remote ${VERSION_NEW}\033[0m"
+      printf "\n\033[0;94m[ INFO ] Script ${MD5_CURRENT}\033[0m"
+      printf "\n\033[0;94m[ INFO ] Latest ${MD5_NEW}\033[0m"
+    fi
+
+    if [[ "${VERBOSE}" != "-1" ]]; then
+      printf "\n"
+    fi
+
+    exec ${0} -Q ${ARGS_ALL}
+  fi
+else
+  printf "\r\033[0;93m[ SKIP ]\033[0m Updating repository\033[0m"
+fi
+
+if [[ "${VERBOSE}" != "-1" ]]; then
+
+  if [[ "${VERBOSE}" == "1" ]]; then
+    printf "\n\033[0;94m[ INFO ] Local  ${VERSION_CURRENT}\033[0m"
+    printf "\n\033[0;94m[ INFO ] Script ${MD5_CURRENT}\033[0m"
+  fi
+
+  printf "\n\033[0;92m[  ..  ]\033[0m Running install script\033[0m"
 fi
 
 if [[ -x "${INSTALL_SCRIPTS}${OS_PREFIX}" ]]; then
-
   if [[ "${VERBOSE}" != "-1" ]]; then
-    printf "\033[0;32m\nApplying install\033[0m\n"
+    printf "\033[0;93m\r[UPDATE]\033[0m Running install script\033[0m"
   fi
 
+  COMMAND="${INSTALL_SCRIPTS}${OS_PREFIX} ${ARGS_INSTALL}"
   if [[ "${OS_PREFIX}" == "osx" ]]; then
-    bash -c "${INSTALL_SCRIPTS}${OS_PREFIX} ${ARGS_INSTALL}"
+    OUTPUT=$(bash -c "${COMMAND}" 2>&1)
+    readarray -t OUTPUT <<< "${OUTPUT}"
   else
     if [[ "${EUID}" == 0 ]]; then
-      bash -c "sudo \"${INSTALL_SCRIPTS}${OS_PREFIX}\" ${ARGS_INSTALL}"
+      OUTPUT=$(bash -c "sudo ${COMMAND}" 2>&1)
+      readarray -t OUTPUT <<< "${OUTPUT}"
     else
-      bash -c "\"${INSTALL_SCRIPTS}${OS_PREFIX}\" ${ARGS_INSTALL}"
+      OUTPUT=$(bash -c "${COMMAND}" 2>&1)
+      readarray -t OUTPUT <<< "${OUTPUT}"
     fi
   fi
 fi
+
+if [[ "${VERBOSE}" != "-1" ]]; then
+  printf "\r\033[0;92m[  OK  ]\033[0m Running install script\033[0m"
+  if [[ "${VERBOSE}" == "1" ]] && [[ "${COMMAND}" != "" ]]; then
+    printf "\n\033[0;94m[SCRIPT] ${COMMAND}\033[0m"
+    if [[ "${OUTPUT}" != "" ]]; then
+      printf "\n\033[0;94m[OUTPUT] %s\033[0m" "${OUTPUT[@]}"
+    fi
+  fi
+
+  printf "\n\033[0;92m[  ..  ]\033[0m Running dotbot\033[0m"
+fi
+
+printf "\n"
+exit 1
 
 for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
   if [[ ! -f "${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}" ]]; then
@@ -150,11 +278,9 @@ for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_
 done
 
 unset ARGS_ALL
-unset ARGS_DOTBOT
-unset ARGS_GIT
 unset ARGS_INSTALL
-unset ARGS_REDIRECT
 unset BASE_DIR
+unset COMMAND
 unset CONF_SUFFIX
 unset DEFAULT_CONFIG_PREFIX
 unset DEPLOY_DIR
@@ -165,6 +291,7 @@ unset FINAL_CONFIG_PREFIX
 unset FORCE
 unset INSTALL_CONFIG_PREFIX
 unset OPTIND
+unset OUTPUT
 unset REMOTE_REPO
 unset UPDATE
 unset VERBOSE

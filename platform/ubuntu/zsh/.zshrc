@@ -7,10 +7,7 @@ test -e ${HOME}/.dotfiles/deploy/update_online.sh && /bin/bash ${HOME}/.dotfiles
 
 # P10K Instant Prompt
 if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-    printf "\033[3;93m\n==> Instant prompt enabled\033[0m\n"
-  fi
-
+  printf "\033[3;93m    Environment loading\033[0m\n"
   source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
@@ -21,11 +18,13 @@ if [[ "${VERBOSE_LOGIN}" == "1" ]] && [[ "${ITERM_SHELL_INTEGRATION_INSTALLED}" 
 fi
 
 # Variables
+export COLORTERM=truecolor
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
   printf "\033[3;93m\n==> Exported Variables\033[0m\n"
+  printf "\033[3;93m    COLORTERM\t\t\033[3;97m${COLORTERM}\033[0m\n"
   printf "\033[3;93m    LANG\t\t\033[3;97m${LANG}\033[0m\n"
   printf "\033[3;93m    LANGUAGE\t\t\033[3;97m${LANGUAGE}\033[0m\n"
   printf "\033[3;93m    LC_CTYPE\t\t\033[3;97m${LC_CTYPE}\033[0m\n"
@@ -76,5 +75,7 @@ if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
   printf "\033[3;93m\n==> Final path\033[0m\n"
   printf "\033[3;93m${PATH}\033[0m\n"
 fi
+
+  printf "\033[3;93m    Environment loaded\033[0m\n"
 
 unset VERBOSE_LOGIN
