@@ -303,29 +303,6 @@ if [[ "${SUDO}" == "1" ]]; then
   fi
 fi
 
-if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
-  FILE_CONTENT="${SUDO_USER} ALL=(ALL) NOPASSWD: ALL"
-  if [[ -f /etc/sudoers.d/90-${SUDO_USER}-nopasswd ]]; then
-    MD5_CURRENT=$(md5sum /etc/sudoers.d/90-${SUDO_USER}-nopasswd | awk '{ print $1 }')
-    MD5_NEW=$(echo "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
-    if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
-      if [[ "${VERBOSE}" == "1" ]]; then
-        printf "\033[0;34mUpdating sudo users\033[0m\n"
-        printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
-      fi
-
-      echo "${FILE_CONTENT}" > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
-    fi
-  else
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mUpdating sudo users\033[0m\n"
-    fi
-
-    echo "${FILE_CONTENT}" > /etc/sudoers.d/90-${SUDO_USER}-nopasswd
-  fi
-fi
-
-
 if [[ "${SUDO}" == "1" ]]; then
   if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
@@ -361,8 +338,6 @@ if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor'
 
   update-alternatives --set editor $(which nvim) ${ARGS_QUIET}
   update-alternatives --set vi $(which nvim) ${ARGS_QUIET}
-
-chmod -R 444 /etc/sudoers.d
 fi
 
 if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
@@ -392,7 +367,7 @@ if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
     cp -R "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" /etc
   fi
 
-  chmod -R 444 /etc/update-motd.d
+  chmod -R 444 /etc/update-motd.d/*
   chmod -R 555 /etc/update-motd.d/01-neofetch
   chmod -R 555 /etc/update-motd.d/9?-*
 fi
