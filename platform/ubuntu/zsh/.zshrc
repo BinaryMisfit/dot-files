@@ -7,14 +7,25 @@ test -e ${HOME}/.dotfiles/deploy/update_online.sh && /bin/bash ${HOME}/.dotfiles
 
 # P10K Instant Prompt
 if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  printf "\033[3;93m    Environment loading\033[0m\n"
+  if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
+    printf "\033[0;94m[ INFO ]\033[3;94m Environment loading\033[0m\n"
+  else
+    printf "\033[0;92m[ INFO ]\033[0m Environment loading\033[0m\n"
+  fi
+
   source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Load environment
+# iTerm integration
+if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
+  printf "\033[0;92m[  ..  ]\033[0m iTerm integration\033[0m"
+fi
+
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 if [[ "${VERBOSE_LOGIN}" == "1" ]] && [[ "${ITERM_SHELL_INTEGRATION_INSTALLED}" == "Yes" ]]; then
-  printf "\033[3;93m\n==> iTerm Integrated\t\033[3;97m\033[0m\n"
+  printf "\r\033[0;92m[  OK  ]\033[0m iTerm integration\033[0m\n"
+elif [[ "${VERBOSE_LOGIN}" == "1" ]]; then
+  printf "\r\033[0;93m[ SKIP ]\033[0m iTerm integration\033[0m\n"
 fi
 
 # Variables
@@ -23,34 +34,41 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-  printf "\033[3;93m\n==> Exported Variables\033[0m\n"
-  printf "\033[3;93m    COLORTERM\t\t\033[3;97m${COLORTERM}\033[0m\n"
-  printf "\033[3;93m    LANG\t\t\033[3;97m${LANG}\033[0m\n"
-  printf "\033[3;93m    LANGUAGE\t\t\033[3;97m${LANGUAGE}\033[0m\n"
-  printf "\033[3;93m    LC_CTYPE\t\t\033[3;97m${LC_CTYPE}\033[0m\n"
+  printf "\033[0;94m[ INFO ]\033[3;94m COLORTERM\t${COLORTERM}\033[0m"
+  printf "\n\033[0;94m[ INFO ]\033[3;94m LANG\t\t${LANG}\033[0m"
+  printf "\n\033[0;94m[ INFO ]\033[3;94m LANGUAGE\t${LANGUAGE}\033[0m"
+  printf "\n\033[0;94m[ INFO ]\033[3;94m LC_CTYPE\t${LC_CTYPE}\033[0m"
 fi
 
 # Load Antigen
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-  printf "\033[3;93m\n==> Loading antigen\033[0m\n"
+  printf "\n\033[0;92m[  ..  ]\033[0m Loading antigen\033[0m"
 fi
+
 test -e /usr/share/zsh-antigen/antigen.zsh && source /usr/share/zsh-antigen/antigen.zsh
 test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
+if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
+  printf "\r\033[0;92m[  OK  ]\033[0m Loading antigen\033[0m"
+  printf "\n\033[0;92m[  ..  ]\033[0m Loading p10k\033[0m"
+fi
+
 # Source p10k files
 test -e ${HOME}/.p10k.zsh && source ${HOME}/.p10k.zsh
+
+if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
+  printf "\r\033[0;92m[  OK  ]\033[0m Loading p10k\033[0m"
+  printf "\n\033[0;92m[  ..  ]\033[0m Loading additional variables\033[0m"
+fi
 
 # Additional variables
 test -e $(which java) && export JAVA_HOME="$($(which java) -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home'  | awk '{ print $3 }')"
 test -e /usr/bin/nvim && export EDITOR=$(which nvim)
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-    printf "\033[3;93m\n==> Additional variables\033[0m\n"
-    printf "\033[3;93m    JAVA_HOME:\t\033[3,97m${JAVA_HOME}\033[0m\n"
-fi
-
-# ZSH config
-if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-  printf "\033[3;93m\n==> Loading compinit\033[0m\n"
+  printf "\r\033[0;92m[  OK  ]\033[0m Loading additional variables\033[0m"
+  printf "\n\033[0;94m[ INFO ]\033[3;94m JAVA_HOME\t${JAVA_HOME}\033[0m"
+  printf "\n\033[0;94m[ INFO ]\033[3;94m EDITOR\t\t${EDITOR}\033[0m"
+  printf "\n\033[0;92m[  ..  ]\033[0m Loading compinit\033[0m"
 fi
 
 autoload -U compinit && compinit
@@ -58,10 +76,16 @@ unsetopt BEEP
 
 # Export aliases
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-    printf "\033[3;93m\n==> Loading aliases\033[0m\n"
+  printf "\r\033[0;92m[  OK  ]\033[0m Loading compinit\033[0m"
+  printf "\n\033[0;92m[  ..  ]\033[0m Loading aliases\033[0m"
 fi
 
 test -e /usr/bin/nvim && alias sudoedit="sudo nvim "
+
+if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
+  printf "\r\033[0;92m[  OK  ]\033[0m Loading aliases\033[0m"
+  printf "\n\033[0;92m[  ..  ]\033[0m Updating PATH\033[0m"
+fi
 
 # Update PATH
 test -e ${HOME}/.npm_global && PATH=${HOME}/.npm_global/bin:$PATH
@@ -72,10 +96,13 @@ test -e /usr/local/sbin && PATH=/usr/local/sbin:$PATH
 typeset -U PATH
 export PATH
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-  printf "\033[3;93m\n==> Final path\033[0m\n"
-  printf "\033[3;93m${PATH}\033[0m\n"
+  printf "\r\033[0;92m[  OK  ]\033[0m Updating PATH\033[0m"
+  IFS=: read -rA CURRENT_PATH <<< "${PATH}"
+  printf "\n\033[0;94m[ PATH ]\033[3;94m %s\033[0m" "${CURRENT_PATH[@]}"
+  printf "\n\033[0;94m[ INFO ]\033[3;94m Environment loaded\033[0m\n"
+else
+  printf "\r\033[0;92m[ INFO ]\033[0m Environment loaded\033[0m\n"
 fi
 
-  printf "\033[3;93m    Environment loaded\033[0m\n"
-
+unset CURRENT_PATH
 unset VERBOSE_LOGIN
