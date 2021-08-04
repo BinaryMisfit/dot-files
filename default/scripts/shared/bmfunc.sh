@@ -186,7 +186,7 @@ function bm_update () {
 # Get current user
 function bm_user () {
   export BM_USER=${USER}
-  if [[ ! -z "${SUDO_USER+x}" ]]; then
+  if [[ "${EUID}" == "0" ]]; then
     export BM_USER=${SUDO_USER}
   fi
 }
