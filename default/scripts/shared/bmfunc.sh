@@ -185,10 +185,15 @@ function bm_update () {
 
 # Get current user
 function bm_user () {
+  bm_info "User\t${USER}"
+  bm_info "Sudo\t${SUDO_USER}"
+  bm_info "UEID\t${EUID}"
   export BM_USER=${USER}
   if [[ "${EUID}" == "0" ]]; then
     export BM_USER=${SUDO_USER}
   fi
+
+  bm_info "BM User\t${BM_USER}"
 }
 
 # Write to log
