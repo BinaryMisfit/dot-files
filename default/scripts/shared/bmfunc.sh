@@ -74,7 +74,7 @@ function bm_detect_os () {
 # Execute command
 function bm_execute() {
   BM_COMMAND="$@"
-  if [[ "${EUID}" == 0 ]]; then
+  if [[ "${EUID}" == "0" ]]; then
     BM_COMMAND="sudo -u ${BM_USER} $@"
   fi
 
