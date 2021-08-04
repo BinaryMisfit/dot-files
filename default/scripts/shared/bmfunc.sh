@@ -73,12 +73,12 @@ function bm_detect_os () {
 
 # Execute command
 function bm_execute() {
-  BM_COMMAND=$@
+  BM_COMMAND="$@"
   if [[ "${EUID}" == 0 ]]; then
-    BM_OUTPUT=$(bash -c "${BM_COMMAND}" 2>&1)
-  else
-    BM_OUTPUT=$(bash -c "sudo -u ${BM_USER} ${BM_COMMAND}" 2>&1)
+    BM_COMMAND="sudo -u ${BM_USER} $@"
   fi
+
+  BM_OUTPUT=$(bash -c "${BM_COMMAND}" 2>&1)
 }
 
 # Exit with error
