@@ -30,7 +30,7 @@ DOT_BOT_DIR="${BASE_DIR}/dotbot"
 INSTALL_SCRIPTS="${BASE_DIR}/default/scripts/install/"
 
 bm_title "BinaryMisfit Install Script V1.0.0"
-bm_info "${USER}-${SUDO_USER}-${EUID}-${HOME}"
+bm_info "${USER+x}-${SUDO_USER+x}-${EUID+x}-${HOME+x}-$(id -u)-$(id -r)-$(groups)"
 bm_user_no_sudo
 bm_detect_os
 bm_command_locate git
