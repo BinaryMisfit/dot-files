@@ -39,7 +39,15 @@ fi
 
 bm_task_ok "Configuring environment"
 bm_task_start "Checking nodesource"
-if [[ "${BM_SUDO}" != "1" ]]; then
+if [[ "${BM_USE_SUDO}" != "1" ]]; then
+  bm_task_update "Checking nodesource"
+else
+  bm_task_skip "Checking nodesource"
+fi
+
+bm_task_ok "Checking nodesource"
+bm_task_start "Checking git ppa"
+if [[ "${BM_USE_SUDO}" != "1" ]]; then
   bm_task_update "Checking nodesource"
 else
   bm_task_skip "Checking nodesource"
