@@ -212,7 +212,7 @@ function bm_user_no_sudo() {
 # Start script
 export BM_SKIP=0
 export BM_VERBOSE=0
-export BM_ARGS=$@
+export BM_ARGS=("$@")
 while getopts "dfqs" OPT; do
   case "${OPT}" in
   d)
