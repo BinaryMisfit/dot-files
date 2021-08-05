@@ -35,8 +35,7 @@ function bm_command_output_success() {
   fi
 
   if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_OUTPUT}" != "" ]]; then
-    IFS=$'\n'
-    OUTPUT=("${BM_OUTPUT}")
+    mapfile-t OUTPUT < "${BM_OUTPUT}"
     printf "\n\033[0;94m[OUTPUT]\033[3;94m %s\033[0m" "${OUTPUT[@]}"
     unset OUTPUT
   fi
@@ -52,8 +51,7 @@ function bm_command_output_error() {
   fi
 
   if [[ "${BM_OUTPUT}" != "" ]]; then
-    IFS=$'\n'
-    OUTPUT=("${BM_OUTPUT}")
+    mapfile-t OUTPUT < "${BM_OUTPUT}"
     printf "\n\033[0;91m[FAILED]\033[3;91m %s\033[0m" "${OUTPUT[@]}"
     unset OUTPUT
   fi
