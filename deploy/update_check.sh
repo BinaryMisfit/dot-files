@@ -28,6 +28,8 @@ if [[ -d "${BASE_DIR}" ]]; then
     printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
   fi
 
+  printf "Last command %s" "${COMMAND}"
+  printf "Last result %s" "${OUTPUT}"
   unset BRANCH
   unset COMMAND
   unset EXIT_CODE
