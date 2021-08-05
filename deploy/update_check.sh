@@ -23,11 +23,11 @@ if [[ -d "${BASE_DIR}" ]]; then
         printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${COMMAND}"
         printf "\n\033[0;91m[OUTPUT]\033[3;91m %s\033[0m" "${OUTPUT[@]}"
       else
-        printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m"
+        printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
       fi
     fi
   else
-    printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m"
+    printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
   fi
 
   unset BRANCH
