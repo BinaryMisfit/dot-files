@@ -42,9 +42,9 @@ bm_print_info "dotbot directory: ${DOT_BOT_DIR}"
 bm_print_info "Script path: $0"
 bm_task_start "Locating dotfiles"
 
-if [[ ! -d "${BASE_DIR}" ]]; then
+if [[ -d "${BASE_DIR}" ]]; then
   bm_update "Locating dotfiles"
-  if ! bm_command_execute "git clone --depth 1 --recurse-submodules \"${REMOTE_REPO}\" \"${BASE_DIR}\""; then
+  if ! bm_command_execute "git clone --depth 1 --recurse-submodules ${REMOTE_REPO} ${BASE_DIR}"; then
     bm_task_failed "Locating dotfiles"
     bm_command_output_error
     bm_script_error
@@ -84,7 +84,7 @@ if [[ "${BM_SKIP}" == "0" ]]; then
   fi
 
   VERSION_CURRENT=$(git -C "${BASE_DIR}" rev-parse HEAD)
-  if ! bm_command_execute "git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase"; then
+  if ! bm_command_execute "git -C ${BASE_DIR} pull --autostash --all --recurse-submodules --rebase"; then
     bm_task_failed "Updating dotfiles"
     bm_command_output_error
     bm_script_error
