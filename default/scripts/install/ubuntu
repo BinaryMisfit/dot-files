@@ -11,6 +11,24 @@ SUDO=1
 SOURCES_ADDED=0
 VERBOSE=0
 
+if [[ -f "${HOME}/.dotfiles/default/scripts/shared/bmfunc.sh" ]]; then
+  source "${HOME}/.dotfiles/default/scripts/shared/bmfunc.sh"
+  if [[ -n "${BM_LOADED+x}" ]]; then
+    bm_init
+  else
+    printf "\r\033[0;91m[FAILED]\033[0;97m Shared functions not loaded\033[0m\n"
+    exit 255
+  fi
+else
+  printf "\r\033[0;91m[FAILED]\033[0;97m Shared functions not found\033[0m\n"
+  exit 255
+fi
+
+bm_print_title "Ubuntu configurator V1.0.0"
+bm_user_no_sudo
+bm_print_info "User: ${BM_USER}"
+bm_print_info "Sudo: ${BM_USE_SUDO}"
+
 if [[ "$(command -v add-apt-repository)" == "" ]]; then
   printf "\033[0;31m\nadd-apt-repository not found, aborting\033[0m\n"
   exit 1
