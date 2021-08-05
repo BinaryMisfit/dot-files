@@ -28,37 +28,7 @@ bm_print_title "Ubuntu configurator V1.0.0"
 bm_user_no_sudo
 bm_print_info "User: ${BM_USER}"
 bm_print_info "Sudo: ${BM_USE_SUDO}"
-
-if [[ "$(command -v add-apt-repository)" == "" ]]; then
-  printf "\033[0;31m\nadd-apt-repository not found, aborting\033[0m\n"
-  exit 1
-fi
-
-if [[ "$(groups | grep sudo)" == "" ]] && [[ "${USER}" != "root" ]]; then
-  SUDO=0
-fi
-
-if [[ "${EUID}" != 0 ]]; then
-  SUDO=0
-fi
-
-while getopts "sv" OPT; do
-  case "${OPT}" in
-    s)
-      VERBOSE=-1
-      ;;
-    v)
-      ARGS_APT=
-      ARGS_CURL=
-      ARGS_QUIET=
-      VERBOSE=1
-      ;;
-  esac
-done
-
-shift $((OPTIND-1))
-
-[[ "${1:-}" = "--" ]] && shift
+bm_command_locate add-apt-repository
 
 if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
   if [[ ! -d "/home/${SUDO_USER}/.npm_global" ]]; then
