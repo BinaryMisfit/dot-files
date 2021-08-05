@@ -12,10 +12,10 @@ function bm_command_check() {
 function bm_command_execute() {
   BM_COMMAND="$1"
   if [[ "${BM_USE_SUDO}" == "1" ]]; then
-    BM_COMMAND="sudo -u ${BM_USER} \"${BM_COMMAND}\""
+    BM_COMMAND="sudo -u ${BM_USER} ${BM_COMMAND}"
   fi
 
-  BM_OUTPUT=$(bash -c "${BM_COMMAND}" 2>&1)
+  BM_OUTPUT=$("${BM_COMMAND}")
 }
 
 # Locate command and print result

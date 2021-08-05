@@ -84,7 +84,7 @@ if [[ "${BM_SKIP}" == "0" ]]; then
   fi
 
   VERSION_CURRENT=$(git -C "${BASE_DIR}" rev-parse HEAD)
-  if ! bm_command_execute "git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase"; then
+  if ! bm_command_execute "$(which git) -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase"; then
     bm_task_failed "Updating dotfiles"
     bm_command_output_error
     bm_script_error
