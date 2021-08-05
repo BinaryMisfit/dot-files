@@ -132,6 +132,44 @@ function bm_print_title() {
   fi
 }
 
+# Execute script and store results
+function bm_script_execute() {
+  BM_COMMAND="$1"
+  BM_OUTPUT=$(bash -c "${BM_COMMAND}" 2>&1)
+}
+
+# Last script output
+function bm_script_output() {
+  if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_COMMAND}" != "" ]]; then
+    printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
+  fi
+
+  if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_OUTPUT}" != "" ]]; then
+    mapfile -t OUTPUT < <(printf "%s" "${BM_OUTPUT}")
+    printf "\n%s" "${OUTPUT[@]}"
+    unset OUTPUT
+  fi
+
+  unset BM_COMMAND
+  unset BM_OUTPUT
+}
+
+# Last command error
+function bm_command_output_error() {
+  if [[ "${BM_COMMAND}" != "" ]]; then
+    printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
+  fi
+
+  if [[ "${BM_OUTPUT}" != "" ]]; then
+    mapfile -t OUTPUT < <(printf "%s" "${BM_OUTPUT}")
+    printf "\n\033[0;91m[FAILED]\033[3;91m %s\033[0m" "${OUTPUT[@]}"
+    unset OUTPUT
+  fi
+
+  unset BM_COMMAND
+  unset BM_OUTPUT
+}
+
 # Exit script with error
 function bm_script_error() {
   if [[ "$1" != "" ]]; then

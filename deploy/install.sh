@@ -117,14 +117,14 @@ bm_task_start "Running installation"
 if [[ -x "${INSTALL_SCRIPTS}${BM_OS}" ]]; then
   bm_update "Running installation"
   COMMAND="${INSTALL_SCRIPTS}${BM_OS}"
-  if ! bm_command_execute "${COMMAND}"; then
+  if ! bm_script_execute "${COMMAND}"; then
     bm_task_failed "Running installation"
-    bm_command_output_error
+    bm_script_output
     bm_script_error
   fi
 
   bm_task_ok "Running installation"
-  bm_command_output_success
+  bm_script_output
   unset COMMAND
 else
   bm_task_skip "Running installation"
