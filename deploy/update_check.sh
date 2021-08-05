@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 if [[ -n ${TMUX+x} ]]; then
-  printf "\r\033[0;96m[ SKIP ]\033[0;96m Online update\033[0m\n"
+  printf "\r\033[0;96m[ SKIP ]\033[0;96m Online update\033[0m"
   exit 0
 fi
 
@@ -21,13 +21,13 @@ if [[ -d "${BASE_DIR}" ]]; then
         printf "\r\033[0;91m[FAILED]\033[0;97m Online update\033[0m"
         mapfile -t OUTPUT < <(printf "%s" "${OUTPUT}")
         printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${COMMAND}"
-        printf "\n\033[0;91m[OUTPUT]\033[3;91m %s\033[0m" "${OUTPUT[@]}"
+        printf "\n%s" "${OUTPUT[@]}"
       else
-        printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
+        printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m"
       fi
     fi
   else
-    printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
+    printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m"
   fi
 
   unset BRANCH
@@ -38,3 +38,4 @@ if [[ -d "${BASE_DIR}" ]]; then
   unset VERSION_NEW
 fi
 unset BASE_DIR
+printf "\033[0m\n"

@@ -55,7 +55,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     echo -en "${FILE_CONTENT}" | sudo tee -a /etc/apt/sources.list.d/nodesource.list >/dev/null
   fi
 
-  if ! bm_command_execute "apt update"; then
+  if ! bm_command_execute "sudo apt update"; then
     bm_task_failed "Checking nodesource"
     bm_script_output
     bm_script_error

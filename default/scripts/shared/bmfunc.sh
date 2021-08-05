@@ -11,8 +11,10 @@ function bm_command_check() {
 # Execute command and store results
 function bm_command_execute() {
   BM_COMMAND="$1"
-  if [[ "${BM_USE_SUDO}" == "1" ]]; then
-    BM_COMMAND="sudo -u ${BM_USER} ${BM_COMMAND}"
+  if [[ "${BM_COMMAND}" != "sudo*" ]]; then
+    if [[ "${BM_USE_SUDO}" == "1" ]]; then
+      BM_COMMAND="sudo -u ${BM_USER} ${BM_COMMAND}"
+    fi
   fi
 
   BM_OUTPUT=$(bash -c "${BM_COMMAND}" 2>&1)
@@ -179,7 +181,7 @@ function bm_script_output() {
 # Exit script with error
 function bm_script_error() {
   if [[ "$1" != "" ]]; then
-    printf "\n\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
+    printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
   fi
 
   bm_de_init
