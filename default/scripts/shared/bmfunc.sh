@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # Check if command exists
 function bm_command_check() {
+  bm_print_info "Find $1"
   if [[ $(command -v "$1") != "" ]]; then
+    bm_print_info "Found $1"
     return 1
   fi
 
+  bm_print_info "Not Found $1"
   return 0
 }
 
