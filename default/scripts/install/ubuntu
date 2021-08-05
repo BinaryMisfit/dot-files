@@ -32,11 +32,11 @@ bm_task_ok "Configuring environment"
 bm_task_start "Checking nodesource"
 MD5_FOUND=$(bm_command_check md5sum)
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
-  bm_task_update "Checking nodesource"
   FILE_CONTENT="\
   deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
   deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
   if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
+    bm_task_update "Checking nodesource"
     MD5_CURRENT="SKIPPED"
     MD5_NEW="SKIPPED"
     if [[ "${MD5_FOUND}" == "1" ]]; then
@@ -64,6 +64,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       unset MD5_NEW
     fi
   else
+    bm_task_update "Checking nodesource"
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor |
       sudo tee -a /usr/share/keyrings/nodesource.gpg >/dev/nul
     echo -en "${FILE_CONTENT}" | sudo tee -a /etc/apt/sources.list.d/nodesource.list >/dev/null
