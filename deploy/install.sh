@@ -24,21 +24,22 @@ else
   exit 255
 fi
 
-BASE_DIR="/home/${BM_USER}/.dotfiles"
-DEPLOY_DIR="${BASE_DIR}/deploy"
-DOT_BOT_DIR="${BASE_DIR}/dotbot"
-INSTALL_SCRIPTS="${BASE_DIR}/default/scripts/install/"
-
 bm_title "BinaryMisfit Install Script V1.0.0"
 bm_info "${USER}-${SUDO_USER}-${EUID}-${HOME}-$(id -u)-$(id -u -r)-$(groups)"
 bm_user_no_sudo
 bm_detect_os
 bm_command_locate git
+bm_info "User: ${BM_USER}"
+
+BASE_DIR="/home/${BM_USER}/.dotfiles"
+DEPLOY_DIR="${BASE_DIR}/deploy"
+DOT_BOT_DIR="${BASE_DIR}/dotbot"
+INSTALL_SCRIPTS="${BASE_DIR}/default/scripts/install/"
+
 bm_info "Base directory: ${BASE_DIR}"
 bm_info "Deploy directory: ${DEPLOY_DIR}"
 bm_info "dotbot directory: ${DOT_BOT_DIR}"
 bm_info "Script path: $0"
-bm_info "User ${BM_USER}"
 bm_progress "Locating dotfiles"
 
 bm_script_error

@@ -32,14 +32,15 @@ function bm_command_locate() {
 function bm_de_init() {
   unset BM_ARGS
   unset BM_COMMAND
+  unset BM_INIT
   unset BM_LOADED
   unset BM_LOG_FILE
   unset BM_LOG_TO_FILE
-  unset BM_INIT
-  unset BM_SKIP
-  unset BM_OUTPUT
   unset BM_OS
+  unset BM_OUTPUT
+  unset BM_SKIP
   unset BM_USER
+  unset BM_USE_SUDO
   unset BM_VERBOSE
   printf "\033[0m\n"
 }
@@ -193,6 +194,11 @@ function bm_user_no_sudo() {
   export BM_USER=${USER}
   if [[ ${EUID} -eq 0 ]]; then
     bm_script_error "Running as sudo not supported"
+  fi
+
+  if ! groups "${USER}" | grep -q "\bsudo\b"; then
+    export BM_USE_SUDO=1
+    bm_script_error "User not in sudo group"
   fi
 }
 
