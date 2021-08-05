@@ -16,7 +16,7 @@ else
 fi
 
 command -v md5sum
-bm_command_check md5sum
+echo "MD5 Found: $(bm_command_check md5sum)"
 bm_print_title "Ubuntu configurator V1.0.0"
 bm_user_no_sudo
 bm_print_info "User: ${BM_USER}"
@@ -57,13 +57,15 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     echo -en "${FILE_CONTENT}" | sudo tee -a /etc/apt/sources.list.d/nodesource.list >/dev/null
   fi
 
+  bm_task_ok "Checking nodesource"
+  bm_task_start "Updating apt"
   if ! bm_command_execute "sudo apt-get update"; then
-    bm_task_failed "Checking nodesource"
+    bm_task_failed "Updating apt"
     bm_script_output
     bm_command_output_error
   fi
 
-  bm_task_ok "Checking nodesource"
+  bm_task_ok "Updating apt"
   bm_print_info "MD5 Found: ${MD5_FOUND}"
   bm_print_info "Version C: ${MD5_CURRENT}"
   bm_print_info "Version N: ${MD5_NEW}"
@@ -79,13 +81,22 @@ bm_task_start "Checking git ppa"
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
   bm_task_update "Checking git ppa"
   if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" != "" ]]; then
-    if ! bm_command_execute "sudo add-apt-repository -sy ppa:git-core/ppa"; then
+    if ! bm_command_execute "sudo add-apt-repository -nsy ppa:git-core/ppa"; then
       bm_task_failed "Checking git ppa"
       bm_script_output
       bm_command_output_error
     fi
 
     bm_task_ok "Checking git ppa"
+    bm_command_output_success
+    bm_task_start "Updating apt"
+    if ! bm_command_execute "sudo apt-get update"; then
+      bm_task_failed "Updating apt"
+      bm_script_output
+      bm_command_output_error
+    fi
+
+    bm_task_ok "Updating apt"
     bm_command_output_success
   else
     bm_task_ok "Checking git ppa"
@@ -95,36 +106,26 @@ else
 fi
 
 bm_task_start "Checking neovim unstable"
-if [[ "${BM_USE_SUDO}" != "1" ]]; then
+if [[ "${BM_USE_SUDO}" == "1" ]]; then
   bm_task_update "Checking neovim unstable"
+  if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" == "" ]]; then
+    if ! bm_command_execute "sudo add-apt-repository -nsy ppa:neovim-ppa/unstable"; then
+      bm_task_failed "Checking git ppa"
+      bm_script_output
+      bm_command_output_error
+    fi
+
+    bm_task_ok "Checking neovim unstable"
+    bm_command_output_success
+  else
+    bm_task_ok "Checking neovim unstable"
+  fi
 else
   bm_task_skip "Checking neovim unstable"
 fi
 
 printf "\033[0m\n"
 if [[ "${SUDO}" == "1" ]]; then
-  if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" == "" ]]; then
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mInstalling neovim repository\033[0m\n"
-    fi
-
-    add-apt-repository -nsy ppa:neovim-ppa/unstable 2>&1 >/dev/null
-    SOURCES_ADDED=1
-    INSTALL_LIST+=("neovim")
-  fi
-
-  if [[ "${SOURCES_ADDED}" == "1" ]]; then
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mRunning apt-get update\033[0m\n"
-    fi
-
-    apt-get ${ARGS_APT} update
-  fi
-
-  if [[ "${VERBOSE}" != "-1" ]]; then
-    printf "\033[0;32mAll sources have been installed\033[0m\n"
-  fi
-
   if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
     build-essential 2>/dev/null)" ]]; then
     INSTALL_LIST+=("build-essential")
