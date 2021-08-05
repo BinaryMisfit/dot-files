@@ -13,10 +13,16 @@ if [[ -d "${BASE_DIR}" ]]; then
     COMMAND="unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase --quiet"
     if bash -c "${COMMAND}" >/dev/null; then
       COMMAND="\"${BASE_DIR}\"/install -s"
+      if ! bash -c "${COMMAND}"; then
+        printf "\r\033[0;91m[FAILED]\033[0;97m Online update\033[0m\n"
+      else
+        printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
+      fi
     fi
+  else
+    printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
   fi
 
-  printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
   unset COMMAND
   unset BRANCH
   unset VERSION_CURRENT

@@ -16,11 +16,11 @@ if [[ -f "${BASE_DIR}/default/scripts/shared/bmfunc.sh" ]]; then
   if [[ -n "${BM_LOADED+x}" ]]; then
     bm_init
   else
-    printf "\r\033[0;91m[FAILED]\033[0m Shared functions not loaded\033[0m\n"
+    printf "\r\033[0;91m[FAILED]\033[0;97m Shared functions not loaded\033[0m\n"
     exit 255
   fi
 else
-  printf "\r\033[0;91m[FAILED]\033[0m Shared functions not found\033[0m\n"
+  printf "\r\033[0;91m[FAILED]\033[0;97m Shared functions not found\033[0m\n"
   exit 255
 fi
 
@@ -65,6 +65,7 @@ if [[ -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
     bm_script_error
   fi
 
+  echo $?
   bm_task_ok "Locating dotbot"
   bm_command_output_success
 else
