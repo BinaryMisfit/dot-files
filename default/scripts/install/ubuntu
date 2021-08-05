@@ -28,6 +28,7 @@ if [[ ! -d "${HOME}/.npm_global" ]]; then
   bm_make_dir "${HOME}/.npm_global"
 fi
 
+bm_command_locate md5sum
 bm_task_ok "Configuring environment"
 bm_task_start "Checking nodesource"
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
