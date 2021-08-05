@@ -29,6 +29,7 @@ bm_user_no_sudo
 bm_detect_os
 bm_command_locate git
 bm_print_info "User: ${BM_USER}"
+bm_print_info "Home: ${HOME}"
 bm_print_info "Sudo: ${BM_USE_SUDO}"
 
 BASE_DIR="/home/${BM_USER}/.dotfiles"
