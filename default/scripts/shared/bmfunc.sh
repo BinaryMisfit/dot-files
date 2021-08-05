@@ -66,9 +66,9 @@ function bm_detect_os() {
 }
 
 # Exit script with error
-function bm_script_exit_error() {
+function bm_script_error() {
   if [[ "$1" != "" ]]; then
-    printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
+    printf "\n\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
   fi
 
   bm_de_init
@@ -105,7 +105,7 @@ function bm_init() {
     export BM_LOG_FILE="${LOG_FILE}"
   fi
 
-  if [[ -n "${VERBOSE_LOGIN+x}" ]]; then
+  if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
     export BM_VERBOSE=1
   fi
 
@@ -192,7 +192,7 @@ function bm_task_reboot() {
 function bm_user_no_sudo() {
   export BM_USER=${USER}
   if [[ ${EUID} == 0 ]] && [[ "${SUDO_USER}" != "" ]]; then
-    bm_script_exit_error "Running as sudo not supported"
+    bm_script_error "Running as sudo not supported"
   fi
 }
 
@@ -217,7 +217,7 @@ while getopts "dfqs" OPT; do
     export BM_SKIP=1
     ;;
   *)
-    bm_script_exit_error
+    bm_script_error
     ;;
   esac
 done

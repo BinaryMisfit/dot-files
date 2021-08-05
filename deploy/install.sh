@@ -41,14 +41,14 @@ bm_info "Script path: $0"
 bm_info "User ${BM_USER}"
 bm_progress "Locating dotfiles"
 
-bm_script_exit_error
+bm_script_error
 
 if [[ ! -d "${BASE_DIR}" ]]; then
   bm_update "Locating dotfiles"
   if ! bm_command_execute "unset HOME; git clone --depth 1 --recurse-submodules \"${REMOTE_REPO}\" \"${BASE_DIR}\""; then
     bm_task_failed "Locating dotfiles"
     bm_last_error
-    bm_script_exit_error
+    bm_script_error
   fi
 
   bm_task_ok "Locating dotfiles"
@@ -63,7 +63,7 @@ if [[ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
   if ! bm_command_execute "unset HOME; git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase"; then
     bm_task_failed "Locating dotbot"
     bm_last_error
-    bm_script_exit_error
+    bm_script_error
   fi
 
   bm_task_ok "Locating dotbot"
@@ -86,7 +86,7 @@ if [[ "${BM_SKIP}" == "0" ]]; then
   if ! bm_command_execute "unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase"; then
     bm_task_failed "Updating dotfiles"
     bm_last_error
-    bm_script_exit_error
+    bm_script_error
   fi
 
   VERSION_NEW=$(git -C "${BASE_DIR}" rev-parse HEAD)
@@ -121,7 +121,7 @@ if [[ -x "${INSTALL_SCRIPTS}${BM_OS}" ]]; then
   if ! bm_command_execute "${COMMAND}"; then
     bm_task_failed "Running installation"
     bm_last_error
-    bm_script_exit_error
+    bm_script_error
   fi
 
   bm_task_ok "Running installation"
@@ -140,7 +140,7 @@ for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_
   if ! bm_command_execute "${DOT_BOT_DIR}/${DOT_BOT_BIN} -d \"${BASE_DIR}\" -c \"${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}\""; then
     bm_task_failed "Running $CONF"
     bm_last_error
-    bm_script_exit_error
+    bm_script_error
   fi
 
   bm_task_ok "Running $CONF"
