@@ -10,7 +10,7 @@ function bm_command_check() {
 
 # Execute command and store results
 function bm_command_execute() {
-  BM_COMMAND="$1"
+  BM_COMMAND="bash -c \"$1\""
   if [[ "${BM_USE_SUDO}" == "1" ]]; then
     BM_COMMAND="sudo -u ${BM_USER} \"$1\""
   fi

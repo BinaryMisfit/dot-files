@@ -11,12 +11,15 @@ if [[ -d "${BASE_DIR}" ]]; then
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
     printf "\r\033[0;93m[UPDATE]\033[0;97m Online update\033[0m"
     COMMAND="unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase --quiet"
-    OUTPUT=$(bash -c "${COMMAND}")
+    EXIT_CODE=$?
     printf "\n%s" "${OUTPUT}"
-    if bash -c "${COMMAND}" >/dev/null; then
+    if [[ ${EXIT_CODE} -ne 0 ]]; then
       COMMAND="\"${BASE_DIR}\"/install -s"
-      if ! bash -c "${COMMAND}"; then
+      OUTPUT=$(bash -c "${COMMAND}")
+      EXIT_CODE=$?
+      if [[ ${EXIT_CODE} -ne 0 ]]; then
         printf "\r\033[0;91m[FAILED]\033[0;97m Online update\033[0m\n"
+        printf "%s" "${OUTPUT}"
       else
         printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
       fi
@@ -25,8 +28,10 @@ if [[ -d "${BASE_DIR}" ]]; then
     printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
   fi
 
-  unset COMMAND
   unset BRANCH
+  unset COMMAND
+  unset EXIT_CODE
+  unset OUTPUT
   unset VERSION_CURRENT
   unset VERSION_NEW
 fi
