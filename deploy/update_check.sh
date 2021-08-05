@@ -19,7 +19,9 @@ if [[ -d "${BASE_DIR}" ]]; then
       EXIT_CODE=$?
       if [[ ${EXIT_CODE} -ne 0 ]]; then
         printf "\r\033[0;91m[FAILED]\033[0;97m Online update\033[0m"
-        printf "\n%s" "${OUTPUT}"
+        mapfile -t OUTPUT < <(printf "%s" "${OUTPUT}")
+        printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${COMMAND}"
+        printf "\n\033[0;91m[OUTPUT]\033[3;91m %s\033[0m" "${OUTPUT[@]}"
       else
         printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m"
       fi
