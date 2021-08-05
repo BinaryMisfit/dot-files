@@ -55,9 +55,16 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     echo -en "${FILE_CONTENT}" | sudo tee -a /etc/apt/sources.list.d/nodesource.list >/dev/null
   fi
 
+  if ! bm_command_execute "apt update"; then
+    bm_task_failed "Checking nodesource"
+    bm_script_output
+    bm_script_error
+  fi
+
   bm_task_ok "Checking nodesource"
   bm_print_info "Version C: ${MD5_CURRENT}"
   bm_print_info "Version N: ${MD5_NEW}"
+  bm_script_output
 else
   bm_task_skip "Checking nodesource"
 fi
