@@ -10,9 +10,9 @@ function bm_command_check() {
 
 # Execute command and store results
 function bm_command_execute() {
-  BM_COMMAND="$@"
-  if [[ "${EUID}" == "0" ]]; then
-    BM_COMMAND="sudo -u ${BM_USER} $@"
+  BM_COMMAND="$1"
+  if [[ "${BM_SUDO}" == "1" ]]; then
+    BM_COMMAND="sudo -u ${BM_USER} $1"
   fi
 
   BM_OUTPUT=$(bash -c "${BM_COMMAND}" 2>&1)
