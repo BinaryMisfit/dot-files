@@ -33,11 +33,13 @@ export COLORTERM=truecolor
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
+export LIBGL_ALWAYS_INDIRECT=1
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-  printf "\033[0;94m[ INFO ]\033[3;94m COLORTERM\t${COLORTERM}\033[0m"
-  printf "\n\033[0;94m[ INFO ]\033[3;94m LANG\t\t${LANG}\033[0m"
-  printf "\n\033[0;94m[ INFO ]\033[3;94m LANGUAGE\t${LANGUAGE}\033[0m"
-  printf "\n\033[0;94m[ INFO ]\033[3;94m LC_CTYPE\t${LC_CTYPE}\033[0m"
+  printf "\033[0;94m[ INFO ]\033[3;94m COLORTERM: ${COLORTERM}\033[0m"
+  printf "\n\033[0;94m[ INFO ]\033[3;94m LANG: ${LANG}\033[0m"
+  printf "\n\033[0;94m[ INFO ]\033[3;94m LANGUAGE: ${LANGUAGE}\033[0m"
+  printf "\n\033[0;94m[ INFO ]\033[3;94m LC_CTYPE: ${LC_CTYPE}\033[0m"
+  printf "\n\033[0;94m[ INFO ]\033[3;94m LIBGL_ALWAYS_INDIRECT: ${LIBGL_ALWAYS_INDIRECT}\033[0m"
 fi
 
 # Load Antigen
