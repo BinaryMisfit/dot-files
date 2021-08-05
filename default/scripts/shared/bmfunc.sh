@@ -78,7 +78,7 @@ function bm_task_error() {
   exit 1
 }
 
-function bm_failed() {
+function bm_task_failed() {
   printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
 }
 
