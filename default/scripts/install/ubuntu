@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
-ARGS_APT="-qq"
-ARGS_CURL="-sS"
-ARGS_QUIET="--quiet"
 DISTRO="$(lsb_release -s -c)"
-FILE_CONTENT=
 INSTALL_LIST=()
-MD5_CURRENT=
-MD5_NEW=
-SUDO=1
-SOURCES_ADDED=0
-VERBOSE=0
 
 if [[ -f "${HOME}/.dotfiles/default/scripts/shared/bmfunc.sh" ]]; then
   source "${HOME}/.dotfiles/default/scripts/shared/bmfunc.sh"
@@ -44,7 +35,27 @@ if [[ "${BM_USE_SUDO}" != "1" ]]; then
   FILE_CONTENT="\
   deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
   deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
+  if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
+    MD5_FOUND=$(bm_command_check md5sum)
+    MD5_CURRENT="SKIPPED"
+    MD5_NEW="SKIPPED"
+    if [[ "${MD5_FOUND}" == "1" ]]; then
+      MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
+      MD5_NEW=$(echo -en "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
+    fi
+
+    if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+      curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor >/usr/share/keyrings/nodesource.gpg
+      echo -en "${FILE_CONTENT}" >/etc/apt/sources.list.d/nodesource.list
+    fi
+  else
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor >/usr/share/keyrings/nodesource.gpg
+    echo -en "${FILE_CONTENT}" >/etc/apt/sources.list.d/nodesource.list
+  fi
+
   bm_task_ok "Checking nodesource"
+  bm_print_info "Version C: ${MD5_CURRENT}"
+  bm_print_info "Version N: ${MD5_NEW}"
 else
   bm_task_skip "Checking nodesource"
 fi
@@ -58,35 +69,6 @@ else
 fi
 
 printf "\033[0m\n"
-if [[ "${SUDO}" == "1" ]]; then
-  if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
-    MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
-    MD5_NEW=$(echo -en "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
-    if [[ ! -f /usr/share/keyrings/nodesource.gpg ]]; then
-      curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key |
-        gpg --dearmor >/usr/share/keyrings/nodesource.gpg
-    fi
-
-    if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
-      if [[ "${VERBOSE}" == "1" ]]; then
-        printf "\033[0;34mInstalling nodesource repository\033[0m\n"
-      fi
-
-      if [[ "${VERBOSE}" == "1" ]]; then
-        printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
-      fi
-
-      echo -en "${FILE_CONTENT}" >/etc/apt/sources.list.d/nodesource.list
-      INSTALL_LIST+=("nodejs")
-      SOURCES_ADDED=1
-    fi
-  else
-    echo -en "${FILE_CONTENT}" >/etc/apt/sources.list.d/nodesource.list
-    INSTALL_LIST+=("nodejs")
-    SOURCES_ADDED=1
-  fi
-fi
-
 if [[ "${SUDO}" == "1" ]]; then
   if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" == "" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
@@ -373,6 +355,7 @@ if [[ "${VERBOSE}" != "-1" ]]; then
   printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 fi
 
+unset MD5_FOUND
 unset ARGS_APT
 unset ARGS_CURL
 unset ARGS_QUIET
