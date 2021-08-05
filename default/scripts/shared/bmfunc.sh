@@ -118,6 +118,28 @@ function bm_init() {
   export BM_INIT=1
 }
 
+# Create new directory and set permissions
+function bm_make_dir() {
+  if [[ "$1" == "" ]]; then
+    return
+  fi
+
+  BM_COMMAND="mkdir -p $1"
+  if [[ "${BM_SUDO}" == "1" ]]; then
+    BM_COMMAND="sudo -u ${BM_USER} ${BM_COMMAND}"
+  fi
+
+  BM_OUTPUT=$(bash -c "${BM_COMMAND}" 2>&1)
+  BM_COMMAND="chown -R ${BM_USER}:${BM_USER} $1"
+  if [[ "${BM_SUDO}" == "1" ]]; then
+    BM_COMMAND="sudo -u ${BM_USER} ${BM_COMMAND}"
+  fi
+
+  BM_OUTPUT=$(bash -c "${BM_COMMAND}" 2>&1)
+  unset BM_OUTPUT
+  unset BM_COMMAND
+}
+
 # Print info message
 function bm_print_info() {
   if [[ "${BM_VERBOSE}" == "1" ]]; then
@@ -147,22 +169,6 @@ function bm_script_output() {
   if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_OUTPUT}" != "" ]]; then
     mapfile -t OUTPUT < <(printf "%s" "${BM_OUTPUT}")
     printf "\n%s" "${OUTPUT[@]}"
-    unset OUTPUT
-  fi
-
-  unset BM_COMMAND
-  unset BM_OUTPUT
-}
-
-# Last command error
-function bm_command_output_error() {
-  if [[ "${BM_COMMAND}" != "" ]]; then
-    printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
-  fi
-
-  if [[ "${BM_OUTPUT}" != "" ]]; then
-    mapfile -t OUTPUT < <(printf "%s" "${BM_OUTPUT}")
-    printf "\n\033[0;91m[FAILED]\033[3;91m %s\033[0m" "${OUTPUT[@]}"
     unset OUTPUT
   fi
 

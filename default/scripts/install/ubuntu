@@ -31,30 +31,15 @@ bm_print_info "Home: ${HOME}"
 bm_print_info "Sudo: ${BM_USE_SUDO}"
 bm_print_info "Script path: $0"
 bm_command_locate add-apt-repository
-bm_task_start "Configuring npm environment"
-
-
-printf "\033[0m\n"
-if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
-  if [[ ! -d "/home/${SUDO_USER}/.npm_global" ]]; then
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mCreating npm_global [${SUDO_USER}]\033[0m\n"
-    fi
-
-    mkdir -p "/home/${SUDO_USER}/.npm_global"
-    chown -R ${SUDO_USER}:${SUDO_USER} "/home/${SUDO_USER}/.npm_global"
-  fi
-else
-  if [[ ! -d "/home/${USER}/.npm_global" ]]; then
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mCreating npm_global [${USER}]\033[0m\n"
-    fi
-
-    mkdir -p "/home/${USER}/.npm_global"
-    chown -R ${USER}:${USER} "/home/${USER}/.npm_global"
-  fi
+bm_task_start "Configuring environment"
+if [[ ! -d "${HOME}/.npm_global" ]]; then
+  bm_update "Configuring environment"
+  bm_make_dir "${HOME}/.npm_global"
 fi
 
+bm_task_ok "Configuring environment"
+
+printf "\033[0m\n"
 if [[ "${SUDO}" == "1" ]]; then
   FILE_CONTENT="\
   deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
@@ -63,8 +48,8 @@ if [[ "${SUDO}" == "1" ]]; then
     MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
     MD5_NEW=$(echo -en "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
     if [[ ! -f /usr/share/keyrings/nodesource.gpg ]]; then
-      curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
-        | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
+      curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key |
+        gpg --dearmor >/usr/share/keyrings/nodesource.gpg
     fi
 
     if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
@@ -76,14 +61,14 @@ if [[ "${SUDO}" == "1" ]]; then
         printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
       fi
 
-      echo -en "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
+      echo -en "${FILE_CONTENT}" >/etc/apt/sources.list.d/nodesource.list
       INSTALL_LIST+=("nodejs")
       SOURCES_ADDED=1
     fi
   else
-      echo -en "${FILE_CONTENT}" > /etc/apt/sources.list.d/nodesource.list
-      INSTALL_LIST+=("nodejs")
-      SOURCES_ADDED=1
+    echo -en "${FILE_CONTENT}" >/etc/apt/sources.list.d/nodesource.list
+    INSTALL_LIST+=("nodejs")
+    SOURCES_ADDED=1
   fi
 fi
 
@@ -93,7 +78,7 @@ if [[ "${SUDO}" == "1" ]]; then
       printf "\033[0;34mInstalling git repository\033[0m\n"
     fi
 
-    add-apt-repository -nsy ppa:git-core/ppa 2>&1 > /dev/null
+    add-apt-repository -nsy ppa:git-core/ppa 2>&1 >/dev/null
     SOURCES_ADDED=1
     INSTALL_LIST+=("git")
   fi
@@ -103,7 +88,7 @@ if [[ "${SUDO}" == "1" ]]; then
       printf "\033[0;34mInstalling neovim repository\033[0m\n"
     fi
 
-    add-apt-repository -nsy ppa:neovim-ppa/unstable 2>&1 > /dev/null
+    add-apt-repository -nsy ppa:neovim-ppa/unstable 2>&1 >/dev/null
     SOURCES_ADDED=1
     INSTALL_LIST+=("neovim")
   fi
@@ -285,14 +270,14 @@ if [[ "${SUDO}" == "1" ]]; then
         printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
       fi
 
-      sudo echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
+      sudo echo ${FILE_CONTENT} >/etc/sudoers.d/50-keep-environment
     fi
   else
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo environment\033[0m\n"
     fi
 
-    sudo echo ${FILE_CONTENT} > /etc/sudoers.d/50-keep-environment
+    sudo echo ${FILE_CONTENT} >/etc/sudoers.d/50-keep-environment
   fi
 fi
 
@@ -346,14 +331,14 @@ if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
         printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
       fi
 
-      sudo echo -en ${FILE_CONTENT} > /etc/update-motd.d/01-neofetch
+      sudo echo -en ${FILE_CONTENT} >/etc/update-motd.d/01-neofetch
     fi
   else
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo environment\033[0m\n"
     fi
 
-    sudo echo -en ${FILE_CONTENT} > /etc/update-motd.d/01-neofetch
+    sudo echo -en ${FILE_CONTENT} >/etc/update-motd.d/01-neofetch
   fi
 
   if [[ -d "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" ]]; then
