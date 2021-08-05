@@ -15,6 +15,8 @@ else
   exit 255
 fi
 
+command -v md5sum
+bm_command_check md5sum
 bm_print_title "Ubuntu configurator V1.0.0"
 bm_user_no_sudo
 bm_print_info "User: ${BM_USER}"
@@ -28,7 +30,6 @@ if [[ ! -d "${HOME}/.npm_global" ]]; then
   bm_make_dir "${HOME}/.npm_global"
 fi
 
-bm_command_locate md5sum
 bm_task_ok "Configuring environment"
 bm_task_start "Checking nodesource"
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
@@ -78,7 +79,7 @@ bm_task_start "Checking git ppa"
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
   bm_task_update "Checking git ppa"
   if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" != "" ]]; then
-    if ! bm_command_execute "sudo add-apt-repository -nsy ppa:git-core/ppa"; then
+    if ! bm_command_execute "sudo add-apt-repository -sy ppa:git-core/ppa"; then
       bm_task_failed "Checking git ppa"
       bm_script_output
       bm_command_output_error
@@ -93,18 +94,15 @@ else
   bm_task_skip "Checking git ppa"
 fi
 
+bm_task_start "Checking neovim unstable"
+if [[ "${BM_USE_SUDO}" != "1" ]]; then
+  bm_task_update "Checking neovim unstable"
+else
+  bm_task_skip "Checking neovim unstable"
+fi
+
 printf "\033[0m\n"
 if [[ "${SUDO}" == "1" ]]; then
-  if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" == "" ]]; then
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mInstalling git repository\033[0m\n"
-    fi
-
-    add-apt-repository -nsy ppa:git-core/ppa 2>&1 >/dev/null
-    SOURCES_ADDED=1
-    INSTALL_LIST+=("git")
-  fi
-
   if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" == "" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mInstalling neovim repository\033[0m\n"
