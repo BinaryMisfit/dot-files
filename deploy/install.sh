@@ -42,7 +42,7 @@ bm_print_info "dotbot directory: ${DOT_BOT_DIR}"
 bm_print_info "Script path: $0"
 bm_progress "Locating dotfiles"
 
-if [[ -d "${BASE_DIR}" ]]; then
+if [[ ! -d "${BASE_DIR}" ]]; then
   bm_update "Locating dotfiles"
   if ! bm_command_execute "unset HOME; git clone --depth 1 --recurse-submodules \"${REMOTE_REPO}\" \"${BASE_DIR}\""; then
     bm_task_failed "Locating dotfiles"
@@ -57,7 +57,7 @@ else
 fi
 
 bm_progress "Locating dotbot"
-if [[ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
+if [[ -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
   bm_update "Locating dotbot"
   if ! bm_command_execute "unset HOME; git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase"; then
     bm_task_failed "Locating dotbot"
