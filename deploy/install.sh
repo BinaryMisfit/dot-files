@@ -164,5 +164,5 @@ unset INSTALL_CONFIG_PREFIX
 unset REMOTE_REPO
 
 if [[ ! -z "${BM_INIT+x}" ]]; then
-  bm_deinit
+  bm_de_init
 fi

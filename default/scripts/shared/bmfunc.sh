@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Check if command exists
-function bm_command_check () {
-  if [[ $(command -v $@) != "" ]]; then
+function bm_command_check() {
+  if [[ $(command -v "$1") != "" ]]; then
     return 1
   fi
 
@@ -19,17 +19,17 @@ function bm_command_execute() {
 }
 
 # Locate command and print result
-function bm_command_locate () {
-  bm_progress "Locating $@"
-  if [[ $(command -v $@) == "" ]]; then
-    bm_task_error "Locating $@"
+function bm_command_locate() {
+  bm_progress "Locating $1"
+  if [[ $(command -v "$1") == "" ]]; then
+    bm_task_error "Locating $1"
   fi
 
-  bm_task_ok "Locating $@"
+  bm_task_ok "Locating $1"
 }
 
 # Removes all variables and prints a new line
-function bm_deinit () {
+function bm_de_init() {
   unset BM_ARGS
   unset BM_COMMAND
   unset BM_LOADED
@@ -45,36 +45,36 @@ function bm_deinit () {
 }
 
 # Detect OS current operating system
-function bm_detect_os () {
+function bm_detect_os() {
   bm_progress "OS detection"
   case "${OSTYPE}" in
-    "darwin"*)
-      BM_OS='osx'
-      ;;
-    "linux-gnu")
-      BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
-      ;;
-    "linux-gnueabihf")
-      BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
-      ;;
-    *)
-      bm_task_error "OS detected ${OSTYPE}"
-      ;;
+  "darwin"*)
+    BM_OS='osx'
+    ;;
+  "linux-gnu")
+    BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    ;;
+  "linux-gnueabihf")
+    BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    ;;
+  *)
+    bm_task_error "OS detected ${OSTYPE}"
+    ;;
   esac
 
   bm_task_ok "OS detection ${BM_OS}"
 }
 
 # Exit script with error
-function bm_script_exit_error () {
-  bm_deinit
+function bm_script_exit_error() {
+  bm_de_init
   exit 1
 }
 
 # Exit with error
-function bm_task_error () {
-  printf "\r\033[0;91m[FAILED]\033[0;97m $@\033[0m"
-  bm_deinit
+function bm_task_error() {
+  printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
+  bm_de_init
   exit 1
 }
 
@@ -85,13 +85,13 @@ function bm_failed() {
 # Print info
 function bm_info() {
   if [[ "${BM_VERBOSE}" == "1" ]]; then
-    printf "\n\033[0;94m[ INFO ]\033[3;94m $@\033[0m"
+    printf "\n\033[0;94m[ INFO ]\033[3;94m %s\033[0m" "$1"
   fi
 }
 
 # Initialize the script and set required variables
-function bm_init () {
-  if [[ ! -z "${BM_INIT+x}" ]]; then
+function bm_init() {
+  if [[ -n "${BM_INIT+x}" ]]; then
     return 1
   fi
 
@@ -101,7 +101,7 @@ function bm_init () {
     export BM_LOG_FILE="${LOG_FILE}"
   fi
 
-  if [[ ! -z "${VERBOSE_LOGIN+x}" ]]; then
+  if [[ -n "${VERBOSE_LOGIN+x}" ]]; then
     export BM_VERBOSE=1
   fi
 
@@ -111,7 +111,7 @@ function bm_init () {
 # Last command output
 function bm_last_command() {
   if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_COMMAND}" != "" ]]; then
-    printf "\n\033[0;94m[SCRIPT]\033[3;94m ${BM_COMMAND}\033[0m"
+    printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
   fi
 
   if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_OUTPUT}" != "" ]]; then
@@ -128,7 +128,7 @@ function bm_last_command() {
 # Last command error
 function bm_last_error() {
   if [[ "${BM_COMMAND}" != "" ]]; then
-    printf "\n\033[0;94m[SCRIPT]\033[3;94m ${BM_COMMAND}\033[0m"
+    printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
   fi
 
   if [[ "${BM_OUTPUT}" != "" ]]; then
@@ -145,47 +145,47 @@ function bm_last_error() {
 # Print skipped
 function bm_skip() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;96m[ SKIP ]\033[0;96m $@\033[0m"
+    printf "\r\033[0;96m[ SKIP ]\033[0;96m %s\033[0m" "$1"
   fi
 }
 
 # Print title
 function bm_title() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\033[0;92m[ PROG ]\033[0;95m $@\033[0m"
+    printf "\033[0;92m[ PROG ]\033[0;95m %s\033[0m" "$1"
   fi
 }
 
 # Print progress
 function bm_progress() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\n\033[0;92m[  ..  ]\033[0;97m $@\033[0m"
+    printf "\n\033[0;92m[  ..  ]\033[0;97m %s\033[0m" "$1"
   fi
 }
 
 # Update last task
 function bm_update() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;93m[UPDATE]\033[0;97m $@\033[0m"
+    printf "\r\033[0;93m[UPDATE]\033[0;97m %s\033[0m" "$1"
   fi
 }
 
 # Update status of last task to OK
-function bm_task_ok () {
+function bm_task_ok() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;92m[  OK  ]\033[0;97m $@\033[0m"
+    printf "\r\033[0;92m[  OK  ]\033[0;97m %s\033[0m" "$1"
   fi
 }
 
 # Update status of last task to reboot
-function bm_task_reboot () {
+function bm_task_reboot() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;96m[REBOOT]\033[0;96m $@\033[0m"
+    printf "\r\033[0;96m[REBOOT]\033[0;96m %s\033[0m" "$1"
   fi
 }
 
 # Get current user
-function bm_user () {
+function bm_user() {
   export BM_USER=${USER}
   if [[ "${EUID}" == "0" ]] && [[ "${SUDO_USER}" != "" ]]; then
     export BM_USER=${SUDO_USER}
@@ -211,6 +211,9 @@ while getopts "dfqs" OPT; do
     ;;
   s)
     export BM_SKIP=1
+    ;;
+  *)
+    bm_script_exit_error
     ;;
   esac
 done
