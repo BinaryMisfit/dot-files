@@ -15,8 +15,6 @@ else
   exit 255
 fi
 
-command -v md5sum
-echo "MD5 Found: $(bm_command_check md5sum)"
 bm_print_title "Ubuntu configurator V1.0.0"
 bm_user_no_sudo
 bm_print_info "User: ${BM_USER}"
@@ -32,8 +30,8 @@ fi
 
 bm_task_ok "Configuring environment"
 bm_task_start "Checking nodesource"
+MD5_FOUND=$(bm_command_check md5sum)
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
-  MD5_FOUND=$(bm_command_check md5sum)
   bm_task_update "Checking nodesource"
   FILE_CONTENT="\
   deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
@@ -50,31 +48,39 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor |
         sudo tee -a /usr/share/keyrings/nodesource.gpg >/dev/null
       echo -en "${FILE_CONTENT}" | sudo tee -a /etc/apt/sources.list.d/nodesource.list >/dev/null
+      bm_task_ok "Checking nodesource"
+      bm_task_start "Updating apt"
+      if ! bm_command_execute "sudo apt-get update"; then
+        bm_task_failed "Updating apt"
+        bm_command_output_error
+      fi
+
+      bm_task_ok "Updating apt"
+      bm_print_info "MD5 Found: ${MD5_FOUND}"
+      bm_print_info "Version C: ${MD5_CURRENT}"
+      bm_print_info "Version N: ${MD5_NEW}"
+      bm_command_output_success
+      unset MD5_CURRENT
+      unset MD5_NEW
     fi
   else
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor |
       sudo tee -a /usr/share/keyrings/nodesource.gpg >/dev/nul
     echo -en "${FILE_CONTENT}" | sudo tee -a /etc/apt/sources.list.d/nodesource.list >/dev/null
-  fi
+    bm_task_ok "Checking nodesource"
+    bm_task_start "Updating apt"
+    if ! bm_command_execute "sudo apt-get update"; then
+      bm_task_failed "Updating apt"
+      bm_command_output_error
+    fi
 
-  bm_task_ok "Checking nodesource"
-  bm_task_start "Updating apt"
-  if ! bm_command_execute "sudo apt-get update"; then
-    bm_task_failed "Updating apt"
-    bm_command_output_error
+    bm_task_ok "Updating apt"
+    bm_command_output_success
   fi
-
-  bm_task_ok "Updating apt"
-  bm_print_info "MD5 Found: ${MD5_FOUND}"
-  bm_print_info "Version C: ${MD5_CURRENT}"
-  bm_print_info "Version N: ${MD5_NEW}"
-  bm_command_output_success
-  unset MD5_CURRENT
-  unset MD5_FOUND
-  unset MD5_NEW
 else
   bm_task_skip "Checking nodesource"
 fi
+unset MD5_FOUND
 
 bm_task_start "Checking git ppa"
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
@@ -105,7 +111,7 @@ fi
 bm_task_start "Checking neovim unstable"
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
   bm_task_update "Checking neovim unstable"
-  if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" != "" ]]; then
+  if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" == "" ]]; then
     if ! bm_command_execute "sudo add-apt-repository -nsy ppa:neovim-ppa/unstable"; then
       bm_task_failed "Checking neovim unstable"
       bm_command_output_error
@@ -128,6 +134,7 @@ else
   bm_task_skip "Checking neovim unstable"
 fi
 
+bm_task_start "Checking required apps"
 printf "\033[0m\n"
 if [[ "${SUDO}" == "1" ]]; then
   if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
