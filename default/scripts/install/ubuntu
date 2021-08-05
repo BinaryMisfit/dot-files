@@ -61,7 +61,6 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   bm_task_start "Updating apt"
   if ! bm_command_execute "sudo apt-get update"; then
     bm_task_failed "Updating apt"
-    bm_script_output
     bm_command_output_error
   fi
 
@@ -83,7 +82,6 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" != "" ]]; then
     if ! bm_command_execute "sudo add-apt-repository -nsy ppa:git-core/ppa"; then
       bm_task_failed "Checking git ppa"
-      bm_script_output
       bm_command_output_error
     fi
 
@@ -92,7 +90,6 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     bm_task_start "Updating apt"
     if ! bm_command_execute "sudo apt-get update"; then
       bm_task_failed "Updating apt"
-      bm_script_output
       bm_command_output_error
     fi
 
@@ -111,7 +108,6 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" == "" ]]; then
     if ! bm_command_execute "sudo add-apt-repository -nsy ppa:neovim-ppa/unstable"; then
       bm_task_failed "Checking git ppa"
-      bm_script_output
       bm_command_output_error
     fi
 
