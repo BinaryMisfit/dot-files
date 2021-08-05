@@ -11,10 +11,12 @@ if [[ -d "${BASE_DIR}" ]]; then
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
     printf "\r\033[0;93m[UPDATE]\033[0;97m Online update\033[0m"
     COMMAND="unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase --quiet"
+    printf "Run command %s" "${COMMAND}"
     EXIT_CODE=$?
     printf "\n%s" "${OUTPUT}"
     if [[ ${EXIT_CODE} -ne 0 ]]; then
       COMMAND="\"${BASE_DIR}\"/install -s"
+      printf "Run command %s" "${COMMAND}"
       OUTPUT=$(bash -c "${COMMAND}")
       EXIT_CODE=$?
       if [[ ${EXIT_CODE} -ne 0 ]]; then

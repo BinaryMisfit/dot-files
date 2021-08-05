@@ -44,7 +44,7 @@ bm_task_start "Locating dotfiles"
 
 if [[ ! -d "${BASE_DIR}" ]]; then
   bm_update "Locating dotfiles"
-  if ! bm_command_execute "unset HOME; git clone --depth 1 --recurse-submodules \"${REMOTE_REPO}\" \"${BASE_DIR}\""; then
+  if ! bm_command_execute "git clone --depth 1 --recurse-submodules \"${REMOTE_REPO}\" \"${BASE_DIR}\""; then
     bm_task_failed "Locating dotfiles"
     bm_command_output_error
     bm_script_error
@@ -59,7 +59,7 @@ fi
 bm_task_start "Locating dotbot"
 if [[ -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
   bm_update "Locating dotbot"
-  if ! bm_command_execute "unset HOME; git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase"; then
+  if ! bm_command_execute "git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase"; then
     bm_task_failed "Locating dotbot"
     bm_command_output_error
     bm_script_error
@@ -84,7 +84,7 @@ if [[ "${BM_SKIP}" == "0" ]]; then
   fi
 
   VERSION_CURRENT=$(git -C "${BASE_DIR}" rev-parse HEAD)
-  if ! bm_command_execute "unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase"; then
+  if ! bm_command_execute "git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase"; then
     bm_task_failed "Updating dotfiles"
     bm_command_output_error
     bm_script_error
