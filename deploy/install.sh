@@ -56,7 +56,6 @@ else
   bm_task_ok "Locating dotfiles"
 fi
 
-bm_script_error
 bm_progress "Locating dotbot"
 if [[ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
   bm_update "Locating dotbot"
@@ -72,6 +71,7 @@ else
   bm_task_ok "Locating dotbot"
 fi
 
+bm_script_error
 bm_progress "Updating dotfiles"
 if [[ "${BM_SKIP}" == "0" ]]; then
   bm_update "Updating dotfiles"

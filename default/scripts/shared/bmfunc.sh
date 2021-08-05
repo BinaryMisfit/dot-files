@@ -200,6 +200,10 @@ function bm_user_no_sudo() {
   if groups "${USER}" | grep -q "\bsudo\b"; then
     export BM_USE_SUDO=1
   fi
+
+  if groups "${USER}" | grep -q "\badmin\b"; then
+    export BM_USE_SUDO=1
+  fi
 }
 
 # Write to log
