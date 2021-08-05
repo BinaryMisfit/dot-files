@@ -191,6 +191,9 @@ function bm_task_reboot() {
 # Get current user
 function bm_user_no_sudo() {
   export BM_USER=${USER}
+  if [[ ${EUID} -eq 0 ]]; then
+    bm_script_error "Running as sudo not supported"
+  fi
 }
 
 # Write to log

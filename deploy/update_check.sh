@@ -14,11 +14,9 @@ if [[ -d "${BASE_DIR}" ]]; then
     pushd "${BASE_DIR}" > /dev/null || exit
     . "${BASE_DIR}/install" -s
     popd > /dev/null || exit
-    printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
-  else
-    printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
   fi
 
+  printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
   unset BRANCH
   unset VERSION_CURRENT
   unset VERSION_NEW
