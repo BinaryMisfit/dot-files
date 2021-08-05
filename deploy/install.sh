@@ -82,7 +82,7 @@ if [[ "${BM_SKIP}" == "0" ]]; then
   fi
 
   VERSION_CURRENT=$(git -C "${BASE_DIR}" rev-parse HEAD)
-  if ! bm_command_execute "git -C ${BASE_DIR} pull --autostash --all --recurse-submodules --rebase"; then
+  if ! bm_command_execute "git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase"; then
     bm_task_failed "Updating dotfiles"
     bm_command_output_error
     bm_script_error
@@ -92,18 +92,18 @@ if [[ "${BM_SKIP}" == "0" ]]; then
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]] || [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     bm_task_reboot "Updating dotfiles"
     bm_command_output_success
-    bm_print_info "Git Local\t${VERSION_CURRENT}"
-    bm_print_info "Git remote\t${VERSION_NEW}"
-    bm_print_info "Script found\t${MD5_CURRENT}"
-    bm_print_info "Script latest\t${MD5_NEW}"
+    bm_print_info "Git F: ${VERSION_CURRENT}"
+    bm_print_info "Git L: ${VERSION_NEW}"
+    bm_print_info "Script F: ${MD5_CURRENT}"
+    bm_print_info "Script L: ${MD5_NEW}"
   fi
 
   bm_task_ok "Updating dotfiles"
   bm_command_output_success
-  bm_print_info "Git Local\t${VERSION_CURRENT}"
-  bm_print_info "Git remote\t${VERSION_NEW}"
-  bm_print_info "Script found\t${MD5_CURRENT}"
-  bm_print_info "Script latest\t${MD5_NEW}"
+  bm_print_info "Git F: ${VERSION_CURRENT}"
+  bm_print_info "Git L: ${VERSION_NEW}"
+  bm_print_info "Script F: ${MD5_CURRENT}"
+  bm_print_info "Script L: ${MD5_NEW}"
   unset MD5_FOUND
   unset MD5_CURRENT
   unset MD5_NEW
