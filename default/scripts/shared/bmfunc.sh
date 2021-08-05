@@ -20,12 +20,46 @@ function bm_command_execute() {
 
 # Locate command and print result
 function bm_command_locate() {
-  bm_progress "Locating $1"
+  bm_task_start "Locating $1"
   if [[ $(command -v "$1") == "" ]]; then
     bm_task_error "Locating $1"
   fi
 
   bm_task_ok "Locating $1"
+}
+
+# Last command output
+function bm_command_output_success() {
+  if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_COMMAND}" != "" ]]; then
+    printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
+  fi
+
+  if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_OUTPUT}" != "" ]]; then
+    IFS=$'\n'
+    OUTPUT=("${BM_OUTPUT}")
+    printf "\n\033[0;94m[OUTPUT]\033[3;94m %s\033[0m" "${OUTPUT[@]}"
+    unset OUTPUT
+  fi
+
+  unset BM_COMMAND
+  unset BM_OUTPUT
+}
+
+# Last command error
+function bm_command_output_error() {
+  if [[ "${BM_COMMAND}" != "" ]]; then
+    printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
+  fi
+
+  if [[ "${BM_OUTPUT}" != "" ]]; then
+    IFS=$'\n'
+    OUTPUT=("${BM_OUTPUT}")
+    printf "\n\033[0;91m[FAILED]\033[3;91m %s\033[0m" "${OUTPUT[@]}"
+    unset OUTPUT
+  fi
+
+  unset BM_COMMAND
+  unset BM_OUTPUT
 }
 
 # Removes all variables and prints a new line
@@ -47,7 +81,7 @@ function bm_de_init() {
 
 # Detect OS current operating system
 function bm_detect_os() {
-  bm_progress "OS detection"
+  bm_task_start "OS detection"
   case "${OSTYPE}" in
   "darwin"*)
     BM_OS='osx'
@@ -64,34 +98,6 @@ function bm_detect_os() {
   esac
 
   bm_task_ok "OS detection ${BM_OS}"
-}
-
-# Exit script with error
-function bm_script_error() {
-  if [[ "$1" != "" ]]; then
-    printf "\n\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
-  fi
-
-  bm_de_init
-  exit 1
-}
-
-# Exit with error
-function bm_task_error() {
-  printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
-  bm_de_init
-  exit 1
-}
-
-function bm_task_failed() {
-  printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
-}
-
-# Print info
-function bm_info() {
-  if [[ "${BM_VERBOSE}" == "1" ]]; then
-    printf "\n\033[0;94m[ INFO ]\033[3;94m %s\033[0m" "$1"
-  fi
 }
 
 # Initialize the script and set required variables
@@ -114,66 +120,40 @@ function bm_init() {
   export BM_INIT=1
 }
 
-# Last command output
-function bm_last_command() {
-  if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_COMMAND}" != "" ]]; then
-    printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
-  fi
-
-  if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_OUTPUT}" != "" ]]; then
-    IFS=$'\n'
-    OUTPUT=("${BM_OUTPUT}")
-    printf "\n\033[0;94m[OUTPUT]\033[3;94m %s\033[0m" "${OUTPUT[@]}"
-    unset OUTPUT
-  fi
-
-  unset BM_COMMAND
-  unset BM_OUTPUT
-}
-
-# Last command error
-function bm_last_error() {
-  if [[ "${BM_COMMAND}" != "" ]]; then
-    printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
-  fi
-
-  if [[ "${BM_OUTPUT}" != "" ]]; then
-    IFS=$'\n'
-    OUTPUT=("${BM_OUTPUT}")
-    printf "\n\033[0;91m[FAILED]\033[3;91m %s\033[0m" "${OUTPUT[@]}"
-    unset OUTPUT
-  fi
-
-  unset BM_COMMAND
-  unset BM_OUTPUT
-}
-
-# Print skipped
-function bm_skip() {
-  if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;96m[ SKIP ]\033[0;96m %s\033[0m" "$1"
+# Print info message
+function bm_print_info() {
+  if [[ "${BM_VERBOSE}" == "1" ]]; then
+    printf "\n\033[0;94m[ INFO ]\033[3;94m %s\033[0m" "$1"
   fi
 }
 
 # Print title
-function bm_title() {
+function bm_print_title() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
     printf "\033[0;92m[ PROG ]\033[0;95m %s\033[0m" "$1"
   fi
 }
 
-# Print progress
-function bm_progress() {
-  if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\n\033[0;92m[  ..  ]\033[0;97m %s\033[0m" "$1"
+# Exit script with error
+function bm_script_error() {
+  if [[ "$1" != "" ]]; then
+    printf "\n\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
   fi
+
+  bm_de_init
+  exit 1
 }
 
-# Update last task
-function bm_update() {
-  if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;93m[UPDATE]\033[0;97m %s\033[0m" "$1"
-  fi
+# Update task status to error and exit
+function bm_task_error() {
+  printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
+  bm_de_init
+  exit 1
+}
+
+# Update task status to failed
+function bm_task_failed() {
+  printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
 }
 
 # Update status of last task to OK
@@ -187,6 +167,27 @@ function bm_task_ok() {
 function bm_task_reboot() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
     printf "\r\033[0;96m[REBOOT]\033[0;96m %s\033[0m" "$1"
+  fi
+}
+
+# Update task status to skipped
+function bm_task_skip() {
+  if [[ "${BM_VERBOSE}" != "-1" ]]; then
+    printf "\r\033[0;96m[ SKIP ]\033[0;96m %s\033[0m" "$1"
+  fi
+}
+
+# Update task status to started
+function bm_task_start() {
+  if [[ "${BM_VERBOSE}" != "-1" ]]; then
+    printf "\n\033[0;92m[  ..  ]\033[0;97m %s\033[0m" "$1"
+  fi
+}
+
+# Update task status to in progress
+function bm_update() {
+  if [[ "${BM_VERBOSE}" != "-1" ]]; then
+    printf "\r\033[0;93m[UPDATE]\033[0;97m %s\033[0m" "$1"
   fi
 }
 

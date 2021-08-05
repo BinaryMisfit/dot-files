@@ -24,34 +24,34 @@ else
   exit 255
 fi
 
-bm_title "BinaryMisfit Install Script V1.0.0"
+bm_print_title "BinaryMisfit Install Script V1.0.0"
 bm_user_no_sudo
 bm_detect_os
 bm_command_locate git
-bm_info "User: ${BM_USER}"
-bm_info "Sudo: ${BM_USE_SUDO}"
+bm_print_info "User: ${BM_USER}"
+bm_print_info "Sudo: ${BM_USE_SUDO}"
 
 BASE_DIR="/home/${BM_USER}/.dotfiles"
 DEPLOY_DIR="${BASE_DIR}/deploy"
 DOT_BOT_DIR="${BASE_DIR}/dotbot"
 INSTALL_SCRIPTS="${BASE_DIR}/default/scripts/install/"
 
-bm_info "Base directory: ${BASE_DIR}"
-bm_info "Deploy directory: ${DEPLOY_DIR}"
-bm_info "dotbot directory: ${DOT_BOT_DIR}"
-bm_info "Script path: $0"
+bm_print_info "Base directory: ${BASE_DIR}"
+bm_print_info "Deploy directory: ${DEPLOY_DIR}"
+bm_print_info "dotbot directory: ${DOT_BOT_DIR}"
+bm_print_info "Script path: $0"
 bm_progress "Locating dotfiles"
 
-if [[ ! -d "${BASE_DIR}" ]]; then
+if [[ -d "${BASE_DIR}" ]]; then
   bm_update "Locating dotfiles"
   if ! bm_command_execute "unset HOME; git clone --depth 1 --recurse-submodules \"${REMOTE_REPO}\" \"${BASE_DIR}\""; then
     bm_task_failed "Locating dotfiles"
-    bm_last_error
+    bm_command_output_error
     bm_script_error
   fi
 
   bm_task_ok "Locating dotfiles"
-  bm_last_command
+  bm_command_output_success
 else
   bm_task_ok "Locating dotfiles"
 fi
@@ -61,12 +61,12 @@ if [[ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
   bm_update "Locating dotbot"
   if ! bm_command_execute "unset HOME; git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase"; then
     bm_task_failed "Locating dotbot"
-    bm_last_error
+    bm_command_output_error
     bm_script_error
   fi
 
   bm_task_ok "Locating dotbot"
-  bm_last_command
+  bm_command_output_success
 else
   bm_task_ok "Locating dotbot"
 fi
@@ -85,33 +85,33 @@ if [[ "${BM_SKIP}" == "0" ]]; then
   VERSION_CURRENT=$(git -C "${BASE_DIR}" rev-parse HEAD)
   if ! bm_command_execute "unset HOME; git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase"; then
     bm_task_failed "Updating dotfiles"
-    bm_last_error
+    bm_command_output_error
     bm_script_error
   fi
 
   VERSION_NEW=$(git -C "${BASE_DIR}" rev-parse HEAD)
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]] || [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     bm_task_reboot "Updating dotfiles"
-    bm_last_command
-    bm_info "Git Local\t${VERSION_CURRENT}"
-    bm_info "Git remote\t${VERSION_NEW}"
-    bm_info "Script found\t${MD5_CURRENT}"
-    bm_info "Script latest\t${MD5_NEW}"
+    bm_command_output_success
+    bm_print_info "Git Local\t${VERSION_CURRENT}"
+    bm_print_info "Git remote\t${VERSION_NEW}"
+    bm_print_info "Script found\t${MD5_CURRENT}"
+    bm_print_info "Script latest\t${MD5_NEW}"
   fi
 
   bm_task_ok "Updating dotfiles"
-  bm_last_command
-  bm_info "Git Local\t${VERSION_CURRENT}"
-  bm_info "Git remote\t${VERSION_NEW}"
-  bm_info "Script found\t${MD5_CURRENT}"
-  bm_info "Script latest\t${MD5_NEW}"
+  bm_command_output_success
+  bm_print_info "Git Local\t${VERSION_CURRENT}"
+  bm_print_info "Git remote\t${VERSION_NEW}"
+  bm_print_info "Script found\t${MD5_CURRENT}"
+  bm_print_info "Script latest\t${MD5_NEW}"
   unset MD5_FOUND
   unset MD5_CURRENT
   unset MD5_NEW
   unset VERSION_CURRENT
   unset VERSION_NEW
 else
-  bm_skip "Updating dotfiles"
+  bm_task_skip "Updating dotfiles"
 fi
 
 bm_progress "Running installation"
@@ -120,15 +120,15 @@ if [[ -x "${INSTALL_SCRIPTS}${BM_OS}" ]]; then
   COMMAND="${INSTALL_SCRIPTS}${BM_OS}"
   if ! bm_command_execute "${COMMAND}"; then
     bm_task_failed "Running installation"
-    bm_last_error
+    bm_command_output_error
     bm_script_error
   fi
 
   bm_task_ok "Running installation"
-  bm_last_command
+  bm_command_output_success
   unset COMMAND
 else
-  bm_skip "Running installation"
+  bm_task_skip "Running installation"
 fi
 
 for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
@@ -139,12 +139,12 @@ for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_
   bm_progress "Running $CONF"
   if ! bm_command_execute "${DOT_BOT_DIR}/${DOT_BOT_BIN} -d \"${BASE_DIR}\" -c \"${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}\""; then
     bm_task_failed "Running $CONF"
-    bm_last_error
+    bm_command_output_error
     bm_script_error
   fi
 
   bm_task_ok "Running $CONF"
-  bm_last_command
+  bm_command_output_success
 done
 
 unset BASE_DIR
