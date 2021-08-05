@@ -65,14 +65,12 @@ if [[ -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
     bm_script_error
   fi
 
-  echo $?
   bm_task_ok "Locating dotbot"
   bm_command_output_success
 else
   bm_task_ok "Locating dotbot"
 fi
 
-bm_script_error
 bm_task_start "Updating dotfiles"
 if [[ "${BM_SKIP}" == "0" ]]; then
   bm_update "Updating dotfiles"
@@ -115,6 +113,7 @@ else
   bm_task_skip "Updating dotfiles"
 fi
 
+bm_script_error
 bm_task_start "Running installation"
 if [[ -x "${INSTALL_SCRIPTS}${BM_OS}" ]]; then
   bm_update "Running installation"
