@@ -15,7 +15,7 @@ function bm_command_execute() {
     BM_COMMAND="sudo -u ${BM_USER} ${BM_COMMAND}"
   fi
 
-  BM_OUTPUT=$("${BM_COMMAND}")
+  BM_OUTPUT=$(bash -c "${BM_COMMAND}")
 }
 
 # Locate command and print result

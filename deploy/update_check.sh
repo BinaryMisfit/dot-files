@@ -12,7 +12,7 @@ if [[ -d "${BASE_DIR}" ]]; then
     printf "\r\033[0;93m[UPDATE]\033[0;97m Online update\033[0m"
     COMMAND="git -C ${BASE_DIR} pull --autostash --all --recurse-submodules --rebase --quiet"
     printf "\nRun command %s" "${COMMAND}"
-    OUTPUT=$("${COMMAND}")
+    OUTPUT=$(bash -c "${COMMAND}")
     EXIT_CODE=$?
     printf "\nExit Code %s" "${EXIT_CODE}"
     if [[ ${EXIT_CODE} -eq 0 ]]; then
