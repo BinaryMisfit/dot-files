@@ -10,7 +10,7 @@ if [[ -d "${BASE_DIR}" ]]; then
   VERSION_NEW=$(git ls-remote https://github.com/BinaryMisfit/dot-files HEAD | awk '{ print $1 }')
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
     printf "\r\033[0;93m[UPDATE]\033[0;97m Online update\033[0m"
-    COMMAND="git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase --quiet"
+    COMMAND="git -C ${BASE_DIR} pull --autostash --all --recurse-submodules --rebase --quiet"
     printf "\nRun command %s" "${COMMAND}"
     OUTPUT=$("${COMMAND}")
     EXIT_CODE=$?
@@ -31,8 +31,8 @@ if [[ -d "${BASE_DIR}" ]]; then
     printf "\r\033[0;92m[  OK  ]\033[0;97m Online update\033[0m\n"
   fi
 
-  printf "Last command %s" "${COMMAND}"
-  printf "Last result %s" "${OUTPUT}"
+  printf "\nLast command %s" "${COMMAND}"
+  printf "\nLast result %s" "${OUTPUT}"
   unset BRANCH
   unset COMMAND
   unset EXIT_CODE
