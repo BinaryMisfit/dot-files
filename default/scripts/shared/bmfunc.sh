@@ -110,6 +110,7 @@ function bm_init() {
     export BM_VERBOSE=1
   fi
 
+  export BM_USE_SUDO=0
   export BM_INIT=1
 }
 
@@ -196,9 +197,8 @@ function bm_user_no_sudo() {
     bm_script_error "Running as sudo not supported"
   fi
 
-  if ! groups "${USER}" | grep -q "\bsudo\b"; then
+  if groups "${USER}" | grep -q "\bsudo\b"; then
     export BM_USE_SUDO=1
-    bm_script_error "User not in sudo group"
   fi
 }
 

@@ -25,11 +25,11 @@ else
 fi
 
 bm_title "BinaryMisfit Install Script V1.0.0"
-bm_info "${USER}-${SUDO_USER}-${EUID}-${HOME}-$(id -u)-$(id -u -r)-$(groups)"
 bm_user_no_sudo
 bm_detect_os
 bm_command_locate git
 bm_info "User: ${BM_USER}"
+bm_info "Sudo: ${BM_USE_SUDO}"
 
 BASE_DIR="/home/${BM_USER}/.dotfiles"
 DEPLOY_DIR="${BASE_DIR}/deploy"
@@ -41,8 +41,6 @@ bm_info "Deploy directory: ${DEPLOY_DIR}"
 bm_info "dotbot directory: ${DOT_BOT_DIR}"
 bm_info "Script path: $0"
 bm_progress "Locating dotfiles"
-
-bm_script_error
 
 if [[ ! -d "${BASE_DIR}" ]]; then
   bm_update "Locating dotfiles"
@@ -58,6 +56,7 @@ else
   bm_task_ok "Locating dotfiles"
 fi
 
+bm_script_error
 bm_progress "Locating dotbot"
 if [[ ! -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
   bm_update "Locating dotbot"
