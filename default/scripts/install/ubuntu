@@ -31,12 +31,12 @@ fi
 bm_task_ok "Configuring environment"
 bm_task_start "Checking nodesource"
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
+  MD5_FOUND=$(bm_command_check md5sum)
   bm_task_update "Checking nodesource"
   FILE_CONTENT="\
   deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
   deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
   if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
-    MD5_FOUND=$(bm_command_check md5sum)
     MD5_CURRENT="SKIPPED"
     MD5_NEW="SKIPPED"
     if [[ "${MD5_FOUND}" == "1" ]]; then
@@ -66,12 +66,15 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   bm_print_info "Version C: ${MD5_CURRENT}"
   bm_print_info "Version N: ${MD5_NEW}"
   bm_command_output_success
+  unset MD5_CURRENT
+  unset MD5_FOUND
+  unset MD5_NEW
 else
   bm_task_skip "Checking nodesource"
 fi
 
 bm_task_start "Checking git ppa"
-if [[ "${BM_USE_SUDO}" != "1" ]]; then
+if [[ "${BM_USE_SUDO}" == "1" ]]; then
   bm_task_update "Checking git ppa"
   if [[ "$(grep -l git-core /etc/apt/sources.list.d/*)" != "" ]]; then
     if ! bm_command_execute "sudo add-apt-repository -nsy ppa:git-core/ppa"; then
@@ -376,15 +379,12 @@ if [[ "${VERBOSE}" != "-1" ]]; then
   printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 fi
 
-unset MD5_FOUND
 unset ARGS_APT
 unset ARGS_CURL
 unset ARGS_QUIET
 unset DISTRO
 unset FILE_CONTENT
 unset INSTALL_LIST
-unset MD5_CURRENT
-unset MD5_NEW
 unset SOURCES_ADDED
 unset SUDO
 unset VERBOSE
