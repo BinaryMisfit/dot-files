@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Init functions
-function bm_init () {
-  if [[ ! -z "${BM_INIT+x}" ]]; then
+function bm_init() {
+  if [[ -n "${BM_INIT+x}" ]]; then
     return 1
   fi
 
@@ -19,7 +19,7 @@ function bm_init () {
 }
 
 # Deinit functions
-function bm_deinit () {
+function bm_deinit() {
   unset BM_ARGS
   unset BM_COMMAND
   unset BM_LOADED
@@ -35,7 +35,7 @@ function bm_deinit () {
 }
 
 # Check if command exists
-function bm_check () {
+function bm_check() {
   if [[ $(command -v $@) != "" ]]; then
     return 1
   fi
@@ -44,28 +44,28 @@ function bm_check () {
 }
 
 # Complete last task
-function bm_complete () {
+function bm_complete() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;92m[  OK  ]\033[0;97m $@\033[0m"
+    printf "\r\033[0;92m[  OK  ]\033[0;97m %s\033[0m" "$1"
   fi
 }
 
 # Detect OS
-function bm_detect_os () {
+function bm_detect_os() {
   bm_progress "OS detection"
   case "${OSTYPE}" in
-    "darwin"*)
-      BM_OS='osx'
-      ;;
-    "linux-gnu")
-      BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
-      ;;
-    "linux-gnueabihf")
-      BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
-      ;;
-    *)
-      bm_error "OS detected ${OSTYPE}"
-      ;;
+  "darwin"*)
+    BM_OS='osx'
+    ;;
+  "linux-gnu")
+    BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    ;;
+  "linux-gnueabihf")
+    BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    ;;
+  *)
+    bm_error "OS detected ${OSTYPE}"
+    ;;
   esac
 
   bm_complete "OS detection ${BM_OS}"
@@ -82,30 +82,30 @@ function bm_execute() {
 }
 
 # Exit with error
-function bm_error () {
-  printf "\r\033[0;91m[FAILED]\033[0;97m $@\033[0m"
+function bm_error() {
+  printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
   bm_deinit
   exit 1
 }
 
-function bm_error_exit () {
+function bm_error_exit() {
   bm_deinit
   exit 1
 }
 
-function bm_failed () {
-  printf "\r\033[0;91m[FAILED]\033[0;97m $@\033[0m"
+function bm_failed() {
+  printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
 }
 
 # Print info
-function bm_info () {
+function bm_info() {
   if [[ "${BM_VERBOSE}" == "1" ]]; then
     printf "\n\033[0;94m[ INFO ]\033[3;94m $@\033[0m"
   fi
 }
 
 # Last command output
-function bm_last_command () {
+function bm_last_command() {
   if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_COMMAND}" != "" ]]; then
     printf "\n\033[0;94m[SCRIPT]\033[3;94m ${BM_COMMAND}\033[0m"
   fi
@@ -122,7 +122,7 @@ function bm_last_command () {
 }
 
 # Last command error
-function bm_last_error () {
+function bm_last_error() {
   if [[ "${BM_COMMAND}" != "" ]]; then
     printf "\n\033[0;94m[SCRIPT]\033[3;94m ${BM_COMMAND}\033[0m"
   fi
@@ -139,7 +139,7 @@ function bm_last_error () {
 }
 
 # Locate command
-function bm_locate () {
+function bm_locate() {
   bm_progress "Locating $@"
   if [[ $(command -v $@) == "" ]]; then
     bm_error "Locating $@"
@@ -149,42 +149,42 @@ function bm_locate () {
 }
 
 # Print restart
-function bm_reboot () {
+function bm_reboot() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
     printf "\r\033[0;96m[REBOOT]\033[0;96m $@\033[0m"
   fi
 }
 
 # Print skipped
-function bm_skip () {
+function bm_skip() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
     printf "\r\033[0;96m[ SKIP ]\033[0;96m $@\033[0m"
   fi
 }
 
 # Print title
-function bm_title () {
+function bm_title() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
     printf "\033[0;92m[ PROG ]\033[0;95m $@\033[0m"
   fi
 }
 
 # Print progress
-function bm_progress () {
+function bm_progress() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
     printf "\n\033[0;92m[  ..  ]\033[0;97m $@\033[0m"
   fi
 }
 
 # Update last task
-function bm_update () {
+function bm_update() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
     printf "\r\033[0;93m[UPDATE]\033[0;97m $@\033[0m"
   fi
 }
 
 # Get current user
-function bm_user () {
+function bm_user() {
   bm_info "User\t${USER}"
   bm_info "Sudo\t${SUDO_USER}"
   bm_info "UEID\t${EUID}"
@@ -204,24 +204,24 @@ export BM_VERBOSE=0
 export BM_ARGS=$@
 while getopts "dfqs" OPT; do
   case "${OPT}" in
-    d)
-      export BM_VERBOSE=1
-      ;;
-    f)
-      export BM_VERBOSE=1
-      ;;
-    q)
-      export BM_VERBOSE=-1
-      ;;
-    s)
-      export BM_SKIP=1
-      ;;
+  d)
+    export BM_VERBOSE=1
+    ;;
+  f)
+    export BM_VERBOSE=1
+    ;;
+  q)
+    export BM_VERBOSE=-1
+    ;;
+  s)
+    export BM_SKIP=1
+    ;;
   esac
 done
 
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
-[[ "${1:-}" = "--" ]] && shift
+[[ "${1:-}" == "--" ]] && shift
 
 bm_user
 export BM_LOADED=1
