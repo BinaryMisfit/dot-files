@@ -41,23 +41,24 @@ bm_task_ok "Configuring environment"
 bm_task_start "Checking nodesource"
 if [[ "${BM_USE_SUDO}" != "1" ]]; then
   bm_task_update "Checking nodesource"
+  FILE_CONTENT="\
+  deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
+  deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
+  bm_task_ok "Checking nodesource"
 else
   bm_task_skip "Checking nodesource"
 fi
 
-bm_task_ok "Checking nodesource"
 bm_task_start "Checking git ppa"
 if [[ "${BM_USE_SUDO}" != "1" ]]; then
-  bm_task_update "Checking nodesource"
+  bm_task_update "Checking git ppa"
+  bm_task_ok "Checking git ppa"
 else
-  bm_task_skip "Checking nodesource"
+  bm_task_skip "Checking git ppa"
 fi
 
 printf "\033[0m\n"
 if [[ "${SUDO}" == "1" ]]; then
-  FILE_CONTENT="\
-  deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
-  deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
   if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
     MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
     MD5_NEW=$(echo -en "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
