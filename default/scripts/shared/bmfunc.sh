@@ -227,7 +227,7 @@ function bm_task_start() {
 }
 
 # Update task status to in progress
-function bm_update() {
+function bm_task_update() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
     printf "\r\033[0;93m[UPDATE]\033[0;97m %s\033[0m" "$1"
   fi

@@ -33,11 +33,17 @@ bm_print_info "Script path: $0"
 bm_command_locate add-apt-repository
 bm_task_start "Configuring environment"
 if [[ ! -d "${HOME}/.npm_global" ]]; then
-  bm_update "Configuring environment"
+  bm_task_update "Configuring environment"
   bm_make_dir "${HOME}/.npm_global"
 fi
 
 bm_task_ok "Configuring environment"
+bm_task_start "Checking nodesource"
+if [[ "${BM_SUDO}" != "1" ]]; then
+  bm_task_update "Checking nodesource"
+else
+  bm_task_skip "Checking nodesource"
+fi
 
 printf "\033[0m\n"
 if [[ "${SUDO}" == "1" ]]; then

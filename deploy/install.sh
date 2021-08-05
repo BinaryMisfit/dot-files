@@ -44,7 +44,7 @@ bm_print_info "Script path: $0"
 bm_task_start "Locating dotfiles"
 
 if [[ ! -d "${BASE_DIR}" ]]; then
-  bm_update "Locating dotfiles"
+  bm_task_update "Locating dotfiles"
   if ! bm_command_execute "git clone --depth 1 --recurse-submodules ${REMOTE_REPO} ${BASE_DIR}"; then
     bm_task_failed "Locating dotfiles"
     bm_command_output_error
@@ -59,7 +59,7 @@ fi
 
 bm_task_start "Locating dotbot"
 if [[ -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
-  bm_update "Locating dotbot"
+  bm_task_update "Locating dotbot"
   if ! bm_command_execute "git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase"; then
     bm_task_failed "Locating dotbot"
     bm_command_output_error
@@ -74,7 +74,7 @@ fi
 
 bm_task_start "Updating dotfiles"
 if [[ "${BM_SKIP}" == "0" ]]; then
-  bm_update "Updating dotfiles"
+  bm_task_update "Updating dotfiles"
   MD5_CURRENT="SKIPPED"
   MD5_NEW="SKIPPED"
   MD5_FOUND=$(bm_command_check md5sum)
@@ -116,7 +116,7 @@ fi
 
 bm_task_start "Running installation"
 if [[ -x "${INSTALL_SCRIPTS}${BM_OS}" ]]; then
-  bm_update "Running installation"
+  bm_task_update "Running installation"
   COMMAND="${INSTALL_SCRIPTS}${BM_OS} ${BM_ARGS}"
   if ! bm_script_execute "${COMMAND}"; then
     bm_task_failed "Running installation"
