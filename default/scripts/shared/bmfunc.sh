@@ -67,6 +67,10 @@ function bm_detect_os() {
 
 # Exit script with error
 function bm_script_exit_error() {
+  if [[ "$1" != "" ]]; then
+    printf "\r\033[0;91m[FAILED]\033[0;97m %s\033[0m" "$1"
+  fi
+
   bm_de_init
   exit 1
 }
@@ -185,10 +189,10 @@ function bm_task_reboot() {
 }
 
 # Get current user
-function bm_user() {
+function bm_user_no_sudo() {
   export BM_USER=${USER}
-  if [[ "${EUID}" == "0" ]] && [[ "${SUDO_USER}" != "" ]]; then
-    export BM_USER=${SUDO_USER}
+  if [[ ${EUID} == 0 ]] && [[ "${SUDO_USER}" != "" ]]; then
+    bm_script_exit_error "Running as sudo not supported"
   fi
 }
 
@@ -222,5 +226,4 @@ shift $((OPTIND - 1))
 
 [[ "${1:-}" == "--" ]] && shift
 
-bm_user
 export BM_LOADED=1

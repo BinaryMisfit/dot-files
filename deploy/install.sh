@@ -30,13 +30,14 @@ DOT_BOT_DIR="${BASE_DIR}/dotbot"
 INSTALL_SCRIPTS="${BASE_DIR}/default/scripts/install/"
 
 bm_title "BinaryMisfit Install Script V1.0.0"
-bm_info "${USER}/${SUDO_USER}/${EUID}/${HOME}"
+bm_info "${USER}-${SUDO_USER}-${EUID}-${HOME}"
+bm_user_no_sudo
 bm_detect_os
 bm_command_locate git
-bm_info "Base directory ${BASE_DIR}"
-bm_info "Deploy directory ${DEPLOY_DIR}"
-bm_info "dotbot directory ${DOT_BOT_DIR}"
-bm_info "Script path $0"
+bm_info "Base directory: ${BASE_DIR}"
+bm_info "Deploy directory: ${DEPLOY_DIR}"
+bm_info "dotbot directory: ${DOT_BOT_DIR}"
+bm_info "Script path: $0"
 bm_info "User ${BM_USER}"
 bm_progress "Locating dotfiles"
 
