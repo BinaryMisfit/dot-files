@@ -184,6 +184,7 @@ function bm_task_reboot () {
   fi
 }
 
+# Get current user
 function bm_user () {
   export BM_USER=${USER}
   if [[ "${EUID}" == "0" ]] && [[ "${SUDO_USER}" != "" ]]; then
