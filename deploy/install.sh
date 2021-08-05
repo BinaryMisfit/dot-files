@@ -40,7 +40,7 @@ bm_print_info "Base directory: ${BASE_DIR}"
 bm_print_info "Deploy directory: ${DEPLOY_DIR}"
 bm_print_info "dotbot directory: ${DOT_BOT_DIR}"
 bm_print_info "Script path: $0"
-bm_progress "Locating dotfiles"
+bm_task_start "Locating dotfiles"
 
 if [[ ! -d "${BASE_DIR}" ]]; then
   bm_update "Locating dotfiles"
@@ -56,7 +56,7 @@ else
   bm_task_ok "Locating dotfiles"
 fi
 
-bm_progress "Locating dotbot"
+bm_task_start "Locating dotbot"
 if [[ -f "${DOT_BOT_DIR}/${DOT_BOT_BIN}" ]]; then
   bm_update "Locating dotbot"
   if ! bm_command_execute "unset HOME; git -C \"${BASE_DIR}\" submodule update --init --recursive --rebase"; then
@@ -72,7 +72,7 @@ else
 fi
 
 bm_script_error
-bm_progress "Updating dotfiles"
+bm_task_start "Updating dotfiles"
 if [[ "${BM_SKIP}" == "0" ]]; then
   bm_update "Updating dotfiles"
   MD5_CURRENT="SKIPPED"
@@ -114,7 +114,7 @@ else
   bm_task_skip "Updating dotfiles"
 fi
 
-bm_progress "Running installation"
+bm_task_start "Running installation"
 if [[ -x "${INSTALL_SCRIPTS}${BM_OS}" ]]; then
   bm_update "Running installation"
   COMMAND="${INSTALL_SCRIPTS}${BM_OS}"
@@ -136,7 +136,7 @@ for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_
     continue
   fi
 
-  bm_progress "Running $CONF"
+  bm_task_start "Running $CONF"
   if ! bm_command_execute "${DOT_BOT_DIR}/${DOT_BOT_BIN} -d \"${BASE_DIR}\" -c \"${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}\""; then
     bm_task_failed "Running $CONF"
     bm_command_output_error
