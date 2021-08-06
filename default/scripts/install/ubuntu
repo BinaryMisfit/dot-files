@@ -141,6 +141,14 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     INSTALL_LIST+=("build-essential")
   fi
 
+  if ! bm_ubuntu_package_installed coreutils; then
+    INSTALL_LIST+=("coreutils")
+  fi
+
+  if ! bm_command_check cron; then
+    INSTALL_LIST+=("cron")
+  fi
+
   if [[ ${#{INSTALL_LIST[@]} -eq 0 ]]; then
     bm_task_ok "Checking required apps"
   fi
@@ -150,11 +158,6 @@ fi
 
 printf "\033[0m\n"
 if [[ "${SUDO}" == "1" ]]; then
-  if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
-    coreutils 2>/dev/null)" ]]; then
-    INSTALL_LIST+=("coreutils")
-  fi
-
   if [[ "$(command -v cron)" == "" ]]; then
     INSTALL_LIST+=("cron")
   fi

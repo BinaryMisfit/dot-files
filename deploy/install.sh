@@ -28,6 +28,7 @@ bm_print_title "Dotfiles installer V1.0.0"
 bm_user_no_sudo
 bm_detect_os
 bm_command_locate git
+bm_command_locate md5sum
 bm_print_info "User: ${BM_USER}"
 bm_print_info "Home: ${HOME}"
 bm_print_info "Sudo: ${BM_USE_SUDO}"
@@ -75,13 +76,7 @@ fi
 bm_task_start "Updating dotfiles"
 if [[ "${BM_SKIP}" == "0" ]]; then
   bm_task_update "Updating dotfiles"
-  MD5_CURRENT="SKIPPED"
-  MD5_NEW="SKIPPED"
-  MD5_FOUND=$(bm_command_check md5sum)
-  if [[ "${MD5_FOUND}" == "1" ]]; then
-    MD5_CURRENT=$(md5sum "$0" | awk '{ print $1 }')
-  fi
-
+  MD5_CURRENT=$(md5sum "$0" | awk '{ print $1 }')
   VERSION_CURRENT=$(git -C "${BASE_DIR}" rev-parse HEAD)
   if ! bm_command_execute "git -C \"${BASE_DIR}\" pull --autostash --all --recurse-submodules --rebase"; then
     bm_task_failed "Updating dotfiles"
@@ -89,6 +84,7 @@ if [[ "${BM_SKIP}" == "0" ]]; then
     bm_script_error
   fi
 
+  MD5_NEW=$(md5sum "$0" | awk '{ print $1 }')
   VERSION_NEW=$(git -C "${BASE_DIR}" rev-parse HEAD)
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]] || [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
     bm_task_reboot "Updating dotfiles"
@@ -105,7 +101,6 @@ if [[ "${BM_SKIP}" == "0" ]]; then
   bm_print_info "Git L: ${VERSION_NEW}"
   bm_print_info "Script F: ${MD5_CURRENT}"
   bm_print_info "Script L: ${MD5_NEW}"
-  unset MD5_FOUND
   unset MD5_CURRENT
   unset MD5_NEW
   unset VERSION_CURRENT

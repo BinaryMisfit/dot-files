@@ -253,7 +253,7 @@ function bm_user_no_sudo() {
 
 # Check if package is installed on ubuntu
 function bm_ubuntu_package_installed () {
-  if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' build-essential 2>/dev/null)" ]]; then
+  if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' build-essential 2>&1)" ]]; then
       result 1
   fi
 
