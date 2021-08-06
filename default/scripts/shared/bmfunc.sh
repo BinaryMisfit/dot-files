@@ -68,6 +68,7 @@ function bm_de_init() {
   unset BM_LOG_FILE
   unset BM_LOG_TO_FILE
   unset BM_OS
+  unset BM_OS_UPDATE
   unset BM_OUTPUT
   unset BM_SKIP
   unset BM_USER
@@ -81,13 +82,13 @@ function bm_detect_os() {
   bm_task_start "OS detection"
   case "${OSTYPE}" in
   "darwin"*)
-    BM_OS='osx'
+    export BM_OS='osx'
     ;;
   "linux-gnu")
-    BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    export BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
     ;;
   "linux-gnueabihf")
-    BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    export BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
     ;;
   *)
     bm_task_error "OS detected ${OSTYPE}"
@@ -252,6 +253,23 @@ function bm_user_no_sudo() {
 function bm_ubuntu_package_installed() {
   dpkg-query -W --showformat='${Status}\n' "$1" &> /dev/null
   return $?
+}
+
+# Check if updates are available on ubuntu
+function bm_ubuntu_update_check() {
+  bm_task_start "Checking ubuntu updates"
+  export BM_OS_UPDATE=0
+  IFS=';' read UPD_COUNT SEC_COUNT < <(/usr/lib/update-notifier/apt-check 2>&1)
+  local UPDATES=$((${UPD_COUNT}+${SEC_COUNT}))
+  if [[ ${UPDATES} -ne 0 ]]; then
+    export BM_OS_UPDATE=1
+  fi
+
+  bm_task_ok "Checking ubuntu updates"
+  bm_print_info "Updates F: ${UPD_COUNT}"
+  bm_print_info "Updates S: ${SEC_COUNT}"
+  bm_print_info "Updates T: ${UPDATES}"
+  bm_print_info "Update OS: ${BM_OS_UPDATE}"
 }
 
 # Write to log

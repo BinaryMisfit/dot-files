@@ -47,6 +47,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       if ! bm_command_execute "sudo apt-get update"; then
         bm_task_failed "Updating apt"
         bm_command_output_error
+        bm_script_error
       fi
 
       bm_task_ok "Updating apt"
@@ -55,8 +56,6 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       bm_command_output_success
     else
       bm_task_ok "Checking nodesource"
-      bm_print_info "Version C: ${MD5_CURRENT}"
-      bm_print_info "Version N: ${MD5_NEW}"
     fi
 
     unset DISTRO
@@ -74,6 +73,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     if ! bm_command_execute "sudo apt-get update"; then
       bm_task_failed "Updating apt"
       bm_command_output_error
+      bm_script_error
     fi
 
     bm_task_ok "Updating apt"
@@ -90,6 +90,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     if ! bm_command_execute "sudo add-apt-repository -nsy ppa:git-core/ppa"; then
       bm_task_failed "Checking git ppa"
       bm_command_output_error
+      bm_script_error
     fi
 
     bm_task_ok "Checking git ppa"
@@ -98,6 +99,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     if ! bm_command_execute "sudo apt-get update"; then
       bm_task_failed "Updating apt"
       bm_command_output_error
+      bm_script_error
     fi
 
     bm_task_ok "Updating apt"
@@ -116,6 +118,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     if ! bm_command_execute "sudo add-apt-repository -nsy ppa:neovim-ppa/unstable"; then
       bm_task_failed "Checking neovim unstable"
       bm_command_output_error
+      bm_script_error
     fi
 
     bm_task_ok "Checking neovim unstable"
@@ -124,6 +127,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     if ! bm_command_execute "sudo apt-get update"; then
       bm_task_failed "Updating apt"
       bm_command_output_error
+      bm_script_error
     fi
 
     bm_task_ok "Updating apt"
@@ -192,15 +196,80 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     bm_task_update "Checking required apps"
     bm_task_ok "Checking required apps"
     for APP in "${INSTALL_LIST[@]}"; do
-      bm_print_info "Missing ${APP}"
+      bm_print_info "Missing: ${APP}"
     done
   fi
 
-  unset INSTALL_LIST
 else
   bm_task_skip "Checking required apps"
 fi
 
+if [[ "${BM_USE_SUDO}" == "1" ]]; then
+  bm_ubuntu_update_check
+  bm_task_start "Installing ubuntu updates"
+  if [[ "${BM_OS_UPDATE}" == "1" ]]; then
+    bm_task_update "Installing ubuntu updates"
+    if ! bm_command_execute "sudo apt-get update"; then
+      bm_task_failed "Installing ubuntu updates"
+      bm_command_output_error
+      bm_script_error
+    fi
+
+    if ! bm_command_execute "sudo apt-get upgrade --yes"; then
+      bm_task_failed "Installing ubuntu updates"
+      bm_command_output_error
+      bm_script_error
+    fi
+
+    bm_task_ok "Installing ubuntu updates"
+    bm_command_output_success
+    bm_task_start "Cleaning ubuntu apps"
+    if ! bm_command_execute "sudo apt-get autoremove --yes"; then
+      bm_task_failed "Cleaning ubuntu apps"
+      bm_command_output_error
+      bm_script_error
+    fi
+
+    bm_task_ok "Cleaning ubuntu apps"
+    bm_command_output_success
+  else
+    bm_task_skip "Installing ubuntu updates"
+  fi
+fi
+
+if [[ "${BM_USE_SUDO}" == "1" ]]; then
+  bm_task_start "Installing missing apps"
+  if [[ ${#INSTALL_LIST[@]} -ne 0 ]]; then
+    bm_task_start "Installing missing apps"
+    if ! bm_command_execute "sudo apt-get update"; then
+      bm_task_failed "Installing missing apps"
+      bm_command_output_error
+      bm_script_error
+    fi
+
+    if ! bm_command_execute "sudo apt-get install ${INSTALL_LIST[@]} --yes"; then
+      bm_task_failed "Installing missing apps"
+      bm_command_output_error
+      bm_script_error
+    fi
+
+    bm_task_ok "Installing missing apps"
+    bm_command_output_success
+    bm_task_start "Cleaning ubuntu apps"
+    if ! bm_command_execute "sudo apt-get autoremove --yes"; then
+      bm_task_failed "Cleaning ubuntu apps"
+      bm_command_output_error
+      bm_script_error
+    fi
+
+    bm_task_ok "Cleaning ubuntu apps"
+    bm_command_output_success
+  else
+    bm_task_skip "Installing missing apps"
+  fi
+fi
+
+unset INSTALL_LIST
 bm_script_error
 if [[ "${SUDO}" == "1" ]]; then
   if [[ "${INSTALL_LIST}" != "" ]]; then
