@@ -138,47 +138,47 @@ fi
 bm_task_start "Checking required apps"
 INSTALL_LIST=()
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
-  if [[ $(bm_ubuntu_package_installed build-essential) -eq 0 ]]; then
+  if ! bm_ubuntu_package_installed build-essential; then
     INSTALL_LIST+=("build-essential")
   fi
 
-  if [[ $(bm_ubuntu_package_installed coreutils) -eq 0 ]]; then
+  if ! bm_ubuntu_package_installed coreutils; then
     INSTALL_LIST+=("coreutils")
   fi
 
-  if [[ $(bm_command_check cron) -eq 0 ]]; then
+  if ! bm_command_check cron; then
     INSTALL_LIST+=("cron")
   fi
 
-  if [[ $(bm_command_check curl) -eq 0 ]]; then
+  if ! bm_command_check curl; then
     INSTALL_LIST+=("curl")
   fi
 
-  if [[ $(bm_command_check neofetch) -eq 0 ]]; then
+  if ! bm_command_check neofetch; then
     INSTALL_LIST+=("neofetch")
   fi
 
-  if [[ $(bm_command_check node) -eq 0 ]]; then
+  if ! bm_command_check node; then
     INSTALL_LIST+=("nodejs")
   fi
 
-  if [[ $(bm_command_check nvim) -eq 0 ]]; then
+  if ! bm_command_check nvim; then
     INSTALL_LIST+=("neovim")
   fi
 
-  if [[ $(bm_command_check python3) -eq 0 ]]; then
+  if ! bm_command_check python3; then
     INSTALL_LIST+=("python3")
   fi
 
-  if [[ $(bm_command_check socat) -eq 0 ]]; then
+  if ! bm_command_check socat; then
     INSTALL_LIST+=("socat")
   fi
 
-  if [[ $(bm_command_check tmux) -eq 0 ]]; then
+  if ! bm_command_check tmux; then
     INSTALL_LIST+=("tmux")
   fi
 
-  if [[ $(bm_command_check zsh) -eq 0 ]]; then
+  if ! bm_command_check zsh; then
     INSTALL_LIST+=("zsh")
   fi
 

@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 # Check if command exists
 function bm_command_check() {
-  if command -v "$1" &> /dev/null; then
-    return 1
-  fi
-
-  return 0
+  command -v "$1" &> /dev/null
+  return $?
 }
 
 # Execute command and store results
@@ -253,12 +250,8 @@ function bm_user_no_sudo() {
 
 # Check if package is installed on ubuntu
 function bm_ubuntu_package_installed() {
-  local OUTPUT
-  if ! dpkg-query -W --showformat='${Status}\n' "$1" &> /dev/null; then
-    return 0
-  fi
-
-  return 1
+  dpkg-query -W --showformat='${Status}\n' "$1" &> /dev/null
+  return $?
 }
 
 # Write to log
