@@ -154,6 +154,14 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     INSTALL_LIST+=("curl")
   fi
 
+  if ! bm_command_check curl; then
+    INSTALL_LIST+=("curl")
+  fi
+
+  if ! bm_command_check neofetch; then
+    INSTALL_LIST+=("neofetch")
+  fi
+
   if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
     bm_task_ok "Checking required apps"
   else
@@ -171,14 +179,6 @@ fi
 
 printf "\033[0m\n"
 if [[ "${SUDO}" == "1" ]]; then
-  if [[ "$(command -v cron)" == "" ]]; then
-    INSTALL_LIST+=("cron")
-  fi
-
-  if [[ "$(command -v curl)" == "" ]]; then
-    INSTALL_LIST+=("curl")
-  fi
-
   if [[ "$(command -v neofetch)" == "" ]]; then
     INSTALL_LIST+=("neofetch")
   fi
