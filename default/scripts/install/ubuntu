@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-DISTRO="$(lsb_release -s -c)"
 
 if [[ -f "${HOME}/.dotfiles/default/scripts/shared/bmfunc.sh" ]]; then
   source "${HOME}/.dotfiles/default/scripts/shared/bmfunc.sh"
@@ -31,6 +30,7 @@ fi
 bm_task_ok "Configuring environment"
 bm_task_start "Checking nodesource"
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
+  DISTRO="$(lsb_release -s -c)"
   FILE_CONTENT="\
   deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
   deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
@@ -59,6 +59,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       bm_print_info "Version N: ${MD5_NEW}"
     fi
 
+    unset DISTRO
     unset MD5_CURRENT
     unset MD5_NEW
   fi
@@ -149,10 +150,18 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     INSTALL_LIST+=("cron")
   fi
 
+  if ! bm_command_check curl; then
+    INSTALL_LIST+=("curl")
+  fi
+
   if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
     bm_task_ok "Checking required apps"
   else
     bm_task_update "Checking required apps"
+    bm_task_ok "Checking required apps"
+    for APP in "${INSTALL_LIST[@]}"; do
+      bm_print_info "Missing ${APP}"
+    done
   fi
 
   unset INSTALL_LIST
@@ -404,13 +413,3 @@ if [[ "${VERBOSE}" != "-1" ]]; then
 
   printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
 fi
-
-unset ARGS_APT
-unset ARGS_CURL
-unset ARGS_QUIET
-unset DISTRO
-unset FILE_CONTENT
-unset INSTALL_LIST
-unset SOURCES_ADDED
-unset SUDO
-unset VERBOSE

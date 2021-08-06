@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Check if command exists
 function bm_command_check() {
-  if [[ $(command -v "$1" 2>&1) == "" ]]; then
+  if [[ "$(command -v "$1")" == "" ]]; then
     return 0
   fi
 
@@ -252,9 +252,9 @@ function bm_user_no_sudo() {
 }
 
 # Check if package is installed on ubuntu
-function bm_ubuntu_package_installed () {
-  if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' build-essential 2>&1)" ]]; then
-      result 1
+function bm_ubuntu_package_installed() {
+  if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' "$1" | grep -q "\bno packages found\b")" ]]; then
+    result 1
   fi
 
   result 0
