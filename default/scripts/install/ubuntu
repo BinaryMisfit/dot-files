@@ -34,7 +34,6 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
   deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
   if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
-    bm_task_update "Checking nodesource"
     MD5_CURRENT="SKIPPED"
     MD5_NEW="SKIPPED"
     if bm_command_check md5sum; then
@@ -43,6 +42,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     fi
 
     if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+      bm_task_update "Checking nodesource"
       curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor |
         sudo tee -a /usr/share/keyrings/nodesource.gpg >/dev/null
       echo -en "${FILE_CONTENT}" | sudo tee -a /etc/apt/sources.list.d/nodesource.list >/dev/null
@@ -134,7 +134,7 @@ fi
 
 bm_task_start "Checking required apps"
 INSTALL_LIST=()
-if [[ "${BM_SUDO}" == "1" ]]; then
+if [[ "${BM__USE_SUDO}" == "1" ]]; then
   if ! bm_ubuntu_package_installed build-essential; then
     INSTALL_LIST+=("build-essential")
   fi
