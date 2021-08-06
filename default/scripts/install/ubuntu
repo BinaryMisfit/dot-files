@@ -146,24 +146,44 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     INSTALL_LIST+=("coreutils")
   fi
 
-  if [[ "$(bm_command_check cron)" == "0" ]]; then
+  if [[ $(bm_command_check cron) -eq 0 ]]; then
     INSTALL_LIST+=("cron")
   fi
 
-  if [[ "$(bm_command_check curl)" == "0" ]]; then
+  if [[ $(bm_command_check curl) -eq 0 ]]; then
     INSTALL_LIST+=("curl")
   fi
 
-  if [[ "$(bm_command_check neofetch)" == "0" ]]; then
+  if [[ $(bm_command_check neofetch) -eq 0 ]]; then
     INSTALL_LIST+=("neofetch")
   fi
 
-  if [[ "$(bm_command_check node)" == "0" ]]; then
+  if [[ $(bm_command_check node) -eq 0 ]]; then
     INSTALL_LIST+=("nodejs")
   fi
 
-  if [[ "$(bm_command_check nvim)" == "0" ]]; then
+  if [[ $(bm_command_check nvim) -eq 0 ]]; then
     INSTALL_LIST+=("neovim")
+  fi
+
+  if [[ $(bm_command_check python3) -eq 0 ]]; then
+    INSTALL_LIST+=("python3")
+  fi
+
+  if [[ $(bm_command_check socat) -eq 0 ]]; then
+    INSTALL_LIST+=("socat")
+  fi
+
+  if [[ $(bm_command_check tmux) -eq 0 ]]; then
+    INSTALL_LIST+=("tmux")
+  fi
+
+  if [[ $(bm_command_check zsh) -eq 0 ]]; then
+    INSTALL_LIST+=("zsh")
+  fi
+
+  if [[ ! -f /usr/share/zsh-antigen/antigen.zsh ]]; then
+    INSTALL_LIST+=("zsh-antigen")
   fi
 
   if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
@@ -183,28 +203,6 @@ fi
 
 bm_script_error
 if [[ "${SUDO}" == "1" ]]; then
-  if [[ "$(command -v python3)" == "" ]]; then
-    INSTALL_LIST+=("python3")
-  fi
-
-  if [[ "$(command -v socat)" == "" ]]; then
-    INSTALL_LIST+=("socat")
-  fi
-
-  if [[ "$(command -v tmux)" == "" ]]; then
-    INSTALL_LIST+=("tmux")
-  fi
-
-  if [[ "$(command -v zsh)" == "" ]]; then
-    INSTALL_LIST+=("zsh")
-  fi
-
-  if [[ ! -f /usr/share/zsh-antigen/antigen.zsh ]]; then
-    INSTALL_LIST+=("zsh-antigen")
-  fi
-
-  INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -u))
-
   if [[ "${INSTALL_LIST}" != "" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;31mMissing %s\033[0m\n" "${INSTALL_LIST[@]}"
