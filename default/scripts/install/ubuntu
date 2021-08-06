@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 DISTRO="$(lsb_release -s -c)"
-INSTALL_LIST=()
 
 if [[ -f "${HOME}/.dotfiles/default/scripts/shared/bmfunc.sh" ]]; then
   source "${HOME}/.dotfiles/default/scripts/shared/bmfunc.sh"
@@ -30,7 +29,6 @@ fi
 
 bm_task_ok "Configuring environment"
 bm_task_start "Checking nodesource"
-MD5_FOUND=$(bm_command_check md5sum)
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
   FILE_CONTENT="\
   deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
@@ -39,7 +37,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     bm_task_update "Checking nodesource"
     MD5_CURRENT="SKIPPED"
     MD5_NEW="SKIPPED"
-    if [[ "${MD5_FOUND}" == "1" ]]; then
+    if bm_command_check md5sum; then
       MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
       MD5_NEW=$(echo -en "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
     fi
@@ -56,7 +54,6 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       fi
 
       bm_task_ok "Updating apt"
-      bm_print_info "MD5 Found: ${MD5_FOUND}"
       bm_print_info "Version C: ${MD5_CURRENT}"
       bm_print_info "Version N: ${MD5_NEW}"
       bm_command_output_success
@@ -136,13 +133,17 @@ else
 fi
 
 bm_task_start "Checking required apps"
-printf "\033[0m\n"
-if [[ "${SUDO}" == "1" ]]; then
-  if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
-    build-essential 2>/dev/null)" ]]; then
+INSTALL_LIST=()
+if [[ "${BM_SUDO}" == "1" ]]; then
+  if ! bm_ubuntu_package_installed build-essential; then
     INSTALL_LIST+=("build-essential")
   fi
+else
+  bm_task_skip "Checking required apps"
+fi
 
+printf "\033[0m\n"
+if [[ "${SUDO}" == "1" ]]; then
   if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' \
     coreutils 2>/dev/null)" ]]; then
     INSTALL_LIST+=("coreutils")

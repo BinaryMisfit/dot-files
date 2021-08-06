@@ -2,9 +2,11 @@
 # Check if command exists
 function bm_command_check() {
   if [[ $(command -v "$1") != "" ]]; then
+    echo 1
     return 1
   fi
 
+  echo 0
   return 0
 }
 
@@ -249,6 +251,17 @@ function bm_user_no_sudo() {
   if groups "${USER}" | grep -q "\badmin\b"; then
     export BM_USE_SUDO=1
   fi
+}
+
+# Check if package is installed on ubuntu
+function bm_ubuntu_package_installed () {
+  if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' build-essential 2>/dev/null)" ]]; then
+      echo 1
+      result 1
+  fi
+
+  echo 0
+  result 0
 }
 
 # Write to log
