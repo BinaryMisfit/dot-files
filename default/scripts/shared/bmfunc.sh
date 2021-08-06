@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
 # Check if command exists
 function bm_command_check() {
-  echo -n "Check $1"
   if [[ "$(command -v "$1")" == "" ]]; then
-    echo -n "Not Found $1"
     return 0
   fi
 
-  echo -n "Found $1"
   return 1
 }
 
@@ -257,9 +254,7 @@ function bm_user_no_sudo() {
 # Check if package is installed on ubuntu
 function bm_ubuntu_package_installed() {
   local OUTPUT
-  OUTPUT="$(dpkg-query -W --showformat='${Status}\n' "$1" | grep -q "\bno packages found\b")"
-  printf "\nOutput: %s" "${OUTPUT}"
-  if [[ "${OUTPUT}" == "" ]]; then
+  if ! dpkg-query -W --showformat='${Status}\n' "$1" | grep -q "\bno packages found\b"; then
     return 1
   fi
 
