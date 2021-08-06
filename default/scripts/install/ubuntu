@@ -162,6 +162,10 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     INSTALL_LIST+=("nodejs")
   fi
 
+  if [[ "$(bm_command_check nvim)" == "0" ]]; then
+    INSTALL_LIST+=("neovim")
+  fi
+
   if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
     bm_task_ok "Checking required apps"
   else
@@ -177,20 +181,8 @@ else
   bm_task_skip "Checking required apps"
 fi
 
-printf "\033[0m\n"
+bm_script_error
 if [[ "${SUDO}" == "1" ]]; then
-  if [[ "$(command -v neofetch)" == "" ]]; then
-    INSTALL_LIST+=("neofetch")
-  fi
-
-  if [[ "$(command -v node)" == "" ]]; then
-    INSTALL_LIST+=("nodejs")
-  fi
-
-  if [[ "$(command -v nvim)" == "" ]]; then
-    INSTALL_LIST+=("neovim")
-  fi
-
   if [[ "$(command -v python3)" == "" ]]; then
     INSTALL_LIST+=("python3")
   fi
