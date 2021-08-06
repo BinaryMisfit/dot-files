@@ -138,11 +138,11 @@ fi
 bm_task_start "Checking required apps"
 INSTALL_LIST=()
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
-  if ! bm_ubuntu_package_installed build-essential; then
+  if [[ $(bm_ubuntu_package_installed build-essential) -eq 0 ]]; then
     INSTALL_LIST+=("build-essential")
   fi
 
-  if [[ "$(bm_ubuntu_package_installed coreutils)" == "0" ]]; then
+  if [[ $(bm_ubuntu_package_installed coreutils) -eq 0 ]]; then
     INSTALL_LIST+=("coreutils")
   fi
 
