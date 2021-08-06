@@ -53,10 +53,15 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       bm_print_info "Version C: ${MD5_CURRENT}"
       bm_print_info "Version N: ${MD5_NEW}"
       bm_command_output_success
-      unset MD5_CURRENT
-      unset MD5_NEW
+    else
+      bm_task_ok "Checking nodesource"
     fi
-  else
+
+    unset MD5_CURRENT
+    unset MD5_NEW
+  fi
+
+  if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]]; then
     bm_task_update "Checking nodesource"
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor |
       sudo tee -a /usr/share/keyrings/nodesource.gpg >/dev/nul
