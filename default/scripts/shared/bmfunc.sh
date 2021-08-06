@@ -2,11 +2,9 @@
 # Check if command exists
 function bm_command_check() {
   if [[ $(command -v "$1") != "" ]]; then
-    echo 1
     return 1
   fi
 
-  echo 0
   return 0
 }
 
@@ -256,11 +254,9 @@ function bm_user_no_sudo() {
 # Check if package is installed on ubuntu
 function bm_ubuntu_package_installed () {
   if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' build-essential 2>/dev/null)" ]]; then
-      echo 1
       result 1
   fi
 
-  echo 0
   result 0
 }
 

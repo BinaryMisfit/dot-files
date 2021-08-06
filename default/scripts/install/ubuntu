@@ -35,13 +35,8 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main
   deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x $DISTRO main\n"
   if [[ -f /etc/apt/sources.list.d/nodesource.list ]]; then
-    MD5_CURRENT="SKIPPED"
-    MD5_NEW="SKIPPED"
-    if bm_command_check md5sum; then
-      MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
-      MD5_NEW=$(echo -en "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
-    fi
-
+    MD5_CURRENT=$(md5sum /etc/apt/sources.list.d/nodesource.list | awk '{ print $1 }')
+    MD5_NEW=$(echo -en "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
     if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
       bm_task_update "Checking nodesource"
       curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor |
@@ -79,7 +74,6 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
 else
   bm_task_skip "Checking nodesource"
 fi
-unset MD5_FOUND
 
 bm_task_start "Checking git ppa"
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
@@ -138,6 +132,10 @@ INSTALL_LIST=()
 if [[ "${BM__USE_SUDO}" == "1" ]]; then
   if ! bm_ubuntu_package_installed build-essential; then
     INSTALL_LIST+=("build-essential")
+  fi
+
+  if [[ ${#{INSTALL_LIST[@]} -eq 0 ]]; then
+    bm_task_ok "Checking required apps"
   fi
 else
   bm_task_skip "Checking required apps"
