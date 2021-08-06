@@ -55,6 +55,8 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       bm_command_output_success
     else
       bm_task_ok "Checking nodesource"
+      bm_print_info "Version C: ${MD5_CURRENT}"
+      bm_print_info "Version N: ${MD5_NEW}"
     fi
 
     unset MD5_CURRENT
