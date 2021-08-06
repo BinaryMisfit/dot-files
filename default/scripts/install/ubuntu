@@ -21,6 +21,7 @@ bm_print_info "Home: ${HOME}"
 bm_print_info "Sudo: ${BM_USE_SUDO}"
 bm_print_info "Script path: $0"
 bm_command_locate add-apt-repository
+bm_command_locate md5sum
 bm_task_start "Configuring environment"
 if [[ ! -d "${HOME}/.npm_global" ]]; then
   bm_task_update "Configuring environment"
