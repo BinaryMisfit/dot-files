@@ -240,7 +240,7 @@ fi
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
   bm_task_start "Installing missing apps"
   if [[ ${#INSTALL_LIST[@]} -ne 0 ]]; then
-    bm_task_start "Installing missing apps"
+    bm_task_update "Installing missing apps"
     if ! bm_command_execute "sudo apt-get update"; then
       bm_task_failed "Installing missing apps"
       bm_command_output_error
@@ -270,29 +270,9 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
 fi
 
 unset INSTALL_LIST
-bm_script_error
-if [[ "${SUDO}" == "1" ]]; then
-  if [[ "${INSTALL_LIST}" != "" ]]; then
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;31mMissing %s\033[0m\n" "${INSTALL_LIST[@]}"
-      printf "\033[0;34mRunning apt-get update\033[0m\n"
-    fi
-
-    apt-get ${ARGS_APT} update
-
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mRunning apt-get install\033[0m\n"
-    fi
-
-    apt-get ${ARGS_APT} install -y ${INSTALL_LIST[@]}
-  fi
-
-  if [[ "${VERBOSE}" != "-1" ]]; then
-    printf "\033[0;32mAll packages have been installed\033[0m\n"
-  fi
-fi
-
 INSTALL_LIST=()
+unset INSTALL_LIST
+bm_script_error
 
 if [[ "${SUDO}" == "1" ]]; then
   if [[ "" != "$(dpkg-query -W --showformat='${Status}\n' \
