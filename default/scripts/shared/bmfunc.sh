@@ -253,10 +253,13 @@ function bm_user_no_sudo() {
 
 # Check if package is installed on ubuntu
 function bm_ubuntu_package_installed() {
+  bm_print_info "Check for $1"
   if [[ "" == "$(dpkg-query -W --showformat='${Status}\n' "$1" | grep -q "\bno packages found\b")" ]]; then
+    bm_print_info "Found $1"
     result 1
   fi
 
+  bm_print_info "Not found $1"
   result 0
 }
 
