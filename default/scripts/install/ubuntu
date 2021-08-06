@@ -149,9 +149,13 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     INSTALL_LIST+=("cron")
   fi
 
-  if [[ ${#{INSTALL_LIST[@]} -eq 0 ]]; then
+  if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
     bm_task_ok "Checking required apps"
+  else
+    bm_task_update "Checking required apps"
   fi
+
+  unset INSTALL_LIST
 else
   bm_task_skip "Checking required apps"
 fi

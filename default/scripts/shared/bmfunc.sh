@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Check if command exists
 function bm_command_check() {
-  if [[ $(command -v "$1") != "" ]]; then
-    return 1
+  if [[ $(command -v "$1" 2>&1) == "" ]]; then
+    return 0
   fi
 
-  return 0
+  return 1
 }
 
 # Execute command and store results
