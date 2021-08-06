@@ -142,24 +142,24 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     INSTALL_LIST+=("build-essential")
   fi
 
-  if ! bm_ubuntu_package_installed coreutils; then
+  if [[ "$(bm_ubuntu_package_installed coreutils)" == "0" ]]; then
     INSTALL_LIST+=("coreutils")
   fi
 
-  if ! bm_command_check cron; then
+  if [[ "$(bm_command_check cron)" == "0" ]]; then
     INSTALL_LIST+=("cron")
   fi
 
-  if ! bm_command_check curl; then
+  if [[ "$(bm_command_check curl)" == "0" ]]; then
     INSTALL_LIST+=("curl")
   fi
 
-  if ! bm_command_check curl; then
-    INSTALL_LIST+=("curl")
-  fi
-
-  if ! bm_command_check neofetch; then
+  if [[ "$(bm_command_check neofetch)" == "0" ]]; then
     INSTALL_LIST+=("neofetch")
+  fi
+
+  if [[ "$(bm_command_check node)" == "0" ]]; then
+    INSTALL_LIST+=("nodejs")
   fi
 
   if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
