@@ -14,7 +14,9 @@ function bm_command_execute() {
     fi
   fi
 
+  bm_write_log "${BM_COMMAND}"
   BM_OUTPUT=$(bash -c "${BM_COMMAND}" 2>&1)
+  bm_write_log "${BM_OUTPUT}"
 }
 
 # Locate command and print result
@@ -63,6 +65,7 @@ function bm_command_output_error() {
 function bm_de_init() {
   unset BM_ARGS
   unset BM_COMMAND
+  unset BM_FORCE
   unset BM_INIT
   unset BM_LOADED
   unset BM_LOG_FILE
@@ -104,8 +107,7 @@ function bm_init() {
     return 1
   fi
 
-  export BM_LOG_TO_FILE="0"
-  if [[ -z "${LOG_FILE+x}" ]]; then
+  if [[ -n "${LOG_FILE+x}" ]] && [[ -n "${BM_LOG_TO_FILE+x}" ]]; then
     export BM_LOG_TO_FILE="1"
     export BM_LOG_FILE="${LOG_FILE}"
   fi
@@ -145,6 +147,8 @@ function bm_print_info() {
   if [[ "${BM_VERBOSE}" == "1" ]]; then
     printf "\n\033[0;94m[ INFO ]\033[3;94m %s\033[0m" "$1"
   fi
+
+  bm_write_log "$1"
 }
 
 # Print title
@@ -152,12 +156,16 @@ function bm_print_title() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
     printf "\033[0;92m[ PROG ]\033[0;95m %s\033[0m" "$1"
   fi
+
+  bm_write_log "$1"
 }
 
 # Execute script and store results
 function bm_script_execute() {
   BM_COMMAND="$1"
+  bm_write_log "${BM_COMMAND}"
   BM_OUTPUT=$(bash -c "${BM_COMMAND}" 2>&1)
+  bm_write_log "${BM_OUTPUT}"
 }
 
 # Last script output
@@ -273,18 +281,27 @@ function bm_ubuntu_update_check() {
 }
 
 # Write to log
+function bm_write_log() {
+  if [[ "${BM_LOG_TO_FILE}" == "1" ]] && [[ "$1" != "" ]]; then
+    mapfile -t OUTPUT < <(printf "%s" "$1")
+    printf "%s %s\n" $(date +"[%Y-%m-%d %T]") "${OUTPUT[@]}" >> "${BM_LOG_FILE}"
+  fi
+}
 
 # Start script
 export BM_SKIP=0
 export BM_VERBOSE=0
 export BM_ARGS=("$@")
-while getopts "dfqs" OPT; do
+while getopts "dflqs" OPT; do
   case "${OPT}" in
   d)
     export BM_VERBOSE=1
     ;;
   f)
-    export BM_VERBOSE=1
+    export BM_FORCE=1
+    ;;
+  l)
+    export BM_LOG_TO_FILE=1
     ;;
   q)
     export BM_VERBOSE=-1
