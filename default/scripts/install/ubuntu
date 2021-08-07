@@ -247,7 +247,8 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       bm_script_error
     fi
 
-    if ! bm_command_execute "sudo apt-get install ${INSTALL_LIST[@]} --yes"; then
+    ARGS=$(printf "%s " "${INSTALL_LIST[@]}")
+    if ! bm_command_execute "sudo apt-get install --yes ${ARGS}"; then
       bm_task_failed "Installing missing apps"
       bm_command_output_error
       bm_script_error
@@ -255,6 +256,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
 
     bm_task_ok "Installing missing apps"
     bm_command_output_success
+    unset ARGS
     bm_task_start "Cleaning ubuntu apps"
     if ! bm_command_execute "sudo apt-get autoremove --yes"; then
       bm_task_failed "Cleaning ubuntu apps"

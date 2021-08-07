@@ -85,19 +85,20 @@ function bm_detect_os() {
   bm_task_start "OS detection"
   case "${OSTYPE}" in
   "darwin"*)
-    export BM_OS='osx'
+    BM_OS='osx'
     ;;
   "linux-gnu")
-    export BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
     ;;
   "linux-gnueabihf")
-    export BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
+    BM_OS=$(grep </etc/os-release "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print tolower($1)}')
     ;;
   *)
     bm_task_error "OS detected ${OSTYPE}"
     ;;
   esac
 
+  export BM_OS
   bm_task_ok "OS detection ${BM_OS}"
 }
 
@@ -267,8 +268,8 @@ function bm_ubuntu_package_installed() {
 function bm_ubuntu_update_check() {
   bm_task_start "Checking ubuntu updates"
   export BM_OS_UPDATE=0
-  IFS=';' read UPD_COUNT SEC_COUNT < <(/usr/lib/update-notifier/apt-check 2>&1)
-  local UPDATES=$((${UPD_COUNT}+${SEC_COUNT}))
+  IFS=';' read -r UPD_COUNT SEC_COUNT < <(/usr/lib/update-notifier/apt-check 2>&1)
+  local UPDATES=$((UPD_COUNT+SEC_COUNT))
   if [[ ${UPDATES} -ne 0 ]]; then
     export BM_OS_UPDATE=1
   fi
@@ -284,7 +285,7 @@ function bm_ubuntu_update_check() {
 function bm_write_log() {
   if [[ "${BM_LOG_TO_FILE}" == "1" ]] && [[ "$1" != "" ]]; then
     mapfile -t OUTPUT < <(printf "%s" "$1")
-    printf "%s %s\n" $(date +"[%Y-%m-%d %T]") "${OUTPUT[@]}" >> "${BM_LOG_FILE}"
+    printf "%s %s\n" "$(date +"[%Y-%m-%d %T]")" "${OUTPUT[@]}" >> "${BM_LOG_FILE}"
   fi
 }
 
