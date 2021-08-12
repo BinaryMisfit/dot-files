@@ -16,11 +16,11 @@ if [[ -f "${BASE_DIR}/default/scripts/shared/bmfunc.sh" ]]; then
   if [[ -n "${BM_LOADED+x}" ]]; then
     bm_init
   else
-    printf "\r\033[0;91m[FAILED]\033[0;97m Shared functions not loaded\033[0m\n"
+    printf "\r\033[0;91m[FAILED]\033[0;90m Shared functions not loaded\033[0m\n"
     exit 255
   fi
 else
-  printf "\r\033[0;91m[FAILED]\033[0;97m Shared functions not found\033[0m\n"
+  printf "\r\033[0;91m[FAILED]\033[0;90m Shared functions not found\033[0m\n"
   exit 255
 fi
 
