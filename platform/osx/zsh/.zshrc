@@ -46,6 +46,7 @@ if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
 fi
 
 test -e /opt/homebrew/share/antigen/antigen.zsh && source /opt/homebrew/share/antigen/antigen.zsh
+test -e /usr/local/share/antigen/antigen.zsh && source /usr/local/share/antigen/antigen.zsh
 test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
