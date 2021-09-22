@@ -40,6 +40,10 @@
       path: platform/osx/zsh/.zshrc
       create: true
       relink: true
+    ~/.config/nvim/config.d/21.airline.conf.vim:
+      path: platform/osx/nvim/config.d/21.airline.conf.vim
+      create: true
+      relink: true
 - shell:
     - ~/.iterm2/update_config.sh
 - clean:

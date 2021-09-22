@@ -1,6 +1,6 @@
 set autochdir                                           " Auto change directory to file parent
 set autoread                                            " Automatically read changed files
-set background=light                                    " Set vim background color
+set background=dark                                     " Set vim background color
 set clipboard+=unnamed,unnamedplus                      " Use OS global clipboard
 set cmdheight=2                                         " Better display messages
 set colorcolumn=125                                     " Set the position of the color column
