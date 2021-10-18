@@ -141,16 +141,13 @@ fi
 
 bm_task_start "Checking required apps"
 INSTALL_LIST=()
-INSTALL_OUTPUT=
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
   if ! bm_ubuntu_package_installed build-essential; then
     INSTALL_LIST+=("build-essential")
-    INSTALL_OUTPUT="${INSTALL_OUTPUT}, build-essential"
   fi
 
   if ! bm_ubuntu_package_installed coreutils; then
     INSTALL_LIST+=("coreutils")
-    INSTALL_OUTPUT="${INSTALL_OUTPUT}, coreutils"
   fi
 
   if ! bm_command_check cron; then
@@ -195,13 +192,9 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
 
   if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
     bm_task_ok "Checking required apps"
-    bm_print_info "Missing required apps ${#INSTALL_LIST[@]}"
-    bm_print_info "${INSTALL_OUTPUT}"
   else
     bm_task_update "Checking required apps"
     bm_task_ok "Checking required apps"
-    bm_print_info "Missing required apps ${#INSTALL_LIST[@]}"
-    bm_print_info "${INSTALL_OUTPUT}"
     for APP in "${INSTALL_LIST[@]}"; do
       bm_print_info "Missing: ${APP}"
     done
@@ -282,7 +275,7 @@ INSTALL_LIST=()
 unset INSTALL_LIST
 bm_script_error
 
-if [[ "${SUDO}" == "1" ]]; then
+if [[ "${BM_USE_SUDO}" == "1" ]]; then
   if [[ "" != "$(dpkg-query -W --showformat='${Status}\n' \
     vim | grep "install ok installed" 2>/dev/null)" ]]; then
     INSTALL_LIST+=("vim")
