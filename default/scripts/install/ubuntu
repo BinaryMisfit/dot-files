@@ -192,9 +192,11 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
 
   if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
     bm_task_ok "Checking required apps"
+    bm_print_info "Missing required apps ${#INSTALL_LIST[@]}"
   else
     bm_task_update "Checking required apps"
     bm_task_ok "Checking required apps"
+    bm_print_info "Missing required apps ${#INSTALL_LIST[@]}"
     for APP in "${INSTALL_LIST[@]}"; do
       bm_print_info "Missing: ${APP}"
     done
@@ -287,13 +289,13 @@ if [[ "${SUDO}" == "1" ]]; then
     INSTALL_LIST+=("vim-tiny")
   fi
 
-  if [[ "${INSTALL_LIST}" != "" ]]; then
+  if [[ ${#INSTALL_LIST[@]} -gt 0 ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;31mRemove %s\033[0m\n" "${INSTALL_LIST[@]}"
       printf "\033[0;34mRunning apt-get remove\033[0m\n"
     fi
 
-    apt-get ${ARGS_APT} remove --purge -y ${INSTALL_LIST[@]}
+    apt-get "${ARGS_APT}" remove --purge -y "${INSTALL_LIST[@]}"
 
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mRunning apt-get autoremove\033[0m\n"
