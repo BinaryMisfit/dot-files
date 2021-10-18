@@ -158,7 +158,7 @@ function bm_make_dir() {
 # Print info message
 function bm_print_info() {
   if [[ "${BM_VERBOSE}" == "1" ]]; then
-    printf "\n\033[0;94m[ INFO ]\033[3;94m %s\033[0m" "$1"
+    printf "\n\033[0;94m[ INFO ]\033[3;90m %s\033[0m" "$1"
   fi
 
   bm_write_log "$1"
@@ -167,7 +167,7 @@ function bm_print_info() {
 # Print title
 function bm_print_title() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\033[0;92m[ PROG ]\033[0;95m %s\033[0m" "$1"
+    printf "\033[0;92m[ PROG ]\033[0;90m %s\033[0m" "$1"
   fi
 
   bm_write_log "$1"
@@ -236,7 +236,7 @@ function bm_task_reboot() {
 # Update task status to skipped
 function bm_task_skip() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;96m[ SKIP ]\033[0;96m %s\033[0m" "$1"
+    printf "\r\033[0;96m[ SKIP ]\033[0;90m %s\033[0m" "$1"
   fi
 }
 
