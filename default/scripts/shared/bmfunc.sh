@@ -19,6 +19,12 @@ function bm_command_execute() {
   bm_write_log "${BM_OUTPUT}"
 }
 
+# Execute command and return output
+function bm_command_exit_code() {
+  bm_command_execute "$1"
+  return $?
+}
+
 # Locate command and print result
 function bm_command_locate() {
   bm_task_start "Locating $1"
