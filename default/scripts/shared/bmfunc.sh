@@ -21,7 +21,13 @@ function bm_command_execute() {
 
 # Execute command and return output
 function bm_command_exit_code() {
-  bm_command_execute "$1"
+  BM_COMMAND="$1"
+  if [[ ${BM_COMMAND} != sudo* ]]; then
+    if [[ "${BM_USE_SUDO}" == "1" ]]; then
+      BM_COMMAND="sudo -u ${BM_USER} ${BM_COMMAND}"
+    fi
+  fi
+  bash -c "${BM_COMMAND}" &>/dev/null
   echo $?
 }
 
