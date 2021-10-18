@@ -126,7 +126,7 @@ else
   bm_task_skip "Running installation"
 fi
 
-for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}.${INSTALL_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
+for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX}${CONF_SUFFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
   if [[ ! -f "${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}" ]]; then
     continue
   fi
