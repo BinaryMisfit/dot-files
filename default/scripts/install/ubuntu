@@ -314,6 +314,9 @@ fi
 unset INSTALL_LIST
 
 bm_task_start "Checking neovim globally"
+bm_command_execute "npm -g list neovim"
+bm_command_output_success
+bm_command_output_error
 if ! bm_command_execute "npm -g list neovim"; then
   if ! bm_command_execute "npm -g install neovim@latest"; then
       bm_task_failed "Checking neovim globally"
