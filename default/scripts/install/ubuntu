@@ -318,9 +318,9 @@ OUTPUT=bm_command_exit_code "npm -g list neovim"
 if ! bm_command_execute "npm -g list neovim"; then
   bm_task_update "Checking neovim globally"
   if ! bm_command_execute "npm -g install neovim@latest"; then
-      bm_task_failed "Checking neovim globally"
-      bm_command_output_error
-      bm_script_error
+    bm_task_failed "Checking neovim globally"
+    bm_command_output_error
+    bm_script_error
   fi
 
   bm_task_ok "Checking neovim globally"
