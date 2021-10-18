@@ -22,7 +22,7 @@ function bm_command_execute() {
 # Execute command and return output
 function bm_command_exit_code() {
   bm_command_execute "$1"
-  return $?
+  echo $?
 }
 
 # Locate command and print result
