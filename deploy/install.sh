@@ -4,7 +4,6 @@ CONF_SUFFIX=".conf.yaml"
 DEFAULT_CONFIG_PREFIX="default"
 DOT_BOT_BIN="bin/dotbot"
 FINAL_CONFIG_PREFIX="final"
-INSTALL_CONFIG_PREFIX="install"
 REMOTE_REPO=https://github.com/BinaryMisfit/dot-files
 
 if [[ "${SUDO_USER}"  != "" ]]; then
@@ -128,6 +127,7 @@ fi
 
 for CONF in ${DEFAULT_CONFIG_PREFIX} ${OS_PREFIX} ${FINAL_CONFIG_PREFIX} "${@}"; do
   if [[ ! -f "${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}" ]]; then
+    bm_print_info "Missing ${CONF}${CONF_SUFFIX}"
     continue
   fi
 
@@ -149,7 +149,6 @@ unset DEPLOY_DIR
 unset DOT_BOT_BIN
 unset DOT_BOT_DIR
 unset FINAL_CONFIG_PREFIX
-unset INSTALL_CONFIG_PREFIX
 unset REMOTE_REPO
 
 if [[ -n "${BM_INIT+x}" ]]; then
