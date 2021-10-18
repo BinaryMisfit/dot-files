@@ -314,7 +314,7 @@ fi
 unset INSTALL_LIST
 
 bm_task_start "Checking neovim globally"
-bm_command_exit_code "npm -g list neovim"
+OUTPUT=bm_command_exit_code "npm -g list neovim"
 if ! bm_command_execute "npm -g list neovim"; then
   bm_task_update "Checking neovim globally"
   if ! bm_command_execute "npm -g install neovim@latest"; then
@@ -327,6 +327,8 @@ if ! bm_command_execute "npm -g list neovim"; then
   bm_command_output_success
 fi
 
+bm_print_info "Last exit code ${OUTPUT}"
+unset OUTPUT
 bm_script_error
 
 if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
