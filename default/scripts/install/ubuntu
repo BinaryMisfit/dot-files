@@ -392,11 +392,12 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       bm_task_update "Checking sudo config"
       printf "%s" "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment >/dev/null
       bm_task_ok "Checking sudo config"
-      bm_print_info "Version C: ${MD5_CURRENT}"
-      bm_print_info "Version N: ${MD5_NEW}"
     else
       bm_task_ok "Checking sudo config"
     fi
+
+    bm_print_info "Version C: ${MD5_CURRENT}"
+    bm_print_info "Version N: ${MD5_NEW}"
   else
     bm_task_update "Checking sudo config"
     printf "%s" "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment >/dev/null
@@ -406,17 +407,29 @@ else
   bm_task_skip "Checking sudo config"
 fi
 
-bm_script_error
-
-if [[ "${SUDO}" == "1" ]]; then
-  if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mUpdating shell [$USER]\033[0m\n"
+if [[ "${BM_USE_SUDO}" == "1" ]]; then
+  bm_task_start "Checking ${BM_USER} shell"
+  ZSH_PATH=$(which zsh)
+  if [[ "${ZSH_PATH}" != "$(getent passwd "${BM_USER}" | awk -F: '{print $NF}')" ]]; then
+    bm_task_update "Checking ${BM_USER} shell"
+    if ! bm_command_execute "chsh ${BM_USER} --shell ${ZSH_PATH}"; then
+      bm_task_failed "Checking ${BM_USER} shell"
+      bm_command_output_error
     fi
 
-    chsh ${USER} --shell $(which zsh)
+    bm_task_ok "Checking ${BM_USER} shell"
+    bm_command_output_success
+  else
+    bm_task_ok "Checking ${BM_USER} shell"
+    bm_command_output_success
   fi
+
+  unset ZSH_PATH
+else
+  bm_task_skip "Checking ${BM_USER} shell"
 fi
+
+bm_script_error
 
 if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
   if [[ "$(which zsh)" != "$(getent passwd $SUDO_USER | awk -F: '{print $NF}')" ]]; then
