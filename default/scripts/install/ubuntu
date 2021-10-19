@@ -421,11 +421,11 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   else
     bm_task_ok "Checking default editor"
   fi
+
+  unset NVIM_PATH
+else
+  bm_task_skip "Checking default editor"
 fi
-
-unset NVIM_PATH
-
-bm_script_error
 
 if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   bm_task_start "Removing obsolete apps"
@@ -478,6 +478,8 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
 fi
 
 unset INSTALL_LIST
+
+bm_script_error
 
 if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
   FILE_CONTENT="\
