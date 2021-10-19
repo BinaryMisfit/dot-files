@@ -158,7 +158,7 @@ function bm_make_dir() {
 # Print info message
 function bm_print_info() {
   if [[ "${BM_VERBOSE}" == "1" ]]; then
-    printf "\n\033[0;94m[ INFO ]\033[3;90m %s\033[0m" "$1"
+    printf "\n\033[0;94m[ INFO ]\033[3;94m %s\033[0m" "$1"
   fi
 
   bm_write_log "$1"
