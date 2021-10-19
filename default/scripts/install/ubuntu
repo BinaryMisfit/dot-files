@@ -368,7 +368,12 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       bm_task_failed "Checking pynvim"
       bm_command_output_error
     fi
+
+    bm_task_ok "Checking pynvim"
+    bm_command_output_success
   fi
+else
+  bm_task_skip "Checking pynvim"
 fi
 
 bm_script_error
