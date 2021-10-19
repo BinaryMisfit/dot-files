@@ -142,23 +142,23 @@ fi
 bm_task_start "Checking required apps"
 INSTALL_LIST=()
 if [[ ${BM_USE_SUDO} -eq 1 ]]; then
-  if [[ $(bm_ubuntu_package_installed build-essential) -eq 1 ]]; then
+  if [[ $(bm_ubuntu_package_installed build-essential) -ne 0 ]]; then
     INSTALL_LIST+=("build-essential")
   fi
 
-  if [[ $(bm_ubuntu_package_installed coreutils) -eq 1 ]]; then
+  if [[ $(bm_ubuntu_package_installed coreutils) -ne 0 ]]; then
     INSTALL_LIST+=("coreutils")
   fi
 
-  if ! bm_command_check cron; then
+  if [[ $(bm_command_check cron) -ne 0 ]]; then
     INSTALL_LIST+=("cron")
   fi
 
-  if ! bm_command_check curl; then
+  if [[ $(bm_command_check curl) -ne 0 ]]; then
     INSTALL_LIST+=("curl")
   fi
 
-  if ! bm_command_check neofetch; then
+  if [[ $(bm_command_check neofetch) -ne 0 ]]; then
     INSTALL_LIST+=("neofetch")
   fi
 
@@ -194,11 +194,12 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
     INSTALL_LIST+=("zsh-antigen")
   fi
 
-  bm_print_info "Install count ${#INSTALL_LIST}"
   if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
     bm_task_ok "Checking required apps"
+    bm_print_info "Install count ${#INSTALL_LIST}"
   else
     bm_task_update "Checking required apps"
+    bm_print_info "Install count ${#INSTALL_LIST}"
     for APP in "${INSTALL_LIST[@]}"; do
       bm_print_info "Missing: ${APP}"
     done
@@ -339,7 +340,7 @@ unset OUTPUT
 
 bm_task_start "Checking pip"
 if [[ ${BM_USE_SUDO} -eq 1 ]]; then
-  if ! bm_command_check pip; then
+  if [[ $(bm_command_check pip) -ne 0 ]]; then
     bm_task_update "Checking pip"
     if ! bm_command_execute "curl -fL https://bootstrap.pypa.io/get-pip.py | python3 -"; then
       bm_task_failed "Checking pip"
