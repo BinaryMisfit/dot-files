@@ -387,7 +387,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   FILE_CONTENT="Defaults env_keep += ""TMUX"""
   if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
     bm_task_update "Checking sudo config"
-    MD5_CURRENT=$(sudo md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
+    MD5_CURRENT=$(md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
     MD5_NEW=$(echo "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
     bm_print_info "Version C: ${MD5_CURRENT}"
     bm_print_info "Version N: ${MD5_NEW}"
@@ -398,11 +398,11 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
         printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
       fi
 
-      echo "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment
+      echo -en "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment >/dev/null
     fi
   else
     bm_task_update "Checking sudo config"
-    echo "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment
+    echo -en "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment >/dev/null
   fi
 fi
 
@@ -458,14 +458,14 @@ if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
         printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
       fi
 
-      echo -en "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch
+      echo -en "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch >/dev/null
     fi
   else
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo environment\033[0m\n"
     fi
 
-    echo -en "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch
+    echo -en "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch >/dev/null
   fi
 
   if [[ -d "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" ]]; then
