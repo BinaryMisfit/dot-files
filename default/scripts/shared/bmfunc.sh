@@ -28,10 +28,10 @@ function bm_command_exit_code() {
     fi
   fi
   if bash -c "${BM_COMMAND}" &>/dev/null; then
-    echo 1
+    return 1
   fi
 
-  echo 0
+  return 0
 }
 
 # Locate command and print result
