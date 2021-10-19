@@ -388,12 +388,12 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
     MD5_CURRENT=$(md5sum </etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
     MD5_NEW=$(printf "%s" "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
-    bm_print_info "Version C: ${MD5_CURRENT}"
-    bm_print_info "Version N: ${MD5_NEW}"
     if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
       bm_task_update "Checking sudo config"
       printf "%s" "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment >/dev/null
       bm_task_ok "Checking sudo config"
+      bm_print_info "Version C: ${MD5_CURRENT}"
+      bm_print_info "Version N: ${MD5_NEW}"
     else
       bm_task_ok "Checking sudo config"
     fi
