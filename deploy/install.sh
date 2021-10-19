@@ -6,10 +6,6 @@ DOT_BOT_BIN="bin/dotbot"
 FINAL_CONFIG_PREFIX="final"
 REMOTE_REPO=https://github.com/BinaryMisfit/dot-files
 
-if [[ "${SUDO_USER}"  != "" ]]; then
-  BASE_DIR="/home/${SUDO_USER}/.dotfiles"
-fi
-
 if [[ -f "${BASE_DIR}/default/scripts/shared/bmfunc.sh" ]]; then
   source "${BASE_DIR}/default/scripts/shared/bmfunc.sh"
   if [[ -n "${BM_LOADED+x}" ]]; then
@@ -32,7 +28,6 @@ bm_print_info "User: ${BM_USER}"
 bm_print_info "Home: ${HOME}"
 bm_print_info "Sudo: ${BM_USE_SUDO}"
 
-BASE_DIR="/home/${BM_USER}/.dotfiles"
 DEPLOY_DIR="${BASE_DIR}/deploy"
 DOT_BOT_DIR="${BASE_DIR}/dotbot"
 INSTALL_SCRIPTS="${BASE_DIR}/default/scripts/install/"
