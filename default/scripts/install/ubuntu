@@ -397,7 +397,7 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
         bm_command_output_error
       fi
 
-      if ! bm_command_execute "update-alternatives --set vi ${NVIM_PATH}"; then
+      if ! bm_command_execute "sudo update-alternatives --set vi ${NVIM_PATH}"; then
         bm_task_failed "Checking default editor"
         bm_command_output_error
       fi
@@ -410,7 +410,7 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
         bm_command_output_error
       fi
 
-      if ! bm_command_execute "update-alternatives --set editor ${NVIM_PATH}"; then
+      if ! bm_command_execute "sudo update-alternatives --set editor ${NVIM_PATH}"; then
         bm_task_failed "Checking default editor"
         bm_command_output_error
       fi
