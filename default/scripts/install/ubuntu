@@ -504,9 +504,9 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
     sudo rm /etc/update-motd.d/50-landscape-sysinfo
   fi
 
-  sudo chmod -R 444 /etc/update-motd.d/*
-  sudo chmod -R 555 /etc/update-motd.d/01-neofetch
-  sudo chmod -R 555 /etc/update-motd.d/9?-*
+  sudo chmod -R -x /etc/update-motd.d/*
+  sudo chmod -R +x /etc/update-motd.d/01-neofetch
+  sudo chmod -R +x /etc/update-motd.d/9?-*
   bm_task_ok "Checking motd"
   bm_print_info "Version C: ${MD5_CURRENT}"
   bm_print_info "Version N: ${MD5_NEW}"
