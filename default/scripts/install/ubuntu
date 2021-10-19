@@ -176,6 +176,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
 
   if ! bm_command_check pip; then
     install_list+=("python3-pip")
+  fi
 
   if ! bm_command_check socat; then
     INSTALL_LIST+=("socat")
