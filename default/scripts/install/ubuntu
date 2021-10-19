@@ -171,11 +171,11 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   fi
 
   if [[ $(bm_command_check python3) -ne 0 ]]; then
-    install_list+=("python3")
+    INSTALL_LIST+=("python3")
   fi
 
   if [[ $(bm_command_check pip) -ne 0 ]]; then
-    install_list+=("python3-pip")
+    INSTALL_LIST+=("python3-pip")
   fi
 
   if [[ $(bm_command_check socat) -ne 0 ]]; then
@@ -290,7 +290,7 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
 
   if [[ ${#INSTALL_LIST} -gt 0 ]]; then
     bm_task_update "Removing obsolete apps"
-    if ! bm_command_execute "apt-get ${ARGS_APT} remove --purge -y ${INSTALL_LIST[*]}"; then
+    if ! bm_command_execute "sudo apt-get ${ARGS_APT} remove --purge -y ${INSTALL_LIST[*]}"; then
       bm_task_failed "Removing obsolete apps"
       bm_command_output_error
       bm_script_error
@@ -432,24 +432,20 @@ bm_task_start "Checking Neovim"
 NVIM_PATH=$(which nvim)
 if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' | awk '{ print $3 }')" ]]; then
   bm_task_update "Checking Neovim"
-  OUTPUT=$(bm_command_exit_code "update-alternatives --display vi")
-  if [[ ${OUTPUT} -ne 0 ]]; then
+  if [[ $(bm_command_exit_code "update-alternatives --display vi | grep ${NVIM_PATH}") -ne 0 ]]; then
     if ! bm_command_execute "update-alternatives --install /usr/bin/vi vi ${NVIM_PATH} 100"; then
       bm_task_failed "Checking Neovim"
       bm_command_output_error
     fi
   fi
 
-  unset OUTPUT
-  OUTPUT=$(bm_command_exit_code "update-alternatives --display editor")
-  if [[ ${OUTPUT} -ne 0 ]]; then
+  if [[ $(bm_command_exit_code "update-alternatives --display editor | grep ${NVIM_PATH}") -ne 0 ]]; then
     if ! bm_command_execute "update-alternatives --install /usr/bin/editor editor ${NVIM_PATH} 100"; then
       bm_task_failed "Checking Neovim"
       bm_command_output_error
     fi
   fi
 
-  unset OUTPUT
   if ! bm_command_execute "update-alternatives --set editor ${NVIM_PATH}"; then
     bm_task_failed "Checking Neovim"
     bm_command_output_error

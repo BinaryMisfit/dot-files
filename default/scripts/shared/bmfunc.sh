@@ -291,7 +291,8 @@ function bm_user_no_sudo() {
 # Check if package is installed on ubuntu
 function bm_ubuntu_package_installed() {
   dpkg-query -W --showformat='${Status}\n' "$1" &>/dev/null
-  return $?
+  echo $?
+  return
 }
 
 # Check if updates are available on ubuntu
