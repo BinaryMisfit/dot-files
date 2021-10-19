@@ -314,8 +314,10 @@ fi
 unset INSTALL_LIST
 
 bm_task_start "Checking neovim globally"
-OUTPUT=$(bm_command_exit_code "npm -g list neovim")+0
-if [[ "${OUTPUT}" != "0" ]]; then
+OUTPUT=$(bm_command_exit_code "npm -g list neovim")
+OUTPUT=${OUTPUT+0}
+bm_print_info "List exit code ${OUTPUT}"
+if [[ ${OUTPUT} -ne 0 ]]; then
   bm_task_update "Checking neovim globally"
   if ! bm_command_execute "npm -g install neovim@latest"; then
     bm_task_failed "Checking neovim globally"
@@ -327,7 +329,6 @@ if [[ "${OUTPUT}" != "0" ]]; then
   bm_command_output_success
 fi
 
-bm_print_info "List exit code ${OUTPUT}"
 unset OUTPUT
 bm_script_error
 
