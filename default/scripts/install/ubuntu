@@ -388,7 +388,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
     bm_task_update "Checking sudo config"
     MD5_CURRENT=$(md5sum < /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
-    MD5_NEW=$(md5sum < "${FILE_CONTENT}" | awk '{ print $1 }')
+    MD5_NEW=$(printf "%s" "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
     bm_print_info "Version C: ${MD5_CURRENT}"
     bm_print_info "Version N: ${MD5_NEW}"
     bm_script_error
@@ -398,11 +398,11 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
         printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
       fi
 
-      echo "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment >/dev/null
+      printf "%s" "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment >/dev/null
     fi
   else
     bm_task_update "Checking sudo config"
-    echo "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment >/dev/null
+    printf "%s" "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment >/dev/null
   fi
 fi
 
