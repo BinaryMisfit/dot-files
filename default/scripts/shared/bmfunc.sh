@@ -27,16 +27,11 @@ function bm_command_exit_code() {
       BM_COMMAND="sudo -u ${BM_USER} ${BM_COMMAND}"
     fi
   fi
-  bash -c "${BM_COMMAND}" &>/dev/null
-  BM_EXIT_CODE=$?
-  printf  "\r\n%s\r\n", ${BM_EXIT_CODE}
-  if [[ "${BM_EXIT_CODE}" == "" ]]; then
-    echo 0
-  else
-    echo ${BM_EXIT_CODE}
+  if bash -c "${BM_COMMAND}" &>/dev/null; then
+    echo $?
   fi
 
-  unset BM_EXIT_CODE
+  echo 0
 }
 
 # Locate command and print result
