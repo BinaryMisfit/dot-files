@@ -316,7 +316,6 @@ unset INSTALL_LIST
 bm_task_start "Checking neovim globally"
 OUTPUT=$(bm_command_exit_code "npm -g list neovim")
 OUTPUT=${OUTPUT+0}
-bm_print_info "List exit code ${OUTPUT}"
 if [[ ${OUTPUT} -ne 0 ]]; then
   bm_task_update "Checking neovim globally"
   if ! bm_command_execute "npm -g install neovim@latest"; then
@@ -330,21 +329,6 @@ if [[ ${OUTPUT} -ne 0 ]]; then
 fi
 
 unset OUTPUT
-bm_script_error
-
-if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
-  if [[ "" == "$(sudo -i -u "${SUDO_USER}" npm list -g neovim)" ]]; then
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mInstalling neovim [${SUDO_USER}]\033[0m\n"
-    fi
-
-    sudo -i -u "${SUDO_USER}" npm -g install neovim@latest &>/dev/null
-  fi
-fi
-
-if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;32mAll node packages have been installed\033[0m\n"
-fi
 
 if [[ "${SUDO}" == "1" ]]; then
   if [[ "" == "$(command -v pip)" ]]; then
@@ -394,6 +378,8 @@ if [[ "${SUDO}" == "1" ]]; then
     sudo echo ${FILE_CONTENT} >/etc/sudoers.d/50-keep-environment
   fi
 fi
+
+bm_script_error
 
 if [[ "${SUDO}" == "1" ]]; then
   if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
