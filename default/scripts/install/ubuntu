@@ -398,16 +398,15 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
         printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
       fi
 
-      sudo echo ${FILE_CONTENT} >/etc/sudoers.d/50-keep-environment
+      echo "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment
     fi
   else
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mUpdating sudo environment\033[0m\n"
-    fi
-
-    sudo echo ${FILE_CONTENT} >/etc/sudoers.d/50-keep-environment
+    bm_task_update "Checking sudo config"
+    echo "${FILE_CONTENT}" | sudo tee /etc/sudoers.d/50-keep-environment
   fi
 fi
+
+bm_script_error
 
 if [[ "${SUDO}" == "1" ]]; then
   if [[ "$(which zsh)" != "$(getent passwd $USER | awk -F: '{print $NF}')" ]]; then
@@ -459,14 +458,14 @@ if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
         printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
       fi
 
-      sudo echo -en ${FILE_CONTENT} >/etc/update-motd.d/01-neofetch
+      echo -en "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch
     fi
   else
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;34mUpdating sudo environment\033[0m\n"
     fi
 
-    sudo echo -en ${FILE_CONTENT} >/etc/update-motd.d/01-neofetch
+    echo -en "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch
   fi
 
   if [[ -d "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" ]]; then
