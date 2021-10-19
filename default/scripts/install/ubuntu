@@ -432,20 +432,27 @@ bm_task_start "Checking Neovim"
 NVIM_PATH=$(which nvim)
 if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' | awk '{ print $3 }')" ]]; then
   bm_task_update "Checking Neovim"
-  if [[ "" == "$(update-alternatives --display vi | grep "${NVIM_PATH}")" ]]; then
+  OUTPUT=$(bm_command_exit_code "update-alternatives --display vi")
+  OUTPUT=${OUTPUT+0}
+  if [[ "${OUTPUT}" != "0" ]]; then
     if ! bm_command_execute "update-alternatives --install /usr/bin/vi vi ${NVIM_PATH} 100"; then
       bm_task_failed "Checking Neovim"
       bm_command_output_error
     fi
   fi
 
-  if [[ "" == "$(update-alternatives --display editor | grep "${NVIM_PATH}")" ]]; then
-    if ! bm_command_execute "update-alternatives --install /usr/bin/editor editor $(which nvim) 100"; then
+  unset OUTPUT
+  OUTPUT=$(bm_command_exit_code "update-alternatives --display editor")
+  OUTPUT=${OUTPUT+0}
+
+  if [[ "${OUTPUT}" != "0" ]]; then
+    if ! bm_command_execute "update-alternatives --install /usr/bin/editor editor ${NVIM_PATH} 100"; then
       bm_task_failed "Checking Neovim"
       bm_command_output_error
     fi
   fi
 
+  unset OUTPUT
   if ! bm_command_execute "update-alternatives --set editor ${NVIM_PATH}"; then
     bm_task_failed "Checking Neovim"
     bm_command_output_error
