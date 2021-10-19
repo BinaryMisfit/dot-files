@@ -315,6 +315,7 @@ unset INSTALL_LIST
 
 bm_task_start "Checking neovim"
 OUTPUT=$(bm_command_exit_code "npm -g list neovim")
+bm_print_info "npm exit ${OUTPUT}"
 if [[ ${OUTPUT} -ne 0 ]]; then
   bm_task_update "Checking neovim"
   if ! bm_command_execute "npm -g install neovim@latest"; then
@@ -360,6 +361,7 @@ fi
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
   bm_task_start "Checking pynvim"
   OUTPUT=$(bm_command_exit_code "python3 -m pip list | grep pynvim")
+  bm_print_info "python exit ${OUTPUT}"
   if [[ ${OUTPUT} -ne 0 ]]; then
     bm_task_update "Checking pynvim"
     if ! bm_command_execute "python3 -m pip install --upgrade pynvim"; then
@@ -431,8 +433,7 @@ NVIM_PATH=$(which nvim)
 if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' | awk '{ print $3 }')" ]]; then
   bm_task_update "Checking Neovim"
   OUTPUT=$(bm_command_exit_code "update-alternatives --display vi")
-  bm_print_info "vi default exit ${OUTPUT}"
-  if [[ ${OUTPUT} -ne 0 ]]; then
+  if [[ ${OUTPUT} -eq 1 ]]; then
     if ! bm_command_execute "update-alternatives --install /usr/bin/vi vi ${NVIM_PATH} 100"; then
       bm_task_failed "Checking Neovim"
       bm_command_output_error
@@ -441,8 +442,7 @@ if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' 
 
   unset OUTPUT
   OUTPUT=$(bm_command_exit_code "update-alternatives --display editor")
-  bm_print_info "editor default exit ${OUTPUT}"
-  if [[ ${OUTPUT} -ne 0 ]]; then
+  if [[ ${OUTPUT} -eq 1 ]]; then
     if ! bm_command_execute "update-alternatives --install /usr/bin/editor editor ${NVIM_PATH} 100"; then
       bm_task_failed "Checking Neovim"
       bm_command_output_error
