@@ -3,11 +3,9 @@
 function bm_command_check() {
   BM_OUTPUT=$(/usr/bin/which "$1")
   if [[ "${BM_OUTPUT}" == "" ]]; then
-    echo 1
     return 1
   fi
 
-  echo 0
   return 0
 }
 
@@ -34,11 +32,9 @@ function bm_command_exit_code() {
     fi
   fi
   if bash -c "${BM_COMMAND}" &>/dev/null; then
-    echo 1
     return 1
   fi
 
-  echo 0
   return 0
 }
 
