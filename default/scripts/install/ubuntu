@@ -434,8 +434,6 @@ if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' 
   bm_task_update "Checking Neovim"
   OUTPUT=$(bm_command_exit_code "update-alternatives --display vi")
   bm_print_info "vi default exit ${OUTPUT}"
-  OUTPUT=${OUTPUT+0}
-  bm_print_info "vi default exit ${OUTPUT}"
   if [[ "${OUTPUT}" != "0" ]]; then
     if ! bm_command_execute "update-alternatives --install /usr/bin/vi vi ${NVIM_PATH} 100"; then
       bm_task_failed "Checking Neovim"
@@ -445,8 +443,6 @@ if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' 
 
   unset OUTPUT
   OUTPUT=$(bm_command_exit_code "update-alternatives --display editor")
-  bm_print_info "vi default exit ${OUTPUT}"
-  OUTPUT=${OUTPUT+0}
   bm_print_info "editor default exit ${OUTPUT}"
   if [[ "${OUTPUT}" != "0" ]]; then
     if ! bm_command_execute "update-alternatives --install /usr/bin/editor editor ${NVIM_PATH} 100"; then
