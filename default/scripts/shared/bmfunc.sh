@@ -202,6 +202,21 @@ function bm_script_output() {
   unset BM_OUTPUT
 }
 
+function bm_script_output_raw() {
+  if [[ "${BM_VERBOSE}" == "1" ]] && [[ "${BM_COMMAND}" != "" ]]; then
+    printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
+  fi
+
+  if [[ "${BM_OUTPUT}" != "" ]]; then
+    mapfile -t OUTPUT < <(printf "%s" "${BM_OUTPUT}")
+    printf "\n%s" "${OUTPUT[@]}"
+    unset OUTPUT
+  fi
+
+  unset BM_COMMAND
+  unset BM_OUTPUT
+}
+
 # Exit script with error
 function bm_script_error() {
   if [[ "$1" != "" ]]; then
