@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 # Check if command exists
 function bm_command_check() {
-  BM_OUTPUT=$(/usr/bin/which "$1")
-  if [[ "${BM_OUTPUT}" == "" ]]; then
-    return 1
-  fi
-
-  return 0
+  /usr/bin/which "$1" >/dev/null
+  return
 }
 
 # Execute command and store results
