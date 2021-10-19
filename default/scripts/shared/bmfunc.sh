@@ -33,6 +33,7 @@ function bm_command_exit_code() {
   fi
 
   echo 0
+  return 0
 }
 
 # Locate command and print result
