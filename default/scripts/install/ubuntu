@@ -343,7 +343,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     bm_task_ok "Checking pip"
     bm_command_output_success
     bm_task_start "Updating pip"
-    if ! bm_command_execute "python3 -m pip install --upgrade pip &>/dev/null"; then
+    if ! bm_command_execute "python3 -m pip install --upgrade pip"; then
       bm_task_failed "Updating pip"
       bm_command_output_error
     fi
