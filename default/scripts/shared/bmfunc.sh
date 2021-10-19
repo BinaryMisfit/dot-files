@@ -30,11 +30,12 @@ function bm_command_exit_code() {
   bash -c "${BM_COMMAND}" &>/dev/null
   BM_EXIT_CODE=$?
   bm_print_info "Exit code: ${BM_EXIT_CODE}"
-  if [[ ${BM_EXIT_CODE} == "" ]]; then
+  if [[ "${BM_EXIT_CODE}" == "" ]]; then
     echo 0
   else
     echo ${BM_EXIT_CODE}
   fi
+
   unset BM_EXIT_CODE
 }
 
