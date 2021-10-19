@@ -112,7 +112,7 @@ else
 fi
 
 bm_task_start "Checking neovim unstable"
-if [[ "${BM_USE_SUDO}" == "1" ]]; then
+if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   bm_task_update "Checking neovim unstable"
   if [[ "$(grep -l neovim-ppa/unstable /etc/apt/sources.list.d/*)" == "" ]]; then
     if ! bm_command_execute "sudo add-apt-repository -nsy ppa:neovim-ppa/unstable"; then
@@ -141,12 +141,12 @@ fi
 
 bm_task_start "Checking required apps"
 INSTALL_LIST=()
-if [[ "${BM_USE_SUDO}" == "1" ]]; then
-  if ! bm_ubuntu_package_installed build-essential; then
+if [[ ${BM_USE_SUDO} -eq 1 ]]; then
+  if $(bm_ubuntu_package_installed build-essential) -eq 1; then
     INSTALL_LIST+=("build-essential")
   fi
 
-  if ! bm_ubuntu_package_installed coreutils; then
+  if $(bm_ubuntu_package_installed coreutils) -eq 1; then
     INSTALL_LIST+=("coreutils")
   fi
 
@@ -194,6 +194,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     INSTALL_LIST+=("zsh-antigen")
   fi
 
+  bm_print_info "Install count ${#INSTALL_LIST}"
   if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
     bm_task_ok "Checking required apps"
   else
