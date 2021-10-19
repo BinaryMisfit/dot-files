@@ -389,7 +389,6 @@ fi
 
 bm_task_start "Checking default editor"
 NVIM_PATH=$(/usr/bin/which nvim)
-bm_print_info "Nvim Path ${NVIM_PATH}"
 if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' | awk '{ print $3 }')" ]]; then
   if [[ $(bm_command_exit_code "update-alternatives --display vi | grep ${NVIM_PATH}") -ne 0 ]]; then
     bm_task_update "Checking default editor"
@@ -418,6 +417,7 @@ if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' 
   fi
 
   bm_task_ok "Checking default editor"
+  bm_print_info "Nvim Path ${NVIM_PATH}"
 else
   bm_task_ok "Checking default editor"
 fi
