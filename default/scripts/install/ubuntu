@@ -171,8 +171,11 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   fi
 
   if ! bm_command_check python3; then
-    INSTALL_LIST+=("python3")
+    install_list+=("python3")
   fi
+
+  if ! bm_command_check pip; then
+    install_list+=("python3-pip")
 
   if ! bm_command_check socat; then
     INSTALL_LIST+=("socat")
@@ -315,8 +318,7 @@ unset INSTALL_LIST
 
 bm_task_start "Checking neovim"
 OUTPUT=$(bm_command_exit_code "npm -g list neovim")
-bm_print_info "npm exit ${OUTPUT}"
-if [[ ${OUTPUT} -ne 0 ]]; then
+if [[ ${OUTPUT} -eq 1 ]]; then
   bm_task_update "Checking neovim"
   if ! bm_command_execute "npm -g install neovim@latest"; then
     bm_task_failed "Checking neovim"
@@ -324,9 +326,11 @@ if [[ ${OUTPUT} -ne 0 ]]; then
   fi
 
   bm_task_ok "Checking neovim"
+  bm_print_info "npm exit ${OUTPUT}"
   bm_command_output_success
 else
   bm_task_ok "Checking neovim"
+  bm_print_info "npm exit ${OUTPUT}"
 fi
 
 unset OUTPUT
@@ -361,7 +365,6 @@ fi
 if [[ "${BM_USE_SUDO}" == "1" ]]; then
   bm_task_start "Checking pynvim"
   OUTPUT=$(bm_command_exit_code "python3 -m pip list | grep pynvim")
-  bm_print_info "python exit ${OUTPUT}"
   if [[ ${OUTPUT} -ne 0 ]]; then
     bm_task_update "Checking pynvim"
     if ! bm_command_execute "python3 -m pip install --upgrade pynvim"; then
@@ -370,9 +373,11 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     fi
 
     bm_task_ok "Checking pynvim"
+    bm_print_info "python exit ${OUTPUT}"
     bm_command_output_success
   else
     bm_task_ok "Checking pynvim"
+    bm_print_info "python exit ${OUTPUT}"
   fi
 else
   bm_task_skip "Checking pynvim"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Check if command exists
 function bm_command_check() {
-  command -v "$1" &>/dev/null
+  /usr/bin/which "$1" &>/dev/null
   return $?
 }
 
