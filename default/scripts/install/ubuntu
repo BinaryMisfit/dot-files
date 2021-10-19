@@ -500,6 +500,10 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
     sudo cp -R "${HOME}/.dotfiles/default/etc/neofetch" /etc
   fi
 
+  if [[ -f /etc/update-motd.d/50-landscape-sysinfo ]]; then
+    sudo rm /etc/update-motd.d/50-landscape-sysinfo
+  fi
+
   sudo chmod -R 444 /etc/update-motd.d/*
   sudo chmod -R 555 /etc/update-motd.d/01-neofetch
   sudo chmod -R 555 /etc/update-motd.d/9?-*
