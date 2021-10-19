@@ -41,8 +41,10 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       bm_task_update "Checking nodesource"
       curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor |
         sudo tee -a /usr/share/keyrings/nodesource.gpg >/dev/null
-      printf "%s" "${FILE_CONTENT}" | sudo tee -a /etc/apt/sources.list.d/nodesource.list >/dev/null
+      printf "%s" "${FILE_CONTENT}" | sudo tee /etc/apt/sources.list.d/nodesource.list >/dev/null
       bm_task_ok "Checking nodesource"
+      bm_print_info "Version C: ${MD5_CURRENT}"
+      bm_print_info "Version N: ${MD5_NEW}"
       bm_task_start "Updating apt"
       if ! bm_command_execute "sudo apt-get update"; then
         bm_task_failed "Updating apt"
@@ -51,8 +53,6 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
       fi
 
       bm_task_ok "Updating apt"
-      bm_print_info "Version C: ${MD5_CURRENT}"
-      bm_print_info "Version N: ${MD5_NEW}"
       bm_command_output_success
     else
       bm_task_ok "Checking nodesource"
