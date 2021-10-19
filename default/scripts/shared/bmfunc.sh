@@ -171,8 +171,8 @@ function bm_print_info() {
 
 # Print title
 function bm_print_title() {
-  if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\033[0;92m[SCRIPT]\033[0;92m %s\033[0m%s" "$1" "$SHLVL"
+  if [[ "${BM_VERBOSE}" != "-1" ]] && [[ $SHLVL -lt 3 ]]; then
+    printf "\033[0;92m[SCRIPT]\033[0;92m %s\033[0m" "$1"
   fi
 
   bm_write_log "$1"
