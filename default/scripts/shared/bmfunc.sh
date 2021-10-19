@@ -28,7 +28,8 @@ function bm_command_exit_code() {
     fi
   fi
   if bash -c "${BM_COMMAND}" &>/dev/null; then
-    return
+    echo 1
+    return 1
   fi
 
   echo 0
