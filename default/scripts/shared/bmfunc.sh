@@ -29,7 +29,7 @@ function bm_command_exit_code() {
   fi
   bash -c "${BM_COMMAND}" &>/dev/null
   BM_EXIT_CODE=$?
-  printf  "%s", ${BM_EXIT_CODE}
+  printf  "\r\n%s\r\n", ${BM_EXIT_CODE}
   if [[ "${BM_EXIT_CODE}" == "" ]]; then
     echo 0
   else
