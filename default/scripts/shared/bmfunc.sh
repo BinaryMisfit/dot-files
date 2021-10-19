@@ -207,6 +207,7 @@ function bm_script_output_raw() {
     printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${BM_COMMAND}"
   fi
 
+  printf "\e[A\e[K"
   if [[ "${BM_OUTPUT}" != "" ]]; then
     mapfile -t OUTPUT < <(printf "%s" "${BM_OUTPUT}")
     printf "\n%s" "${OUTPUT[@]}"

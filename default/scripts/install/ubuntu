@@ -378,21 +378,20 @@ else
   bm_task_skip "Checking pynvim"
 fi
 
-bm_script_error
-
-if [[ "${SUDO}" == "1" ]]; then
-  if [[ "${VERBOSE}" != "-1" ]]; then
-    printf "\033[0;32mAll pip packages have been installed\033[0m\n"
-  fi
-
+if [[ "${BM_USE_SUDO}" == "1" ]]; then
+  bm_task_start "Checking sudo config"
   if [[ -f /etc/sudoers.d/90-cloud-init-users ]]; then
     rm /etc/sudoers.d/90-cloud-init-users
   fi
 
-  FILE_CONTENT="Defaults env_keep += \"TMUX\""
+  FILE_CONTENT="Defaults env_keep += ""TMUX"""
   if [[ -f /etc/sudoers.d/50-keep-environment ]]; then
+    bm_task_update "Checking sudo config"
     MD5_CURRENT=$(md5sum /etc/sudoers.d/50-keep-environment | awk '{ print $1 }')
-    MD5_NEW=$(echo ${FILE_CONTENT} | md5sum | awk '{ print $1 }')
+    MD5_NEW=$(echo "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
+    bm_print_info "Version C: ${MD5_CURRENT}"
+    bm_print_info "Version N: ${MD5_NEW}"
+    bm_script_error
     if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
       if [[ "${VERBOSE}" == "1" ]]; then
         printf "\033[0;34mUpdating sudo environment\033[0m\n"
