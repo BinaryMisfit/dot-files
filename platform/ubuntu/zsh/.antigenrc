@@ -6,7 +6,6 @@ antigen bundle gitfast
 antigen bundle lein
 antigen bundle pip
 antigen bundle tmux
-antigen bundle zsh_reload
 antigen bundle djui/alias-tips
 antigen bundle unixorn/autoupdate-antigen.zshplugin
 antigen bundle zsh-navigation-tools
