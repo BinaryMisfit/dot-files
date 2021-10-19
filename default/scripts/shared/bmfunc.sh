@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Check if command exists
 function bm_command_check() {
-  command -v "$1" &> /dev/null
+  command -v "$1" &>/dev/null
   return $?
 }
 
@@ -28,7 +28,14 @@ function bm_command_exit_code() {
     fi
   fi
   bash -c "${BM_COMMAND}" &>/dev/null
-  echo $?
+  BM_EXIT_CODE=$?
+  bm_print_info "Exit code: ${BM_EXIT_CODE}"
+  if [[ ${BM_EXIT_CODE} == "" ]]; then
+    echo 0
+  else
+    echo ${BM_EXIT_CODE}
+  fi
+  unset BM_EXIT_CODE
 }
 
 # Locate command and print result
@@ -272,7 +279,7 @@ function bm_user_no_sudo() {
 
 # Check if package is installed on ubuntu
 function bm_ubuntu_package_installed() {
-  dpkg-query -W --showformat='${Status}\n' "$1" &> /dev/null
+  dpkg-query -W --showformat='${Status}\n' "$1" &>/dev/null
   return $?
 }
 
@@ -281,7 +288,7 @@ function bm_ubuntu_update_check() {
   bm_task_start "Checking ubuntu updates"
   export BM_OS_UPDATE=0
   IFS=';' read -r UPD_COUNT SEC_COUNT < <(/usr/lib/update-notifier/apt-check 2>&1)
-  local UPDATES=$((UPD_COUNT+SEC_COUNT))
+  local UPDATES=$((UPD_COUNT + SEC_COUNT))
   if [[ ${UPDATES} -ne 0 ]]; then
     export BM_OS_UPDATE=1
   fi
@@ -297,7 +304,7 @@ function bm_ubuntu_update_check() {
 function bm_write_log() {
   if [[ "${BM_LOG_TO_FILE}" == "1" ]] && [[ "$1" != "" ]]; then
     mapfile -t OUTPUT < <(printf "%s" "$1")
-    printf "%s %s\n" "$(date +"[%Y-%m-%d %T]")" "${OUTPUT[@]}" >> "${BM_LOG_FILE}"
+    printf "%s %s\n" "$(date +"[%Y-%m-%d %T]")" "${OUTPUT[@]}" >>"${BM_LOG_FILE}"
   fi
 }
 
