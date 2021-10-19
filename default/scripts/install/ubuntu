@@ -326,6 +326,8 @@ if [[ ${OUTPUT} -ne 0 ]]; then
 
   bm_task_ok "Checking neovim globally"
   bm_command_output_success
+else
+  bm_task_ok "Checking neovim globally"
 fi
 
 unset OUTPUT
