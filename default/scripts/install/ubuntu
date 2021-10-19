@@ -289,57 +289,6 @@ fi
 unset INSTALL_LIST
 INSTALL_LIST=()
 
-if [[ ${BM_USE_SUDO} -eq 1 ]]; then
-  bm_task_start "Removing obsolete apps"
-  if [[ $(bm_ubuntu_package_installed vim) -eq 0 ]]; then
-    INSTALL_LIST+=("vim")
-  fi
-
-  if [[ $(bm_ubuntu_package_installed vim-tiny) -eq 0 ]]; then
-    INSTALL_LIST+=("vim-tiny")
-  fi
-
-  if [[ ${#INSTALL_LIST} -gt 0 ]]; then
-    bm_task_update "Removing obsolete apps"
-    if ! bm_command_execute "sudo apt-get ${ARGS_APT} remove --purge -y ${INSTALL_LIST[*]}"; then
-      bm_task_failed "Removing obsolete apps"
-      bm_command_output_error
-      bm_script_error
-    fi
-
-    bm_task_ok "Removing obsolete apps"
-    bm_command_output_success
-    for APP in "${INSTALL_LIST[@]}"; do
-      bm_print_info "Removed: ${APP}"
-    done
-
-    bm_task_start "Cleaning ubuntu"
-    bm_task_update "Cleaning ubuntu"
-    if ! bm_command_execute "sudo apt-get autoremove --yes"; then
-      bm_task_failed "Cleaning ubuntu apps"
-      bm_command_output_error
-      bm_script_error
-    fi
-
-    bm_task_ok "Cleaning ubuntu apps"
-    bm_command_output_success
-
-    bm_task_start "Cleaning apt"
-    bm_task_update "Cleaning apt"
-    if ! bm_command_execute "sudo apt-get autoclean"; then
-      bm_task_failed "Cleaning apt"
-      bm_command_output_error
-      bm_script_error
-    fi
-
-    bm_task_ok "Cleaning apt"
-    bm_command_output_success
-  else
-    bm_task_skip "Removing obsolete apps"
-  fi
-fi
-
-unset INSTALL_LIST
 
 bm_task_start "Checking neovim"
 OUTPUT=$(bm_command_exit_code "npm -g list neovim")
@@ -436,23 +385,24 @@ if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' 
       bm_task_failed "Checking Neovim"
       bm_command_output_error
     fi
-  fi
 
-  if [[ $(bm_command_exit_code "update-alternatives --display editor | grep ${NVIM_PATH}") -ne 0 ]]; then
-    if ! bm_command_execute "update-alternatives --install /usr/bin/editor editor ${NVIM_PATH} 100"; then
+    if ! bm_command_execute "update-alternatives --set vi ${NVIM_PATH}"; then
       bm_task_failed "Checking Neovim"
       bm_command_output_error
     fi
   fi
 
-  if ! bm_command_execute "update-alternatives --set editor ${NVIM_PATH}"; then
-    bm_task_failed "Checking Neovim"
-    bm_command_output_error
-  fi
+  if [[ $(bm_command_exit_code "update-alternatives --display editor | grep ${NVIM_PATH}") -ne 0 ]]; then
+    bm_task_update "Checking Neovim"
+    if ! bm_command_execute "update-alternatives --install /usr/bin/editor editor ${NVIM_PATH} 100"; then
+      bm_task_failed "Checking Neovim"
+      bm_command_output_error
+    fi
 
-  if ! bm_command_execute "update-alternatives --set vi ${NVIM_PATH}"; then
-    bm_task_failed "Checking Neovim"
-    bm_command_output_error
+    if ! bm_command_execute "update-alternatives --set editor ${NVIM_PATH}"; then
+      bm_task_failed "Checking Neovim"
+      bm_command_output_error
+    fi
   fi
 
   bm_task_ok "Checking Neovim"
@@ -463,6 +413,58 @@ fi
 unset NVIM_PATH
 
 bm_script_error
+
+if [[ ${BM_USE_SUDO} -eq 1 ]]; then
+  bm_task_start "Removing obsolete apps"
+  if [[ $(bm_ubuntu_package_installed vim) -eq 0 ]]; then
+    INSTALL_LIST+=("vim")
+  fi
+
+  if [[ $(bm_ubuntu_package_installed vim-tiny) -eq 0 ]]; then
+    INSTALL_LIST+=("vim-tiny")
+  fi
+
+  if [[ ${#INSTALL_LIST} -gt 0 ]]; then
+    bm_task_update "Removing obsolete apps"
+    if ! bm_command_execute "sudo apt-get ${ARGS_APT} remove --purge -y ${INSTALL_LIST[*]}"; then
+      bm_task_failed "Removing obsolete apps"
+      bm_command_output_error
+      bm_script_error
+    fi
+
+    bm_task_ok "Removing obsolete apps"
+    bm_command_output_success
+    for APP in "${INSTALL_LIST[@]}"; do
+      bm_print_info "Removed: ${APP}"
+    done
+
+    bm_task_start "Cleaning ubuntu"
+    bm_task_update "Cleaning ubuntu"
+    if ! bm_command_execute "sudo apt-get autoremove --yes"; then
+      bm_task_failed "Cleaning ubuntu apps"
+      bm_command_output_error
+      bm_script_error
+    fi
+
+    bm_task_ok "Cleaning ubuntu apps"
+    bm_command_output_success
+
+    bm_task_start "Cleaning apt"
+    bm_task_update "Cleaning apt"
+    if ! bm_command_execute "sudo apt-get autoclean"; then
+      bm_task_failed "Cleaning apt"
+      bm_command_output_error
+      bm_script_error
+    fi
+
+    bm_task_ok "Cleaning apt"
+    bm_command_output_success
+  else
+    bm_task_skip "Removing obsolete apps"
+  fi
+fi
+
+unset INSTALL_LIST
 
 if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
   FILE_CONTENT="\
