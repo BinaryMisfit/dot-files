@@ -2,6 +2,7 @@
 # Check if command exists
 function bm_command_check() {
   /usr/bin/which "$1" &>/dev/null
+  echo $?
   return
 }
 
@@ -28,6 +29,7 @@ function bm_command_exit_code() {
     fi
   fi
   bash -c "${BM_COMMAND}" &>/dev/null
+  echo $?
   return
 }
 
