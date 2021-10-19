@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Check if command exists
 function bm_command_check() {
-  /usr/bin/which "$1" >/dev/null
+  /usr/bin/which "$1" &>/dev/null
   return
 }
 
@@ -27,11 +27,8 @@ function bm_command_exit_code() {
       BM_COMMAND="sudo -u ${BM_USER} ${BM_COMMAND}"
     fi
   fi
-  if bash -c "${BM_COMMAND}" &>/dev/null; then
-    return 1
-  fi
-
-  return 0
+  bash -c "${BM_COMMAND}" &>/dev/null
+  return
 }
 
 # Locate command and print result
