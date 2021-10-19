@@ -40,7 +40,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
       bm_task_update "Checking nodesource"
       curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor |
-        sudo tee -a /usr/share/keyrings/nodesource.gpg >/dev/null
+        sudo tee /usr/share/keyrings/nodesource.gpg >/dev/null
       printf "%s" "${FILE_CONTENT}" | sudo tee /etc/apt/sources.list.d/nodesource.list >/dev/null
       bm_task_ok "Checking nodesource"
       bm_print_info "Version C: ${MD5_CURRENT}"
