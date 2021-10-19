@@ -421,7 +421,6 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
     bm_command_output_success
   else
     bm_task_ok "Checking ${BM_USER} shell"
-    bm_command_output_success
   fi
 
   unset ZSH_PATH
@@ -429,34 +428,42 @@ else
   bm_task_skip "Checking ${BM_USER} shell"
 fi
 
-bm_script_error
-
-if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
-  if [[ "$(which zsh)" != "$(getent passwd $SUDO_USER | awk -F: '{print $NF}')" ]]; then
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mUpdating shell [$SUDO_USER]\033[0m\n"
+bm_task_start "Checking Neovim"
+NVIM_PATH=$(which nvim)
+if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' | awk '{ print $3 }')" ]]; then
+  bm_task_update "Checking Neovim"
+  if [[ "" == "$(update-alternatives --display vi | grep "${NVIM_PATH}")" ]]; then
+    if ! bm_command_execute "update-alternatives --install /usr/bin/vi vi ${NVIM_PATH} 100"; then
+      bm_task_failed "Checking Neovim"
+      bm_command_output_error
     fi
-
-    chsh ${SUDO_USER} --shell $(which zsh)
   fi
+
+  if [[ "" == "$(update-alternatives --display editor | grep "${NVIM_PATH}")" ]]; then
+    if ! bm_command_execute "update-alternatives --install /usr/bin/editor editor $(which nvim) 100"; then
+      bm_task_failed "Checking Neovim"
+      bm_command_output_error
+    fi
+  fi
+
+  if ! bm_command_execute "update-alternatives --set editor ${NVIM_PATH}"; then
+    bm_task_failed "Checking Neovim"
+    bm_command_output_error
+  fi
+
+  if ! bm_command_execute "update-alternatives --set vi ${NVIM_PATH}"; then
+    bm_task_failed "Checking Neovim"
+    bm_command_output_error
+  fi
+
+  bm_task_ok "Checking Neovim"
+else
+  bm_task_ok "Checking Neovim"
 fi
 
-if [[ "$(which nvim)" != "$(update-alternatives --get-selections | grep 'editor' | awk '{ print $3 }')" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mUpdating editor\033[0m\n"
-  fi
+unset NVIM_PATH
 
-  if [[ "" == "$(update-alternatives --display vi | grep $(which nvim))" ]]; then
-    update-alternatives --install /usr/bin/vi vi $(which nvim) 100 ${ARGS_QUIET}
-  fi
-
-  if [[ "" == "$(update-alternatives --display editor | grep $(which nvim))" ]]; then
-    update-alternatives --install /usr/bin/editor editor $(which nvim) 100 ${ARGS_QUIET}
-  fi
-
-  update-alternatives --set editor $(which nvim) ${ARGS_QUIET}
-  update-alternatives --set vi $(which nvim) ${ARGS_QUIET}
-fi
+bm_script_error
 
 if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
   FILE_CONTENT="\
