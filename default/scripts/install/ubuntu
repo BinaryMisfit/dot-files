@@ -483,7 +483,7 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   bm_task_start "Checking motd"
   FILE_CONTENT="\
   #!/bin/bash
-  exec $(/usr/bin/which neofetch) --config /etc/neofetch/config.conf"
+  \n$(/usr/bin/which neofetch) --config /etc/neofetch/config.conf"
   if [[ -f /etc/update-motd.d/01-neofetch ]]; then
     MD5_CURRENT=$(md5sum /etc/update-motd.d/01-neofetch | awk '{ print $1 }')
     MD5_NEW=$(printf "%s" "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
