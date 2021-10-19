@@ -162,31 +162,31 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
     INSTALL_LIST+=("neofetch")
   fi
 
-  if ! bm_command_check node; then
+  if [[ $(bm_command_check node) -ne 0 ]]; then
     INSTALL_LIST+=("nodejs")
   fi
 
-  if ! bm_command_check nvim; then
+  if [[ $(bm_command_check nvim) -ne 0 ]]; then
     INSTALL_LIST+=("neovim")
   fi
 
-  if ! bm_command_check python3; then
+  if [[ $(bm_command_check python3) -ne 0 ]]; then
     install_list+=("python3")
   fi
 
-  if ! bm_command_check pip; then
+  if [[ $(bm_command_check pip) -ne 0 ]]; then
     install_list+=("python3-pip")
   fi
 
-  if ! bm_command_check socat; then
+  if [[ $(bm_command_check socat) -ne 0 ]]; then
     INSTALL_LIST+=("socat")
   fi
 
-  if ! bm_command_check tmux; then
+  if [[ $(bm_command_check tmux) -ne 0 ]]; then
     INSTALL_LIST+=("tmux")
   fi
 
-  if ! bm_command_check zsh; then
+  if [[ $(bm_command_check zsh) -ne 0 ]]; then
     INSTALL_LIST+=("zsh")
   fi
 
@@ -194,7 +194,7 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
     INSTALL_LIST+=("zsh-antigen")
   fi
 
-  if [[ ${#INSTALL_LIST[@]} -eq 0 ]]; then
+  if [[ ${#INSTALL_LIST} -eq 0 ]]; then
     bm_task_ok "Checking required apps"
     bm_print_info "Install count ${#INSTALL_LIST}"
   else
@@ -280,24 +280,20 @@ INSTALL_LIST=()
 
 if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   bm_task_start "Removing obsolete apps"
-  if ! bm_ubuntu_package_installed vim; then
+  if [[ $(bm_ubuntu_package_installed vim) -eq 0 ]]; then
     INSTALL_LIST+=("vim")
   fi
 
-  if ! bm_ubuntu_package_installed vim-tiny; then
+  if [[ $(bm_ubuntu_package_installed vim-tiny) -eq 0 ]]; then
     INSTALL_LIST+=("vim-tiny")
   fi
 
-  if [[ ${#INSTALL_LIST[@]} -gt 0 ]]; then
+  if [[ ${#INSTALL_LIST} -gt 0 ]]; then
     bm_task_update "Removing obsolete apps"
     if ! bm_command_execute "apt-get ${ARGS_APT} remove --purge -y ${INSTALL_LIST[*]}"; then
       bm_task_failed "Removing obsolete apps"
       bm_command_output_error
       bm_script_error
-    fi
-
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mRunning apt-get autoremove\033[0m\n"
     fi
 
     bm_task_ok "Removing obsolete apps"
@@ -329,11 +325,9 @@ if [[ ${OUTPUT} -eq 1 ]]; then
   fi
 
   bm_task_ok "Checking neovim"
-  bm_print_info "npm exit ${OUTPUT}"
   bm_command_output_success
 else
   bm_task_ok "Checking neovim"
-  bm_print_info "npm exit ${OUTPUT}"
 fi
 
 unset OUTPUT
@@ -376,11 +370,9 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
     fi
 
     bm_task_ok "Checking pynvim"
-    bm_print_info "python exit ${OUTPUT}"
     bm_command_output_success
   else
     bm_task_ok "Checking pynvim"
-    bm_print_info "python exit ${OUTPUT}"
   fi
 else
   bm_task_skip "Checking pynvim"
@@ -441,7 +433,7 @@ NVIM_PATH=$(which nvim)
 if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' | awk '{ print $3 }')" ]]; then
   bm_task_update "Checking Neovim"
   OUTPUT=$(bm_command_exit_code "update-alternatives --display vi")
-  if [[ ${OUTPUT} -eq 1 ]]; then
+  if [[ ${OUTPUT} -ne 0 ]]; then
     if ! bm_command_execute "update-alternatives --install /usr/bin/vi vi ${NVIM_PATH} 100"; then
       bm_task_failed "Checking Neovim"
       bm_command_output_error
@@ -450,7 +442,7 @@ if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' 
 
   unset OUTPUT
   OUTPUT=$(bm_command_exit_code "update-alternatives --display editor")
-  if [[ ${OUTPUT} -eq 1 ]]; then
+  if [[ ${OUTPUT} -ne 0 ]]; then
     if ! bm_command_execute "update-alternatives --install /usr/bin/editor editor ${NVIM_PATH} 100"; then
       bm_task_failed "Checking Neovim"
       bm_command_output_error
