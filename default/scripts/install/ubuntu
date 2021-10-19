@@ -412,6 +412,7 @@ if [[ "${BM_USE_SUDO}" == "1" ]]; then
   ZSH_PATH=$(which zsh)
   if [[ "${ZSH_PATH}" != "$(getent passwd "${BM_USER}" | awk -F: '{print $NF}')" ]]; then
     bm_task_update "Checking ${BM_USER} shell"
+    bm_print_info "chsh ${BM_USER} --shell ${ZSH_PATH}"
     if ! bm_command_execute "chsh ${BM_USER} --shell ${ZSH_PATH}"; then
       bm_task_failed "Checking ${BM_USER} shell"
       bm_command_output_error
