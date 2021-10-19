@@ -390,7 +390,6 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   bm_task_start "Checking default editor"
   NVIM_PATH=$(/usr/bin/which nvim)
   if [[ "${NVIM_PATH}" != "$(update-alternatives --get-selections | grep 'editor' | awk '{ print $3 }')" ]]; then
-    OUTPUT=$(bm_command_exit_code "update-alternatives --display vi | grep ${NVIM_PATH}")
     if [[ "$(bm_command_exit_code "update-alternatives --display vi | grep ${NVIM_PATH}")" -ne "0" ]]; then
       bm_task_update "Checking default editor"
       if ! bm_command_execute "sudo update-alternatives --install /usr/bin/vi vi ${NVIM_PATH} 100"; then
@@ -398,14 +397,15 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
         bm_command_output_error
       fi
 
-      bm_command_output_success
-      bm_task_start "Checking default editor"
-
       if ! bm_command_execute "update-alternatives --set vi ${NVIM_PATH}"; then
         bm_task_failed "Checking default editor"
         bm_command_output_error
       fi
+
+      bm_command_output_success
+      bm_task_start "Checking default editor"
     fi
+
 
     if [[ $(bm_command_exit_code "update-alternatives --display editor | grep ${NVIM_PATH}") -ne 0 ]]; then
       bm_task_update "Checking default editor"
@@ -421,8 +421,6 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
     fi
 
     bm_task_ok "Checking default editor"
-    bm_print_info "Nvim Path ${NVIM_PATH}"
-    bm_print_info "vi output ${OUTPUT}"
   else
     bm_task_ok "Checking default editor"
   fi
