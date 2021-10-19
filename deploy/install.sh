@@ -126,14 +126,14 @@ for CONF in ${DEFAULT_CONFIG_PREFIX} ${BM_OS} ${FINAL_CONFIG_PREFIX} "${@}"; do
     continue
   fi
 
-  bm_task_start "Running $CONF"
+  bm_task_start "Running config $CONF"
   if ! bm_command_execute "${DOT_BOT_DIR}/${DOT_BOT_BIN} -d \"${BASE_DIR}\" -c \"${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}\""; then
-    bm_task_failed "Running $CONF"
+    bm_task_failed "Running config $CONF"
     bm_command_output_error
     bm_script_error
   fi
 
-  bm_task_ok "Running $CONF"
+  bm_task_ok "Running config $CONF"
   bm_command_output_success
 done
 

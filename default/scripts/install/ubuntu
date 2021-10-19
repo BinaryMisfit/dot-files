@@ -479,44 +479,33 @@ fi
 
 unset INSTALL_LIST
 
-bm_script_error
-
-if [[ "${SUDO}" == "1" ]] && [[ "${SUDO_USER}" != "" ]]; then
+if [[ ${BM_USE_SUDO} -eq 1 ]]; then
+  bm_task_start "Checking motd"
   FILE_CONTENT="\
   #!/bin/bash
-  \nneofetch --config /etc/neofetch/config.conf\n"
+  neofetch --config /etc/neofetch/config.conf"
   if [[ -f /etc/update-motd.d/01-neofetch ]]; then
     MD5_CURRENT=$(md5sum /etc/update-motd.d/01-neofetch | awk '{ print $1 }')
     MD5_NEW=$(printf "%s" "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
     if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
-      if [[ "${VERBOSE}" == "1" ]]; then
-        printf "\033[0;34mUpdating sudo environment\033[0m\n"
-        printf "\033[0;31mMD5 Mismatch ${MD5_CURRENT}/${MD5_NEW}\033[0m\n"
-      fi
-
+      bm_task_update "Checking motd"
       printf "%s" "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch >/dev/null
     fi
   else
-    if [[ "${VERBOSE}" == "1" ]]; then
-      printf "\033[0;34mUpdating sudo environment\033[0m\n"
-    fi
-
+    bm_task_update "Checking motd"
     printf "%s" "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch >/dev/null
   fi
 
-  if [[ -d "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" ]]; then
-    cp -R "/home/${SUDO_USER}/.dotfiles/default/etc/neofetch" /etc
+  if [[ -d "${HOME}/.dotfiles/default/etc/neofetch" ]]; then
+    sudo cp -R "${HOME}/.dotfiles/default/etc/neofetch" /etc
   fi
 
-  chmod -R 444 /etc/update-motd.d/*
-  chmod -R 555 /etc/update-motd.d/01-neofetch
-  chmod -R 555 /etc/update-motd.d/9?-*
-fi
-
-if [[ "${VERBOSE}" != "-1" ]]; then
-  if [[ "${SUDO}" == "1" ]]; then
-    printf "\033[0;32mAll commands have been executed\033[0m\n"
-  fi
-
-  printf "\033[0;32m\n==> All tasks executed successfully\033[0m\n"
+  sudo chmod -R 444 /etc/update-motd.d/*
+  sudo chmod -R 555 /etc/update-motd.d/01-neofetch
+  sudo chmod -R 555 /etc/update-motd.d/9?-*
+  bm_task_ok "Checking motd"
+  bm_print_info "Version C: ${MD5_CURRENT}"
+  bm_print_info "Version N: ${MD5_NEW}"
+  unset MD5_CURRENT
+  unset MD5_NEW
 fi
