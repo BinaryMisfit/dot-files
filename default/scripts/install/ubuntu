@@ -485,7 +485,7 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
     FILE_CONTENT="\
     #!/bin/sh
 
-    if [[ -f /etc/neofetch/config.conf ]]; then
+    if [ -f /etc/neofetch/config.conf ]; then
       exec $(/usr/bin/which neofetch) --config /etc/neofetch/config.conf
     fi"
     if [[ -f /etc/update-motd.d/01-neofetch ]]; then
