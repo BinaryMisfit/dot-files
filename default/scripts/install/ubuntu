@@ -482,12 +482,15 @@ unset INSTALL_LIST
 if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   if [[ $(bm_command_check neofetch) -eq 0 ]]; then
     bm_task_start "Checking motd"
+    NEOFETCH_PATH=$(/usr/bin/which neofetch)
     FILE_CONTENT="\
-    #!/bin/sh
+  #!/bin/sh
 
-    if [ -f /etc/neofetch/config.conf ]; then
-      exec $(/usr/bin/which neofetch) --config /etc/neofetch/config.conf
-    fi"
+  if [ -f /etc/neofetch/config.conf ]; then
+    exec ${NEOFETCH_PATH} --config /etc/neofetch/config.conf
+  fi
+  "
+    unset NEOFETCH_PATH
     if [[ -f /etc/update-motd.d/01-neofetch ]]; then
       MD5_CURRENT=$(md5sum /etc/update-motd.d/01-neofetch | awk '{ print $1 }')
       MD5_NEW=$(printf "%s" "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
