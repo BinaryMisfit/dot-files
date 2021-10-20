@@ -480,36 +480,43 @@ fi
 unset INSTALL_LIST
 
 if [[ ${BM_USE_SUDO} -eq 1 ]]; then
-  bm_task_start "Checking motd"
-  FILE_CONTENT="\
-  #!/usr/bin/env sh
-  exec $(/usr/bin/which neofetch) --config /etc/neofetch/config.conf"
-  if [[ -f /etc/update-motd.d/01-neofetch ]]; then
-    MD5_CURRENT=$(md5sum /etc/update-motd.d/01-neofetch | awk '{ print $1 }')
-    MD5_NEW=$(printf "%s" "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
-    if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+  if [[ $(bm_command_check neofetch) -eq 0 ]]; then
+    bm_task_start "Checking motd"
+    FILE_CONTENT="\
+    #!/bin/sh
+
+    if [[ -f /etc/neofetch/config.conf ]]; then
+      exec $(/usr/bin/which neofetch) --config /etc/neofetch/config.conf
+    fi"
+    if [[ -f /etc/update-motd.d/01-neofetch ]]; then
+      MD5_CURRENT=$(md5sum /etc/update-motd.d/01-neofetch | awk '{ print $1 }')
+      MD5_NEW=$(printf "%s" "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
+      if [[ "${MD5_CURRENT}" != "${MD5_NEW}" ]]; then
+        bm_task_update "Checking motd"
+        printf "%s" "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch >/dev/null
+      fi
+    else
       bm_task_update "Checking motd"
       printf "%s" "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch >/dev/null
     fi
+
+    if [[ -d "${HOME}/.dotfiles/default/etc/neofetch" ]]; then
+      sudo cp -R "${HOME}/.dotfiles/default/etc/neofetch" /etc
+    fi
+
+    if [[ -f /etc/update-motd.d/50-landscape-sysinfo ]]; then
+      sudo rm /etc/update-motd.d/50-landscape-sysinfo
+    fi
+
+    sudo chmod -R -x /etc/update-motd.d/*
+    sudo chmod -R +x /etc/update-motd.d/01-neofetch
+    sudo chmod -R +x /etc/update-motd.d/9?-*
+    bm_task_ok "Checking motd"
+    bm_print_info "Version C: ${MD5_CURRENT}"
+    bm_print_info "Version N: ${MD5_NEW}"
+    unset MD5_CURRENT
+    unset MD5_NEW
   else
-    bm_task_update "Checking motd"
-    printf "%s" "${FILE_CONTENT}" | sudo tee /etc/update-motd.d/01-neofetch >/dev/null
+    bm_task_skip "Checking motd"
   fi
-
-  if [[ -d "${HOME}/.dotfiles/default/etc/neofetch" ]]; then
-    sudo cp -R "${HOME}/.dotfiles/default/etc/neofetch" /etc
-  fi
-
-  if [[ -f /etc/update-motd.d/50-landscape-sysinfo ]]; then
-    sudo rm /etc/update-motd.d/50-landscape-sysinfo
-  fi
-
-  sudo chmod -R -x /etc/update-motd.d/*
-  sudo chmod -R +x /etc/update-motd.d/01-neofetch
-  sudo chmod -R +x /etc/update-motd.d/9?-*
-  bm_task_ok "Checking motd"
-  bm_print_info "Version C: ${MD5_CURRENT}"
-  bm_print_info "Version N: ${MD5_NEW}"
-  unset MD5_CURRENT
-  unset MD5_NEW
 fi
