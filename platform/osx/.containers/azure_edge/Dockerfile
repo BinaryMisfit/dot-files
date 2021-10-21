@@ -5,4 +5,4 @@ RUN which sh
 RUN which bash
 COPY *.sh /scripts
 RUN chmod -R o+x /scripts/*.sh
-ENTRYPOINT /bin/bash /scripts/entrypoint.sh
+ENTRYPOINT /bin/bash ./scripts/entrypoint.sh
