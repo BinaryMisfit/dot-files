@@ -8,7 +8,9 @@ volumes:
 services:
   azuresql:
     platform: linux/arm64/v8
-    image: mcr.microsoft.com/azure-sql-edge:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     cap_add:
       - SYS_PTRACE
     container_name: LocalSql
