@@ -5,4 +5,5 @@ RUN which sh
 RUN which bash
 COPY *.sh /scripts
 RUN chmod -R o+x /scripts/*.sh
+USER mssql
 ENTRYPOINT /bin/bash ./scripts/entrypoint.sh
