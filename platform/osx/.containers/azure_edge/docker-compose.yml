@@ -8,6 +8,11 @@ services:
     init: true
     network_mode: "host"
     pid: "host"
+    environment:
+      - "ACCEPT_EULA=1"
+      - "MSQL_SA_PASSWORD=S@l3xpr3ss"
+    expose:
+      - "1431:1431/tcp"
     ports:
       - "1433:1433/tcp"
     restart: unless-stopped
