@@ -1,11 +1,3 @@
 ﻿#!/usr/bin/env bash
-
-if [[ -d /sqlmaster/ ]]; then
-  chown -R mssql:mssql /sqlmaster
-fi
-
-if [[ -d /sqldata/ ]]; then
-  chown -R mssql:mssql /sqldata
-fi
-
+printf "Running SQL Server"
 /opt/mssql/bin/sqlservr
