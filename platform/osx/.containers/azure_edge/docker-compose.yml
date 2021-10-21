@@ -1,12 +1,9 @@
 ﻿version: "3.9"
 services:
   azuresql:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      cache_from:
-        - mcr.microsoft.com/azure-sql-edge:latest
-      network: host
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    cap_add:
+      - SYS_PTRACE
     container_name: LocalSql
     init: true
     network_mode: "host"
@@ -17,3 +14,6 @@ services:
     volumes:
       - "sqlmaster:/var/opt/mssql/data"
       - "sqldata:/sqldata"
+volumes:
+  sqlmaster:
+  sqldata:
