@@ -1,9 +1,7 @@
 ﻿version: "3.9"
 volumes:
   sqlmaster:
-    external: true
   sqldata:
-    external: true
 
 services:
   azuresql:
@@ -21,6 +19,6 @@ services:
     ports:
       - "1433:1433/tcp"
     restart: unless-stopped
-    volumes:
-      - "sqlmaster:/var/opt/mssql/data/"
-      - "sqldata:/sqldata/"
+#    volumes:
+#      - "sqlmaster:/var/opt/mssql/data/"
+#      - "sqldata:/sqldata/"
