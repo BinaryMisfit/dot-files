@@ -7,7 +7,7 @@ volumes:
 
 services:
   azuresql:
-    platform: linux/arm64
+    platform: linux/arm64/v8
     image: mcr.microsoft.com/azure-sql-edge:latest
     cap_add:
       - SYS_PTRACE
