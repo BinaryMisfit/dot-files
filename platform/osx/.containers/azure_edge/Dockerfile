@@ -1,9 +1,10 @@
 ﻿FROM mcr.microsoft.com/azure-sql-edge:latest
 USER root
 RUN mkdir -p /scripts
-RUN which sh
-RUN which bash
+RUN mkdir -p /sqldata
 COPY *.sh /scripts
-RUN chmod -R o+x /scripts/*.sh
-USER mssql
+RUN chmod -R +x /scripts/*.sh
+RUN chown -R mssql:mssql /sqldata
+RUN chown -R mssql:mssql /var/opt/mssql/data
+#USER mssql
 ENTRYPOINT /bin/bash ./scripts/entrypoint.sh
