@@ -1,4 +1,4 @@
-﻿#!/bin/sh
+﻿#!/usr/bin/env bash
 
 if [ -d /sqlmaster/ ]; then
   chown -R mssql:mssql /sqlmaster
