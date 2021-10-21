@@ -1,5 +1,5 @@
 ﻿FROM mcr.microsoft.com/azure-sql-edge:latest
-RUN sudo mkdir -p /scripts
-RUN sudo chmod -R +ox /scripts/*.sh
+RUN mkdir -p /home/scripts
+RUN chmod -R +ox /home/scripts/*.sh
 COPY *.sh /scripts
-ENTRYPOINT sh -c "/scripts/entrypoint.sh"
+ENTRYPOINT sh -c "/home/scripts/entrypoint.sh"
