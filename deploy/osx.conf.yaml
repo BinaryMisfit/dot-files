@@ -4,6 +4,10 @@
       path: platform/osx/zsh/.antigenrc
       create: true
       relink: true
+    ~/.containers:
+      path: platform/osx/.containers
+      create: true
+      relink: true
     ~/.gitconfig:
       path: platform/osx/git/.gitconfig
       create: true
