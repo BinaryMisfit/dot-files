@@ -15,7 +15,7 @@ services:
       - SYS_PTRACE
     container_name: LocalSql
     init: true
-    network_mode: "host"
+#    network_mode: "host"
     pid: "host"
     environment:
       - "ACCEPT_EULA=1"
