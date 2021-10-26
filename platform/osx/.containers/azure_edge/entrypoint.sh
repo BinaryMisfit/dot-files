@@ -1,4 +1,4 @@
-﻿printf "Running SQL Server"
+printf "Running SQL Server"
 if [[ -d /sqldata/ ]]; then
   chown -R mssql: /sqldata/
 fi
