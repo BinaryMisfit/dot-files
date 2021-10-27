@@ -9,20 +9,28 @@ services:
   azuresql:
     platform: linux/arm64/v8
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: azure_edge
+      dockerfile: azure_edge/Dockerfile
     cap_add:
       - SYS_PTRACE
     container_name: LocalSql
     init: true
-#    network_mode: "host"
     pid: "host"
     environment:
       - "ACCEPT_EULA=1"
-      - "MSSQL_SA_PASSWORD=S@l3xpr3ss"
     ports:
       - "1433:1433/tcp"
     restart: unless-stopped
     volumes:
       - sqlmaster:/var/opt/mssql/data/
       - sqldata:/sqldata/
+  wcfserver:
+    platform: linux/arm64/v8
+    build:
+      context: nanoserver
+      dockerfile: nanoserver/Dockerfile
+    container_name: MobileWCF
+    init: true
+    pid: host
+    ports:
+      - "14000:14000/tcp"
