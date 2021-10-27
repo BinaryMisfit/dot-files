@@ -4,6 +4,7 @@ RUN apt-get update
 RUN apt-get install mssql-cli --yes
 RUN mkdir -p /scripts
 RUN mkdir -p /sqldata
+RUN mkdir -p /var/opt/mssql/data
 COPY *.sh /scripts
 RUN chmod -R +x /scripts/*.sh
 RUN chown -R mssql: /sqldata
