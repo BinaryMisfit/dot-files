@@ -1,1 +1,1 @@
-﻿FROM mcr.microsoft.com/windows/servercore
+﻿FROM mcr.microsoft.com/windows/nanoserver:20H2
