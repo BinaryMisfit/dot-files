@@ -1,5 +1,7 @@
 ﻿FROM mcr.microsoft.com/azure-sql-edge:latest
 USER root
+RUN apt update
+RUN apt install python3 --yes
 RUN python -m pip install mssql-cli
 RUN mkdir -p /scripts
 RUN mkdir -p /sqldata
