@@ -10,7 +10,6 @@ services:
     platform: linux/arm64/v8
     build:
       context: azure_edge
-      dockerfile: azure_edge/Dockerfile
     cap_add:
       - SYS_PTRACE
     container_name: LocalSql
@@ -28,7 +27,6 @@ services:
     platform: linux/arm64/v8
     build:
       context: nanoserver
-      dockerfile: nanoserver/Dockerfile
     container_name: MobileWCF
     init: true
     pid: host
