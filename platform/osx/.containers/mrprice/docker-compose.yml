@@ -22,11 +22,3 @@ services:
     volumes:
       - sqlmaster:/var/opt/mssql/data/
       - sqldata:/sqldata/
-  wcfserver:
-    build:
-      context: nanoserver
-    container_name: MobileWCF
-    init: true
-    pid: host
-    ports:
-      - "14000:14000/tcp"
