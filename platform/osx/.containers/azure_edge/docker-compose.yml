@@ -19,7 +19,7 @@ services:
     pid: "host"
     environment:
       - "ACCEPT_EULA=1"
-      - "MSQL_SA_PASSWORD=S@l3xpr3ss"
+      - "MSSQL_SA_PASSWORD=S@l3xpr3ss"
     ports:
       - "1433:1433/tcp"
     restart: unless-stopped
