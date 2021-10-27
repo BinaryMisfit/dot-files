@@ -7,7 +7,6 @@ volumes:
 
 services:
   azuresql:
-    platform: linux/arm64/v8
     build:
       context: azure_edge
     cap_add:
@@ -24,7 +23,6 @@ services:
       - sqlmaster:/var/opt/mssql/data/
       - sqldata:/sqldata/
   wcfserver:
-    platform: linux/arm64/v8
     build:
       context: nanoserver
     container_name: MobileWCF
