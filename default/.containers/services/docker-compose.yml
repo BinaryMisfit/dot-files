@@ -9,11 +9,8 @@ services:
     restart: unless-stopped
     networks:
       - services_connect
-      - services_exposed
+      - host
 
 networks:
   services_connect:
     name: services
-  services_exposed:
-    name: expose
-    driver: host
