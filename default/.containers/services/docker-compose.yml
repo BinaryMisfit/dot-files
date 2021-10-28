@@ -13,4 +13,4 @@ services:
 networks:
   services_connect:
     name: services
-    driver: bridge
+    driver: overlay
