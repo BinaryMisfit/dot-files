@@ -1,9 +1,0 @@
-﻿version: "3.9"
-services:
-  sonarr:
-    build:
-      context: sonarr
-    container_name: sonarr
-    init: true
-    pid: "host"
-    restart: unless-stopped
