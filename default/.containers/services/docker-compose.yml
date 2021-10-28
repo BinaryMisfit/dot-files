@@ -9,8 +9,8 @@ services:
     restart: unless-stopped
     networks:
       - services_connect
-      - host
 
 networks:
   services_connect:
     name: services
+    driver: bridge
