@@ -7,3 +7,13 @@ services:
     init: true
     pid: "host"
     restart: unless-stopped
+    networks:
+      - services_connect
+      - services_exposed
+
+networks:
+  services_connect:
+    name: services
+  services_exposed:
+    name: expose
+    driver: host
