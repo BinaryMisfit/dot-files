@@ -1,0 +1,1 @@
+﻿FROM hotio/sonarr:release
