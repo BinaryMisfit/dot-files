@@ -7,10 +7,3 @@ services:
     init: true
     pid: "host"
     restart: unless-stopped
-    networks:
-      - services_connect
-
-networks:
-  services_connect:
-    name: services
-    driver: overlay
