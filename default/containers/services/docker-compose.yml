@@ -34,10 +34,8 @@ services:
         hard: -1
     networks:
       - internal
-    expose:
-      - "9200"
-    volumes:
-      - elastic-node-1:/usr/share/elasticsearch/data
+    #    volumes:
+    #      - elastic-node-1:/usr/share/elasticsearch/data
     depends_on:
       - watchtower
     restart: unless-stopped
@@ -59,8 +57,8 @@ services:
         hard: -1
     networks:
       - internal
-    volumes:
-      - elastic-node-2:/usr/share/elasticsearch/data
+    #    volumes:
+    #      - elastic-node-2:/usr/share/elasticsearch/data
     depends_on:
       - watchtower
     restart: unless-stopped
@@ -92,9 +90,6 @@ services:
       - monitoring.elasticsearch.hosts=[ "http://elastic-node-1:9200", "http://elastic-node-2:9200" ]
     networks:
       - internal
-    expose:
-      - "9600"
-      - "8089"
     links:
       - elastic-node-1:elastic-node-1
       - elastic-node-2:elastic-node-2
@@ -105,17 +100,4 @@ services:
 networks:
   internal:
     name: internal
-    driver: bridge
-volumes:
-  elastic-node-1:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: bind
-      device: /mnt/data/containers/elastic-node-1
-  elastic-node-2:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: bind
-      device: /mnt/data/containers/elastic-node-2
+    driver: overlay
