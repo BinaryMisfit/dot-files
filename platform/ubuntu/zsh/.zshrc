@@ -67,7 +67,6 @@ fi
 test -e /usr/bin/nvim && export EDITOR=$(which nvim)
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
   printf "\r\033[0;92m[  OK  ]\033[0m Loading additional variables\033[0m"
-  printf "\n\033[0;94m[ INFO ]\033[3;94m JAVA_HOME\t${JAVA_HOME}\033[0m"
   printf "\n\033[0;94m[ INFO ]\033[3;94m EDITOR\t\t${EDITOR}\033[0m"
   printf "\n\033[0;92m[  ..  ]\033[0m Loading compinit\033[0m"
 fi
