@@ -24,7 +24,7 @@ services:
       - "9200:9200"
       - "9300:9300"
   kabana:
-    image: kabana:7.14.2
+    image: kibana:7.14.2
     container_name: kibana
     hostname: kibana
     environment:
@@ -32,6 +32,6 @@ services:
     ports:
       - "5601:5601"
     links:
-      - elasticsearch:elastic
+      - elastic:elasticsearch
     depends_on:
       - elastic
