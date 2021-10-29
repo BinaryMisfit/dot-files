@@ -83,21 +83,24 @@ services:
     depends_on:
       - elastic-node-1
       - elastic-node-2
-#  logstash:
-#    image: logstash:7.14.2
-#    container_name: logstash
-#    hostname: logstash
-#    environment:
-#      - TZ=Africa/Johannesburg
-#    networks:
-#      - internal
-#    expose:
-#      - "9600"
-#      - "8089"
-#    links:
-#      - elastic:elasticsearch
-#    depends_on:
-#      - elastic
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.15.1
+    container_name: logstash
+    hostname: logstash
+    environment:
+      - TZ=Africa/Johannesburg
+      - monitoring.elasticsearch.hosts=[ "http://elastic-node-1:9200", "http://elastic-node-2:9200" ]
+    networks:
+      - internal
+    expose:
+      - "9600"
+      - "8089"
+    links:
+      - elastic-node-1:elastic-node-1
+      - elastic-node-2:elastic-node-2
+    depends_on:
+      - elastic-node-1
+      - elastic-node-2
 networks:
   internal:
     name: internal
