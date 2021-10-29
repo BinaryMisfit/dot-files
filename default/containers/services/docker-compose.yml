@@ -71,9 +71,8 @@ services:
     hostname: kibana
     environment:
       - TZ=Africa/Johannesburg
-      - SERVER_NAME=kibana
-      - ELASTICSEARCH_HOSTS=["http://elastic-node-1:9200","http://elastic-node-2:9200"]
-      - MONITORING_ENABLED=true
+      - elasticsearch.hosts=[ "http://elastic-node-1:9200", "http://elastic-node-2:9200" ]
+      - server.name=kibana
     networks:
       - internal
     ports:
