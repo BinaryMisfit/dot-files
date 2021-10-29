@@ -23,6 +23,8 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+    depends_on:
+      - watchtower
   kabana:
     image: kibana:7.14.2
     container_name: kibana
