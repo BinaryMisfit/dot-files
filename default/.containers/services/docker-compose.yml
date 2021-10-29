@@ -1,7 +1,15 @@
 ﻿version: "3.9"
 services:
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    hostname: watchtower
+    environment:
+      - "TZ=Africa/Johannesburg"
+      - "WATCHTOWER_CLEANUP=true"
+      - "WATCHTOWER_REMOVE_VOLUMES=true"
+      - "WATCHTOWER_HTTP_API_METRICS=true"
+      - "WATCHTOWER_ROLLING_RESTART=true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   elastic:
@@ -9,6 +17,7 @@ services:
     container_name: elastic
     hostname: elastic
     environment:
+      - "TZ=Africa/Johannesburg"
       - "discovery-type=single-node"
     ports:
       - "9200:9200"
