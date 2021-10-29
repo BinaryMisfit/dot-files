@@ -2,7 +2,6 @@
 services:
   watchtower:
     image: docker.io/containrrr/watchtower:latest
-    container_name: watchtower
     hostname: watchtower
     environment:
       - TZ=Africa/Johannesburg
@@ -18,7 +17,6 @@ services:
     restart: unless-stopped
   elastic-node-1:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
-    container_name: elastic-node-1
     hostname: elastic-node-1
     environment:
       - TZ=Africa/Johannesburg
@@ -41,7 +39,6 @@ services:
     restart: unless-stopped
   elastic-node-2:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
-    container_name: elastic-node-2
     hostname: elastic-node-2
     environment:
       - TZ=Africa/Johannesburg
@@ -64,7 +61,6 @@ services:
     restart: unless-stopped
   kabana:
     image: docker.elastic.co/kibana/kibana:7.15.1
-    container_name: kibana
     hostname: kibana
     environment:
       - TZ=Africa/Johannesburg
@@ -83,7 +79,6 @@ services:
     restart: unless-stopped
   logstash:
     image: docker.elastic.co/logstash/logstash:7.15.1
-    container_name: logstash
     hostname: logstash
     environment:
       - TZ=Africa/Johannesburg
