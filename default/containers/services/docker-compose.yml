@@ -1,8 +1,15 @@
 ﻿version: "3.9"
 services:
   watchtower:
-    image: docker.io/containrrr/watchtower:latest
-    hostname: watchtower
+    deploy:
+      replicas: 2
+      placement:
+        max_replicas_per_node: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
     environment:
       - TZ=Africa/Johannesburg
       - WATCHTOWER_CLEANUP=true
@@ -10,67 +17,69 @@ services:
       - WATCHTOWER_HTTP_API_METRICS=true
       - WATCHTOWER_ROLLING_RESTART=true
       - WATCHTOWER_HTTP_API_TOKEN=e152e78c-b8b7-43d0-8c20-7bee1a5d81d7
+    hostname: watchtower
+    image: docker.io/containrrr/watchtower:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-  elastic-node-1:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
-    hostname: elastic-node-1
-    environment:
-      - TZ=Africa/Johannesburg
-      - node.name=elastic-node-1
-      - cluster.name=fairview-home
-      - discovery.seed_hosts=elastic-node-2
-      - cluster.initial_master_nodes=elastic-node-1,elastic-node-2
-      - bootstrap.memory_lock=true
-      - ES_JAVA_OPTS=-Xms256m -Xmx256m
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    #    volumes:
-    #      - elastic-node-1:/usr/share/elasticsearch/data
-    depends_on:
-      - watchtower
-  elastic-node-2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
-    hostname: elastic-node-2
-    environment:
-      - TZ=Africa/Johannesburg
-      - node.name=elastic-node-2
-      - cluster.name=fairview-home
-      - discovery.seed_hosts=elastic-node-1
-      - cluster.initial_master_nodes=elastic-node-1,elastic-node-2
-      - bootstrap.memory_lock=true
-      - ES_JAVA_OPTS=-Xms256m -Xmx256m
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    #    volumes:
-    #      - elastic-node-2:/usr/share/elasticsearch/data
-    depends_on:
-      - watchtower
-  kabana:
-    image: docker.elastic.co/kibana/kibana:7.15.1
-    hostname: kibana
-    environment:
-      - TZ=Africa/Johannesburg
-      - elasticsearch.hosts=[ "http://elastic-node-1:9200", "http://elastic-node-2:9200" ]
-      - server.name=kibana
-    ports:
-      - "5601:5601"
-    links:
-      - elastic-node-1:elastic-node-1
-      - elastic-node-2:elastic-node-2
-    depends_on:
-      - elastic-node-1
-      - elastic-node-2
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.15.1
-    hostname: logstash
-    environment:
-      - TZ=Africa/Johannesburg
-      - monitoring.elasticsearch.hosts=[ "http://elastic-node-1:9200", "http://elastic-node-2:9200" ]
-    depends_on:
-      - elastic-node-1
-      - elastic-node-2
+#  elastic-node-1:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+#    hostname: elastic-node-1
+#    environment:
+#      - TZ=Africa/Johannesburg
+#      - node.name=elastic-node-1
+#      - cluster.name=fairview-home
+#      - discovery.seed_hosts=elastic-node-2
+#      - cluster.initial_master_nodes=elastic-node-1,elastic-node-2
+#      - bootstrap.memory_lock=true
+#      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    #    volumes:
+#    #      - elastic-node-1:/usr/share/elasticsearch/data
+#    depends_on:
+#      - watchtower
+#  elastic-node-2:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+#    hostname: elastic-node-2
+#    environment:
+#      - TZ=Africa/Johannesburg
+#      - node.name=elastic-node-2
+#      - cluster.name=fairview-home
+#      - discovery.seed_hosts=elastic-node-1
+#      - cluster.initial_master_nodes=elastic-node-1,elastic-node-2
+#      - bootstrap.memory_lock=true
+#      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    #    volumes:
+#    #      - elastic-node-2:/usr/share/elasticsearch/data
+#    depends_on:
+#      - watchtower
+#  kabana:
+#    image: docker.elastic.co/kibana/kibana:7.15.1
+#    hostname: kibana
+#    environment:
+#      - TZ=Africa/Johannesburg
+#      - elasticsearch.hosts=[ "http://elastic-node-1:9200", "http://elastic-node-2:9200" ]
+#      - server.name=kibana
+#    ports:
+#      - "5601:5601"
+#    links:
+#      - elastic-node-1:elastic-node-1
+#      - elastic-node-2:elastic-node-2
+#    depends_on:
+#      - elastic-node-1
+#      - elastic-node-2
+#  logstash:
+#    image: docker.elastic.co/logstash/logstash:7.15.1
+#    hostname: logstash
+#    environment:
+#      - TZ=Africa/Johannesburg
+#      - monitoring.elasticsearch.hosts=[ "http://elastic-node-1:9200", "http://elastic-node-2:9200" ]
+#    depends_on:
+#      - elastic-node-1
+#      - elastic-node-2
