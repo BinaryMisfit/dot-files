@@ -1,0 +1,67 @@
+﻿version: "3.9"
+services:
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    hostname: watchtower
+    environment:
+      - TZ=Africa/Johannesburg
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_REMOVE_VOLUMES=true
+      - WATCHTOWER_HTTP_API_METRICS=true
+      - WATCHTOWER_ROLLING_RESTART=true
+      - WATCHTOWER_HTTP_API_TOKEN=e152e78c-b8b7-43d0-8c20-7bee1a5d81d7
+    networks:
+      - internal
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  elastic:
+    image: elasticsearch:7.14.2
+    container_name: elastic
+    hostname: elastic
+    environment:
+      - TZ=Africa/Johannesburg
+      - node.name=elastic
+      - cluster.name=fairview-home
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+    networks:
+      - internal
+    expose:
+      - "9200"
+      - "9300"
+    depends_on:
+      - watchtower
+  kabana:
+    image: kibana:7.14.2
+    container_name: kibana
+    hostname: kibana
+    environment:
+      - "TZ=Africa/Johannesburg"
+    networks:
+      - internal
+    ports:
+      - "5601:5601"
+    links:
+      - elastic:elasticsearch
+    depends_on:
+      - elastic
+  logstash:
+    image: logstash:7.14.2
+    container_name: logstash
+    hostname: logstash
+    environment:
+      - TZ=Africa/Johannesburg
+    networks:
+      - internal
+    expose:
+      - "9600"
+      - "8089"
+    links:
+      - elastic:elasticsearch
+    depends_on:
+      - elastic
+networks:
+  internal:
+    name: internal
+    driver: bridge

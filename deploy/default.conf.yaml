@@ -14,7 +14,7 @@
       glob: true
       relink: true
     ~/.containers:
-      path: default/.containers
+      path: default/containers
       create: true
       relink: true
     ~/.iterm2_shell_integration.zsh:
