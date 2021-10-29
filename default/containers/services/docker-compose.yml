@@ -65,20 +65,25 @@ services:
       - elastic-node-2:/usr/share/elasticsearch/data
     depends_on:
       - watchtower
-#  kabana:
-#    image: kibana:7.14.2
-#    container_name: kibana
-#    hostname: kibana
-#    environment:
-#      - "TZ=Africa/Johannesburg"
-#    networks:
-#      - internal
-#    ports:
-#      - "5601:5601"
-#    links:
-#      - elastic:elasticsearch
-#    depends_on:
-#      - elastic
+  kabana:
+    image: docker.elastic.co/kibana/kibana:7.15.1
+    container_name: kibana
+    hostname: kibana
+    environment:
+      - TZ=Africa/Johannesburg
+      - SERVER_NAME=kibana
+      - ELASTICSEARCH_HOSTS=["http://elastic-node-1:9200","http://elastic-node-2:9200"]
+      - MONITORING_ENABLED=true
+    networks:
+      - internal
+    ports:
+      - "5601:5601"
+    links:
+      - elastic-node-1:elastic-node-1
+      - elastic-node-2:elastic-node-2
+    depends_on:
+      - elastic-node-1
+      - elastic-node-2
 #  logstash:
 #    image: logstash:7.14.2
 #    container_name: logstash
