@@ -19,4 +19,5 @@
       relink: true
     ~/.iterm2_shell_integration.zsh:
       path: default/scripts/shell/.iterm2_shell_integration.zsh
+      create: true
       relink: true

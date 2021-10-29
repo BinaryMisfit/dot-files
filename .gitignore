@@ -29,3 +29,6 @@ default/nvim/.netrwhist
 # Local Configs
 */**/*.local
 **/*.log
+
+# Local data
+.data/*

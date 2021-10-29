@@ -1,4 +1,6 @@
 ---
+- create:
+    - ~/.data
 - shell:
     -
       command: exec zsh
