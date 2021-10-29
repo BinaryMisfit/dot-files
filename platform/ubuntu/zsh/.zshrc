@@ -64,7 +64,6 @@ if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
 fi
 
 # Additional variables
-test -e $(which java) && export JAVA_HOME="$($(which java) -XshowSettings:properties -version 2>&1 > /dev/null | grep 'java.home'  | awk '{ print $3 }')"
 test -e /usr/bin/nvim && export EDITOR=$(which nvim)
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
   printf "\r\033[0;92m[  OK  ]\033[0m Loading additional variables\033[0m"
