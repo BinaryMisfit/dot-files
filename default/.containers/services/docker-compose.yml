@@ -10,6 +10,7 @@ services:
       - "WATCHTOWER_REMOVE_VOLUMES=true"
       - "WATCHTOWER_HTTP_API_METRICS=true"
       - "WATCHTOWER_ROLLING_RESTART=true"
+      - "WATCHTOWER_HTTP_API_TOKEN=e152e78c-b8b7-43d0-8c20-7bee1a5d81d7"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   elastic:
@@ -22,3 +23,15 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+  kabana:
+    image: kabana:7.14.2
+    container_name: kibana
+    hostname: kibana
+    environment:
+      - "TZ=Africa/Johannesburg"
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch:elastic
+    depends_on:
+      - elastic
