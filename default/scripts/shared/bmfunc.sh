@@ -218,7 +218,7 @@ function bm_script_output_raw() {
 # Exit script with error
 function bm_script_error() {
   if [[ "$1" != "" ]]; then
-    printf "\r\033[0;91m[FAILED]\033[0;90m %s\033[0m" "$1"
+    printf "\r\033[0;91m[FAILED]\033[0m %s\033[0m" "$1"
   fi
 
   bm_de_init
@@ -227,20 +227,20 @@ function bm_script_error() {
 
 # Update task status to error and exit
 function bm_task_error() {
-  printf "\r\033[0;91m[FAILED]\033[0;90m %s\033[0m" "$1"
+  printf "\r\033[0;91m[FAILED]\033[0m %s\033[0m" "$1"
   bm_de_init
   exit 1
 }
 
 # Update task status to failed
 function bm_task_failed() {
-  printf "\r\033[0;91m[FAILED]\033[0;90m %s\033[0m" "$1"
+  printf "\r\033[0;91m[FAILED]\033[0m %s\033[0m" "$1"
 }
 
 # Update status of last task to OK
 function bm_task_ok() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;92m[  OK  ]\033[0;90m %s\033[0m" "$1"
+    printf "\r\033[0;92m[  OK  ]\033[0m %s\033[0m" "$1"
   fi
 }
 
@@ -254,7 +254,7 @@ function bm_task_reboot() {
 # Update task status to skipped
 function bm_task_skip() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;96m[ SKIP ]\033[0;90m %s\033[0m" "$1"
+    printf "\r\033[0;96m[ SKIP ]\033[0m %s\033[0m" "$1"
   fi
 }
 

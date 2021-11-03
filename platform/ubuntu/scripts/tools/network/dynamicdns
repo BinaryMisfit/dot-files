@@ -11,3 +11,18 @@ else
   printf "\r\033[0;91m[FAILED]\033[0;90m Shared functions not found\033[0m\n"
   exit 255
 fi
+
+if [[ ! -f "$HOME}/.config/dynamic_dns/domains.conf" ]]; then
+  bm_script_error "domain.conf not found"
+fi
+
+bm_print_title "Dynamic DNS Update V1.0.0"
+bm_user_no_sudo
+bm_task_start "Configuring environment"
+CLOUDNS_SUB_AUTH_ID=4719
+CLOUDNS_AUTH_PASSWORD=gRbcyKv7a7QWe7YLfL8n
+bm_task_ok "Configuring environment"
+unset CLOUDNS_SUB_AUTH_ID
+unset CLOUDNS_AUTH_PASSWORD
+bm_task_start "Cleaning environment"
+bm_task_ok "Cleaning environment"
