@@ -45,7 +45,6 @@ if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
   printf "\n\033[0;92m[  ..  ]\033[0m Loading antigen\033[0m"
 fi
 
-test -e /usr/local/share/antigen/antigen.zsh && source /opt/homebrew/share/antigen/antigen.zsh
 test -e /usr/local/share/antigen/antigen.zsh && source /usr/local/share/antigen/antigen.zsh
 test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 
