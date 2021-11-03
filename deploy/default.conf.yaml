@@ -21,3 +21,7 @@
       path: default/scripts/shell/.iterm2_shell_integration.zsh
       create: true
       relink: true
+    ~/.scripts/shared:
+      path: default/scripts/shared
+      create: true
+      relink: true

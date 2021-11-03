@@ -18,7 +18,7 @@ if [[ "$EUID" -ne "0" ]]; then
 fi
 
 if [[ ! -d /opt/acme ]] || [[ ! -x /opt/acme/acme.sh ]]; then
-  printf "\033[0;31macme.sh not found, aborting\033[0m\n"
+  printf "\033[0;31mScript acme.sh not found, aborting\033[0m\n"
   exit 1
 fi
 
@@ -47,6 +47,8 @@ while getopts "dflstv" OPT; do
       ARGS_RELOAD="-v"
       VERBOSE=1
       ;;
+    *)
+      ;;
   esac
 done
 
@@ -62,7 +64,7 @@ if [[ "${FILE_SOURCE}" == "1" ]]; then
   while IFS="=": read -r DOMAIN; do
     if [[ "${DOMAIN}" != "" ]]; then
       if [[ "${VERBOSE}" == "1" ]]; then
-        printf "\033[0;34mAdding ${DOMAIN}\033[0m\n"
+        printf "\033[0;34mAdding %s\033[0m\n", "${DOMAIN}"
       fi
       ARGS_DOMAINS+=("${DOMAIN}")
     fi
@@ -73,7 +75,7 @@ fi
 
 for DOMAIN in "${ARGS_DOMAINS[@]}"; do
   if [[ "${VERBOSE}" != "-1" ]]; then
-    printf "\033[0;34mRequesting ${DOMAIN}\033[0m\n"
+    printf "\033[0;34mRequesting %s\033[0m\n", "${DOMAIN}"
   fi
 
   /opt/acme/acme.sh \
@@ -81,11 +83,11 @@ for DOMAIN in "${ARGS_DOMAINS[@]}"; do
     --issue \
     --dns dns_cloudns \
     --ecc \
-    ${TEST}\
-    ${DEBUG}\
-    ${LOG}\
+    "${TEST}"\
+    "${DEBUG}"\
+    "${LOG}"\
     --reloadcmd "${HOME}/.scripts/tools/ssl/reload ${ARGS_RELOAD}" \
-    --domain ${DOMAIN}
+    --domain "${DOMAIN}"
 done
 
 if [[ "${VERBOSE}" != "-1" ]]; then

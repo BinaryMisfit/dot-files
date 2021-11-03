@@ -4,7 +4,6 @@ FILE_CONTENT=
 INSTALL_LIST=()
 MD5_CURRENT=
 MD5_NEW=
-SOURCES_ADDED=0
 VERBOSE=0
 
 if [[ "" == "$(command -v brew)" ]]; then
@@ -19,8 +18,9 @@ while getopts "sv" OPT; do
       ;;
     v)
       ARGS_BREW=
-      ARGS_REDIRECT=
       VERBOSE=1
+      ;;
+    *)
       ;;
   esac
 done
@@ -71,7 +71,7 @@ if [[ "${USER}" != "root" ]]; then
     INSTALL_LIST+=("zsh")
   fi
 
-  INSTALL_LIST=($(printf "%s\n" ${INSTALL_LIST[@]} | sort -u))
+  INSTALL_LIST=($(printf "%s\n" "${INSTALL_LIST[@]}" | sort -u))
   if [[ "${INSTALL_LIST}" != "" ]]; then
     if [[ "${VERBOSE}" == "1" ]]; then
       printf "\033[0;31mMissing %s\033[0m\n" "${INSTALL_LIST[@]}"

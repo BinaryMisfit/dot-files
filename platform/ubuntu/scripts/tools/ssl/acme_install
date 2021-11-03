@@ -14,8 +14,8 @@ if [[ ! -d /tmp/acme ]] || [[ ! -x /tmp/acme/acme.sh ]]; then
   exit 1
 fi
 
-pushd /tmp/acme > /dev/null
-exec bash << EOF
+pushd /tmp/acme > /dev/null || exit 1
+bash << EOF
   ./acme.sh \
   --install \
   --no-profile \
@@ -26,8 +26,8 @@ exec bash << EOF
   --accountkey /etc/acme/senselessly_foolish_account.key \
   --accountconf /etc/acme/senselessly_foolish_account.conf
 EOF
-exec bash << EOF
+bash << EOF
   ./acme.sh --upgrade --auto-upgrade --quiet
 EOF
-popd > /dev/null
+popd > /dev/null || return
 rm -rf /tmp/acme
