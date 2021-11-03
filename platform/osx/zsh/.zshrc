@@ -65,6 +65,7 @@ fi
 # Optional Variables
 test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
 test -e /usr/local/bin/nvim && export EDITOR=/usr/local/bin/nvim
+test -e /opt/homebrew/bin/nvim && export EDITOR=/opt/homebrew/bin/nvim
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
   printf "\r\033[0;92m[  OK  ]\033[0m Loading additional variables\033[0m"
   printf "\n\033[0;94m[ INFO ]\033[3;94m JAVA_HOME\t${JAVA_HOME}\033[0m"
@@ -82,9 +83,17 @@ if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
   printf "\n\033[0;92m[  ..  ]\033[0m Loading aliases\033[0m"
 fi
 
-test -e /usr/local/bin/nvim && alias sudoedit="sudo nvim "
-test -e /usr/local/bin/nvim && alias vi="nvim "
-test -e /usr/local/bin/nvim && alias vim="nvim "
+if [[ -f /usr/local/bin/nvim ]]; then
+  alias sudoedit="sudo /usr/local/bin/nvim "
+  alias vi="/usr/local/bin/nvim "
+  alias vim="/usr/local/bin/nvim "
+fi
+
+if [[ -f /opt/homebrew/bin/nvim ]]; then
+  alias sudoedit="sudo /opt/homebrew/bin/nvim "
+  alias vi="/opt/homebrew/bin/nvim "
+  alias vim="/opt/homebrew/bin/nvim "
+fi
 
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
   printf "\r\033[0;92m[  OK  ]\033[0m Loading aliases\033[0m"
