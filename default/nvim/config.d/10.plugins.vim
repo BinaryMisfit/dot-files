@@ -4,7 +4,6 @@ call plug#begin(plugins_path)
 Plug 'junegunn/vim-plug'                                " Vim plugin manager
 if !exists('g:vscode')
   Plug 'morhetz/gruvbox'                                " Gruvbox Theme
-  Plug 'kaicataldo/material.vim', { 'branch': 'main' }  " Material Theme
   Plug 'tmux-plugins/vim-tmux-focus-events'             " Better handle tmux focus events
   Plug 'roxma/vim-tmux-clipboard'                       " Better TMUX copy and paster
   Plug 'mhinz/vim-startify'                             " Improved start page
