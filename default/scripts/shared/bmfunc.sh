@@ -261,14 +261,14 @@ function bm_task_skip() {
 # Update task status to started
 function bm_task_start() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\n\033[0;92m[  ..  ]\033[0;90m %s\033[0m" "$1"
+    printf "\n\033[0;92m[  ..  ]\033[0m %s\033[0m" "$1"
   fi
 }
 
 # Update task status to in progress
 function bm_task_update() {
   if [[ "${BM_VERBOSE}" != "-1" ]]; then
-    printf "\r\033[0;93m[UPDATE]\033[0;90m %s\033[0m" "$1"
+    printf "\r\033[0;93m[UPDATE]\033[0m %s\033[0m" "$1"
   fi
 }
 
