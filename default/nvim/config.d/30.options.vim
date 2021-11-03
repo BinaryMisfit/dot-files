@@ -1,6 +1,5 @@
 set autochdir                                           " Auto change directory to file parent
 set autoread                                            " Automatically read changed files
-set background=dark                                     " Set vim background color
 set clipboard+=unnamed,unnamedplus                      " Use OS global clipboard
 set cmdheight=2                                         " Better display messages
 set colorcolumn=125                                     " Set the position of the color column
@@ -26,7 +25,6 @@ set softtabstop=2                                       " Set tab size to 2
 set splitbelow                                          " Always split horizontally to the bottom
 set splitright                                          " Always split veritcally to the right
 set tabstop=2                                           " Set tab size to 2
-set termguicolors                                       " Enable 256color support
 set textwidth=125                                       " Set the width of text to 100 characters
 set undofile                                            " Create file specific undo file
 set undolevels=500                                      " Remember last 500 changes

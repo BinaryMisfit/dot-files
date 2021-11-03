@@ -1,4 +1,5 @@
 if !exists('g:vscode')
-  let g:gruvbox_italic=1
-  silent! colorscheme gruvbox
+  set background=dark                                     " Set background to dark
+  let g:gruvbox_italic=1                                  " Enable Italics
+  silent! colorscheme gruvbox                             " Set theme to gruvbox
 endif
