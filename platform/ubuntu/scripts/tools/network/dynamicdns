@@ -26,3 +26,4 @@ unset CLOUDNS_SUB_AUTH_ID
 unset CLOUDNS_AUTH_PASSWORD
 bm_task_start "Cleaning environment"
 bm_task_ok "Cleaning environment"
+bm_print_title "\033[0m\n"
