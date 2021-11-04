@@ -12,6 +12,10 @@ else
   exit 255
 fi
 
+if [[ $(bm_command_check jq) -ne 0 ]]; then
+  bm_script_error "jq command not found"
+fi
+
 if [[ ! -f "${HOME}/.config/dynamic_dns/domains.conf" ]]; then
   bm_script_error "domains.conf not found"
 fi
@@ -26,14 +30,6 @@ bm_task_start "Configuring environment"
 CONFIG_FILE="${HOME}/.config/dynamic_dns/config.conf"
 DOMAIN_FILE="${HOME}/.config/dynamic_dns/domains.conf"
 DOMAINS=()
-if [[ $(bm_command_check jq) -ne 0 ]]; then
-  if ! bm_command_execute "curl -sS https://webinstall.dev/jq | bash"; then
-      bm_task_failed "Configuring environment"
-      bm_command_output_error
-      bm_script_error
-  fi
-fi
-
 # shellcheck source=.config/config.conf
 source "${CONFIG_FILE}"
 
