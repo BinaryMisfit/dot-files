@@ -12,18 +12,95 @@ else
   exit 255
 fi
 
-if [[ ! -f "$HOME}/.config/dynamic_dns/domains.conf" ]]; then
-  bm_script_error "domain.conf not found"
+if [[ ! -f "${HOME}/.config/dynamic_dns/domains.conf" ]]; then
+  bm_script_error "domains.conf not found"
+fi
+
+if [[ ! -f "${HOME}/.config/dynamic_dns/config.conf" ]]; then
+  bm_script_error "config.conf not found"
 fi
 
 bm_print_title "Dynamic DNS Update V1.0.0"
 bm_user_no_sudo
 bm_task_start "Configuring environment"
-CLOUDNS_SUB_AUTH_ID=4719
-CLOUDNS_AUTH_PASSWORD=gRbcyKv7a7QWe7YLfL8n
+CONFIG_FILE="${HOME}/.config/dynamic_dns/config.conf"
+DOMAIN_FILE="${HOME}/.config/dynamic_dns/domains.conf"
+DOMAINS=()
+if [[ $(bm_command_check jq) -ne 0 ]]; then
+  if ! bm_command_execute "curl -sS https://webinstall.dev/jq | bash"; then
+      bm_task_failed "Configuring environment"
+      bm_command_output_error
+      bm_script_error
+  fi
+fi
+
+# shellcheck source=.config/config.conf
+source "${CONFIG_FILE}"
+
 bm_task_ok "Configuring environment"
+bm_task_start "Loading domains"
+while IFS= read -r DOMAIN; do DOMAINS+=("${DOMAIN}"); done < "${DOMAIN_FILE}"
+bm_task_ok "Loading domains"
+bm_task_start "Checking Local IP"
+API_URL="https://api.cloudns.net/ip/get-my-ip.json"
+API_REQUEST="{ \"sub-auth-id\": \"${CLOUDNS_SUB_AUTH_ID}\", \"auth-password\": \"${CLOUDNS_AUTH_PASSWORD}\" }"
+API_RESPONSE=$(curl -s --request POST -H "Content-Type:application/json" "${API_URL}" --data "${API_REQUEST}")
+if [[ "${API_RESPONSE}" == *"ip"* ]]; then
+  USE_IP=$(jq -r '.ip' <<< "${API_RESPONSE}")
+  bm_task_ok "Checking Local IP"
+else
+  bm_task_error "Checking Local IP"
+  bm_script_error
+fi
+
+for DOMAIN in "${DOMAINS[@]}"; do
+  bm_task_start "Checking ${DOMAIN}"
+  HOST="$(echo "${DOMAIN}" | cut -d . -f 1)"
+  PARENT="$(echo "${DOMAIN}" | rev | cut -d . -f 1,2 | rev)"
+  API_URL="https://api.cloudns.net/dns/records.json"
+  API_REQUEST="\
+  {
+    \"sub-auth-id\": \"${CLOUDNS_SUB_AUTH_ID}\",
+    \"auth-password\": \"${CLOUDNS_AUTH_PASSWORD}\",
+    \"domain-name\": \"${PARENT}\",
+    \"host\": \"${HOST}\",
+    \"type\": \"A\"
+  }"
+  API_RESPONSE=$(curl -s --request POST -H "Content-Type:application/json" "${API_URL}" --data "${API_REQUEST}")
+  DOMAIN_ID=$(jq -r '.[] .id' <<< "${API_RESPONSE}")
+  DOMAIN_IP=$(jq -r '.[] .record' <<< "${API_RESPONSE}")
+  if [[ "${USE_IP}" == "${DOMAIN_IP}" ]]; then
+    bm_task_skip "Checking ${DOMAIN}"
+  else
+    API_URL="https://api.cloudns.net/dns/get-dynamic-url.json"
+    API_REQUEST="\
+    {
+      \"sub-auth-id\": \"${CLOUDNS_SUB_AUTH_ID}\",
+      \"auth-password\": \"${CLOUDNS_AUTH_PASSWORD}\",
+      \"domain-name\": \"${PARENT}\",
+      \"record-id\": \"${DOMAIN_ID}\"
+    }"
+    API_RESPONSE=$(curl -s --request POST -H "Content-Type:application/json" "${API_URL}" --data "${API_REQUEST}")
+    UPDATE_URL=$(jq -r '.url' <<< "${API_RESPONSE}")
+    if [[ "${UPDATE_URL}" != "" ]]; then
+      bm_task_update "Checking ${DOMAIN}"
+      bm_task_ok
+    else
+      bm_task_failed "Checking ${DOMAIN}"
+    fi
+  fi
+
+  unset DOMAIN_ID
+  unset DOMAIN_IP
+  unset PARENT
+done
+
+bm_task_start "Cleaning environment"
+unset API_URL
+unset CONFIG_FILE
 unset CLOUDNS_SUB_AUTH_ID
 unset CLOUDNS_AUTH_PASSWORD
-bm_task_start "Cleaning environment"
+unset DOMAIN_FILE
+unset DOMAINS
 bm_task_ok "Cleaning environment"
-bm_print_title "\033[0m\n"
+printf "\033[0m\n"
