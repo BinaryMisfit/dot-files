@@ -35,22 +35,32 @@ source "${CONFIG_FILE}"
 
 bm_task_ok "Configuring environment"
 bm_task_start "Loading domains"
-while IFS= read -r DOMAIN; do DOMAINS+=("${DOMAIN}"); done < "${DOMAIN_FILE}"
+while IFS= read -r DOMAIN; do DOMAINS+=("${DOMAIN}"); done <"${DOMAIN_FILE}"
 bm_task_ok "Loading domains"
-bm_task_start "Checking Local IP"
-API_URL="https://api.cloudns.net/ip/get-my-ip.json"
-API_REQUEST="{ \"sub-auth-id\": \"${CLOUDNS_SUB_AUTH_ID}\", \"auth-password\": \"${CLOUDNS_AUTH_PASSWORD}\" }"
-API_RESPONSE=$(curl -s --request POST -H "Content-Type:application/json" "${API_URL}" --data "${API_REQUEST}")
-if [[ "${API_RESPONSE}" == *"ip"* ]]; then
-  USE_IP=$(jq -r '.ip' <<< "${API_RESPONSE}")
-  bm_task_ok "Checking Local IP"
+bm_task_start "Local IPv4 address"
+API_URL="https://api.ipify.org"
+API_RESPONSE=$(curl -s "${API_URL}")
+if [[ "${API_RESPONSE}" != "" ]]; then
+  USE_IP4="${API_RESPONSE}"
+  bm_task_ok "Local IPv4 address"
 else
-  bm_task_error "Checking Local IP"
+  bm_task_error "Local IPv4 address"
+  bm_script_error
+fi
+
+bm_task_start "Local IPv6 address"
+API_URL="https://api64.ipify.org"
+API_RESPONSE=$(curl -s "${API_URL}")
+if [[ "${API_RESPONSE}" != "" ]]; then
+  USE_IP6="${API_RESPONSE}"
+  bm_task_ok "Local IPv6 address"
+else
+  bm_task_error "Local IPv6 address"
   bm_script_error
 fi
 
 for DOMAIN in "${DOMAINS[@]}"; do
-  bm_task_start "Checking ${DOMAIN}"
+  bm_task_start "IPv4 ${DOMAIN}"
   HOST="$(echo "${DOMAIN}" | cut -d . -f 1)"
   PARENT="$(echo "${DOMAIN}" | rev | cut -d . -f 1,2 | rev)"
   API_URL="https://api.cloudns.net/dns/records.json"
@@ -63,10 +73,12 @@ for DOMAIN in "${DOMAINS[@]}"; do
     \"type\": \"A\"
   }"
   API_RESPONSE=$(curl -s --request POST -H "Content-Type:application/json" "${API_URL}" --data "${API_REQUEST}")
-  DOMAIN_ID=$(jq -r '.[] .id' <<< "${API_RESPONSE}")
-  DOMAIN_IP=$(jq -r '.[] .record' <<< "${API_RESPONSE}")
-  if [[ "${USE_IP}" == "${DOMAIN_IP}" ]]; then
-    bm_task_skip "Checking ${DOMAIN}"
+  DOMAIN_ID=$(jq -r '.[] .id' <<<"${API_RESPONSE}")
+  DOMAIN_IP=$(jq -r '.[] .record' <<<"${API_RESPONSE}")
+  if [[ "${DOMAIN_ID}" == "" ]]; then
+    bm_task_failed "IPv4 ${DOMAIN}"
+  elif [[ "${USE_IP4}" == "${DOMAIN_IP}" ]]; then
+    bm_task_skip "IPv4 ${DOMAIN}"
   else
     API_URL="https://api.cloudns.net/dns/get-dynamic-url.json"
     API_REQUEST="\
@@ -77,15 +89,61 @@ for DOMAIN in "${DOMAINS[@]}"; do
       \"record-id\": \"${DOMAIN_ID}\"
     }"
     API_RESPONSE=$(curl -s --request POST -H "Content-Type:application/json" "${API_URL}" --data "${API_REQUEST}")
-    UPDATE_URL=$(jq -r '.url' <<< "${API_RESPONSE}")
+    UPDATE_URL=$(jq -r '.url' <<<"${API_RESPONSE}")
     if [[ "${UPDATE_URL}" != "" ]]; then
-      bm_task_update "Checking ${DOMAIN}"
-      bm_task_ok
+      bm_task_update "IPv4 ${DOMAIN}"
+      if ! bm_command_execute "curl -s ${UPDATE_URL}"; then
+        bm_task_failed "IPv4 ${DOMAIN}"
+      else
+        bm_task_ok "IPv6 ${DOMAIN}"
+      fi
     else
-      bm_task_failed "Checking ${DOMAIN}"
+      bm_task_failed "IPv4 ${DOMAIN}"
     fi
+
   fi
 
+  unset DOMAIN_ID
+  unset DOMAIN_IP
+  bm_task_start "IPv6 ${DOMAIN}"
+  API_URL="https://api.cloudns.net/dns/records.json"
+  API_REQUEST="\
+  {
+    \"sub-auth-id\": \"${CLOUDNS_SUB_AUTH_ID}\",
+    \"auth-password\": \"${CLOUDNS_AUTH_PASSWORD}\",
+    \"domain-name\": \"${PARENT}\",
+    \"host\": \"${HOST}\",
+    \"type\": \"AAAA\"
+  }"
+  API_RESPONSE=$(curl -s --request POST -H "Content-Type:application/json" "${API_URL}" --data "${API_REQUEST}")
+  DOMAIN_ID=$(jq -r '.[] .id' <<<"${API_RESPONSE}")
+  DOMAIN_IP=$(jq -r '.[] .record' <<<"${API_RESPONSE}")
+  if [[ "${DOMAIN_ID}" == "" ]]; then
+    bm_task_failed "IPv6 ${DOMAIN}"
+  elif [[ "${USE_IP6}" == "${DOMAIN_IP}" ]]; then
+    bm_task_skip "IPv6 ${DOMAIN}"
+  else
+    API_URL="https://api.cloudns.net/dns/get-dynamic-url.json"
+    API_REQUEST="\
+    {
+      \"sub-auth-id\": \"${CLOUDNS_SUB_AUTH_ID}\",
+      \"auth-password\": \"${CLOUDNS_AUTH_PASSWORD}\",
+      \"domain-name\": \"${PARENT}\",
+      \"record-id\": \"${DOMAIN_ID}\"
+    }"
+    API_RESPONSE=$(curl -s --request POST -H "Content-Type:application/json" "${API_URL}" --data "${API_REQUEST}")
+    UPDATE_URL=$(jq -r '.url' <<<"${API_RESPONSE}")
+    if [[ "${UPDATE_URL}" != "" ]]; then
+      bm_task_update "IPv6 ${DOMAIN}"
+      if ! bm_command_execute "curl -s ${UPDATE_URL}"; then
+        bm_task_failed "IPv6 ${DOMAIN}"
+      else
+        bm_task_ok "IPv6 ${DOMAIN}"
+      fi
+    else
+      bm_task_failed "IPv6 ${DOMAIN}"
+    fi
+  fi
   unset DOMAIN_ID
   unset DOMAIN_IP
   unset PARENT
@@ -98,5 +156,7 @@ unset CLOUDNS_SUB_AUTH_ID
 unset CLOUDNS_AUTH_PASSWORD
 unset DOMAIN_FILE
 unset DOMAINS
+unset USE_IP4
+unset USE_IP6
 bm_task_ok "Cleaning environment"
 printf "\033[0m\n"
