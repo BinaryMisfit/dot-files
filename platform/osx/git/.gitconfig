@@ -27,6 +27,7 @@
   encoding = UTF-8
 [submodule]
   recurse = true
+	stickyRecursiveClone = true
 [alias]
   s = status -s
   clr = rm -rf --cached .
