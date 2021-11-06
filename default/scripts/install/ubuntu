@@ -29,7 +29,7 @@ if groups "${USER}" | grep -q "\badmin\b"; then
 fi
 
 printf "\n\033[0;92m[  ..  ]\033[0m Locating add-apt-repository"
-if [[ $(command -v "$1") == "" ]]; then
+if [[ $(command -v add-apt-repository) == "" ]]; then
   printf "\r\033[0;91m[FAILED]\033[0m Locating add-apt-repository"
   exit 255
 fi

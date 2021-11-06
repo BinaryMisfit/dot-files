@@ -14,6 +14,14 @@ if groups "${USER}" | grep -q "\badmin\b"; then
   BM_USE_SUDO=1
 fi
 
+printf "\n\033[0;92m[  ..  ]\033[0m Locating brew"
+if [[ $(command -v brew) == "" ]]; then
+  printf "\r\033[0;91m[FAILED]\033[0m Locating brew"
+  exit 255
+fi
+
+printf "\r\033[0;92m[  OK  ]\033[0m Locating brew"
+
 ARGS_BREW="--quiet"
 FILE_CONTENT=
 INSTALL_LIST=()
