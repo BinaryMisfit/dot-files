@@ -1,20 +1,11 @@
-# Run local config
-test -e ${HOME}/.environment.zsh && source ${HOME}/.environment.zsh
-test -e ${HOME}/.zshrc.local && source ${HOME}/.zshrc.local
+# P10K Instant Prompt
+if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  printf "\033[0;94m[ INFO ]\033[3;94m Environment loading\033[0m\n"
+  source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 
 # Check for updates
 test -e ${HOME}/.dotfiles/deploy/update_online.sh && /bin/bash ${HOME}/.dotfiles/deploy/update_online.sh
-
-# P10K Instant Prompt
-if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-    printf "\033[0;94m[ INFO ]\033[3;94m Environment loading\033[0m\n"
-  else
-    printf "\033[0;92m[ INFO ]\033[0m Environment loading\033[0m\n"
-  fi
-
-  source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
 
 # iTerm integration
 if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
@@ -84,13 +75,13 @@ if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
 fi
 
 if [[ -f /usr/local/bin/nvim ]]; then
-  alias sudoedit="sudo /usr/local/bin/nvim "
+  alias svi="sudo /usr/local/bin/nvim "
   alias vi="/usr/local/bin/nvim "
   alias vim="/usr/local/bin/nvim "
 fi
 
 if [[ -f /opt/homebrew/bin/nvim ]]; then
-  alias sudoedit="sudo /opt/homebrew/bin/nvim "
+  alias svi="sudo /opt/homebrew/bin/nvim "
   alias vi="/opt/homebrew/bin/nvim "
   alias vim="/opt/homebrew/bin/nvim "
 fi
@@ -120,3 +111,6 @@ fi
 
 unset CURRENT_PATH
 unset VERBOSE_LOGIN
+
+# Run local config
+test -e ${HOME}/.zshrc.local && source ${HOME}/.zshrc.local
