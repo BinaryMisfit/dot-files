@@ -1,4 +1,19 @@
 #!/usr/bin/env bash
+
+printf "\033[0;92m[SCRIPT]\033[0;92m OSX configurator V1.0.0"
+if [[ ${EUID} -eq 0 ]]; then
+  printf "\r\033[0;91m[FAILED]\033[0m Running as sudo not supported"
+fi
+
+BM_USER=${USER}
+if groups "${USER}" | grep -q "\bsudo\b"; then
+  BM_USE_SUDO=1
+fi
+
+if groups "${USER}" | grep -q "\badmin\b"; then
+  BM_USE_SUDO=1
+fi
+
 ARGS_BREW="--quiet"
 FILE_CONTENT=
 INSTALL_LIST=()
