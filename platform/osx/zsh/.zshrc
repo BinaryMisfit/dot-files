@@ -2,6 +2,7 @@ export COLORTERM=truecolor
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
+export ITERM2_SQUELCH_MARK=1
 
 # Check for updates
 test -e ${HOME}/.dotfiles/deploy/update_online.sh && /bin/bash ${HOME}/.dotfiles/deploy/update_online.sh
