@@ -38,4 +38,4 @@ export PATH
 
 # Run local config
 test -e ${HOME}/.zshrc.local && source ${HOME}/.zshrc.local
-printf "\r\033[0;92m[  OK  ]\033[0m Session Startup\n"
+printf "\r\033[0;92m[  OK  ]\033[0m Session startup\n"
