@@ -15,11 +15,11 @@ test -e ${HOME}/.antigenrc && antigen init ${HOME}/.antigenrc
 autoload -U compinit && compinit -u
 unsetopt BEEP
 
-# iTerm integration
-test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
-
 # Source p10k files
 test -e ${HOME}/.p10k.zsh && source ${HOME}/.p10k.zsh
+
+# iTerm integration
+test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh
 
 # Optional Variables
 test -e /usr/libexec/java_home && export JAVA_HOME="$(/usr/libexec/java_home)"
