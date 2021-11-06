@@ -13,7 +13,10 @@ else
   exit 255
 fi
 
-printf "\033[0;92m[SCRIPT]\033[0;92m Ubuntu configurator V1.0.0"
+if [[ $SHLVL -lt 3 ]]; then
+  printf "\033[0;92m[SCRIPT]\033[0;92m Ubuntu configurator V1.0.0"
+fi
+
 if [[ ${EUID} -eq 0 ]]; then
   printf "\r\033[0;91m[FAILED]\033[0m Running as sudo not supported"
   exit 255
