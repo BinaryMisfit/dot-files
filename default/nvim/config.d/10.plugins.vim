@@ -3,7 +3,7 @@ call plug#begin(plugins_path)
 
 Plug 'junegunn/vim-plug'                                " Vim plugin manager
 if !exists('g:vscode')
-  Plug 'morhetz/gruvbox'                                " Gruvbox Theme
+  Plug 'lifepillar/vim-gruvbox8'                        " Gruvbox8 color scheme
   Plug 'tmux-plugins/vim-tmux-focus-events'             " Better handle tmux focus events
   Plug 'roxma/vim-tmux-clipboard'                       " Better TMUX copy and paster
   Plug 'mhinz/vim-startify'                             " Improved start page
