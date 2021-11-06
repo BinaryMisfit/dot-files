@@ -2,66 +2,18 @@
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-#
+# 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 if [[ -o interactive ]]; then
-  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" != "screen" -a "${ITERM_SHELL_INTEGRATION_INSTALLED-}" = "" -a "$TERM" != linux -a "$TERM" != dumb ]; then
-    ITERM_SHELL_INTEGRATION_INSTALLED=Yes
-    ITERM2_SHOULD_DECORATE_PROMPT="1"
-    # Indicates start of command output. Runs just before command executes.
-    iterm2_before_cmd_executes() {
-      printf "\033]133;C;\007"
-    }
-
-    iterm2_set_user_var() {
-      printf "\033]1337;SetUserVar=%s=%s\007" "$1" $(printf "%s" "$2" | base64 | tr -d '\n')
-    }
-
-    # Users can write their own version of this method. It should call
-    # iterm2_set_user_var but not produce any other output.
-    # e.g., iterm2_set_user_var currentDirectory $PWD
-    # Accessible in iTerm2 (in a badge now, elsewhere in the future) as
-    # \(user.currentDirectory).
-    whence -v iterm2_print_user_vars > /dev/null 2>&1
-    if [ $? -ne 0 ]; then
-      iterm2_print_user_vars() {
-          true
-      }
-    fi
-
-    iterm2_print_state_data() {
-      printf "\033]1337;RemoteHost=%s@%s\007" "$USER" "${iterm2_hostname-}"
-      printf "\033]1337;CurrentDir=%s\007" "$PWD"
-      iterm2_print_user_vars
-    }
-
-    # Report return code of command; runs after command finishes but before prompt
-    iterm2_after_cmd_executes() {
-      printf "\033]133;D;%s\007" "$STATUS"
-      iterm2_print_state_data
-    }
-
-    # Mark start of prompt
-    iterm2_prompt_mark() {
-      printf "\033]133;A\007"
-    }
-
-    # Mark end of prompt
-    iterm2_prompt_end() {
-      printf "\033]133;B\007"
-    }
-
-    # There are three possible paths in life.
-    #
-    # 1) A command is entered at the prompt and you press return.
+  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" != "screen"   if [ "${ITERM_ENABLE_SHELL_INTEGRATION_W =  if [ "${ITERM_ENAin  if [ "${ITERM_ENABLE];  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_ED=  if [ "${ITERM_ENALD  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$Ttp  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" exe  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM"et  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" !="   if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$Us rs  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" != #   if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" !=.,  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" ! i  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITHe) as  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" != "sar  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM"in  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" != "screen"   if [      if [ "${ITERM_ENABLE_SHELLit # 1) A command is entered at the prompt and you press return.
     #    The following steps happen:
     #    * iterm2_preexec is invoked
     #      * PS1 is set to ITERM2_PRECMD_PS1
@@ -140,12 +92,16 @@ if [[ -o interactive ]]; then
     }
 
     # If hostname -f is slow on your system set iterm2_hostname prior to
-    # sourcing this script.
+    # sourcing this script. We know it is fast on macOS so we don't cache
+    # it. That lets us handle the hostname changing like when you attach
+    # to a VPN.
     if [ -z "${iterm2_hostname-}" ]; then
-      iterm2_hostname=`hostname -f 2>/dev/null`
-      # Some flavors of BSD (i.e. NetBSD and OpenBSD) don't have the -f option.
-      if [ $? -ne 0 ]; then
-	iterm2_hostname=`hostname`
+      if [ "$(uname)" != "Darwin" ]; then
+        iterm2_hostname=`hostname -f 2>/dev/null`
+        # Some flavors of BSD (i.e. NetBSD and OpenBSD) don't have the -f option.
+        if [ $? -ne 0 ]; then
+          iterm2_hostname=`hostname`
+        fi
       fi
     fi
 
@@ -156,6 +112,8 @@ if [[ -o interactive ]]; then
     preexec_functions=($preexec_functions iterm2_preexec)
 
     iterm2_print_state_data
-    printf "\033]1337;ShellIntegrationVersion=11;shell=zsh\007"
+    printf "\033]1337;ShellIntegrationVersion=12;shell=zsh\007"
   fi
 fi
+
+alias imgcat=/Users/server/.iterm2/imgcat;alias imgls=/Users/server/.iterm2/imgls;alias it2api=/Users/server/.iterm2/it2api;alias it2attention=/Users/server/.iterm2/it2attention;alias it2check=/Users/server/.iterm2/it2check;alias it2copy=/Users/server/.iterm2/it2copy;alias it2dl=/Users/server/.iterm2/it2dl;alias it2getvar=/Users/server/.iterm2/it2getvar;alias it2git=/Users/server/.iterm2/it2git;alias it2setcolor=/Users/server/.iterm2/it2setcolor;alias it2setkeylabel=/Users/server/.iterm2/it2setkeylabel;alias it2ul=/Users/server/.iterm2/it2ul;alias it2universion=/Users/server/.iterm2/it2universion
