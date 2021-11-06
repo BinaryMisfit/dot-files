@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 if [[ -n ${TMUX+x} ]]; then
-  printf "\r\033[0;96m[ SKIP ]\033[0m Online update\033[0m"
+  printf "\r\033[0;96m[ SKIP ]\033[0m Online update\n"
   exit 0
 fi
 
@@ -9,7 +9,7 @@ if [[ -d "${BASE_DIR}" ]]; then
   VERSION_CURRENT=$(git -C "${BASE_DIR}" rev-parse HEAD)
   VERSION_NEW=$(git ls-remote https://github.com/BinaryMisfit/dot-files HEAD | awk '{ print $1 }')
   if [[ "${VERSION_CURRENT}" != "${VERSION_NEW}" ]]; then
-    printf "\r\033[0;93m[UPDATE]\033[0m Online update\033[0m"
+    printf "\r\033[0;93m[UPDATE]\033[0m Online update"
     COMMAND="git -C ${BASE_DIR} pull --autostash --all --recurse-submodules --rebase --quiet"
     OUTPUT=$(bash -c "${COMMAND}" 2>&1)
     EXIT_CODE=$?
@@ -19,19 +19,16 @@ if [[ -d "${BASE_DIR}" ]]; then
       EXIT_CODE=$?
       mapfile -t OUTPUT < <(printf "%s" "${OUTPUT}")
       if [[ ${EXIT_CODE} -ne 0 ]]; then
-        printf "\r\033[0;91m[FAILED]\033[0m Online update\033[0m"
-        printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${COMMAND}"
+        printf "\r\033[0;91m[FAILED]\033[0m Online update\n"
+        printf "\n\033[0;94m[SCRIPT]\033[0m %s" "${COMMAND}"
         printf "\n%s" "${OUTPUT[@]}"
+        printf "\n"
       else
-        printf "\r\033[0;92m[  OK  ]\033[0m Online update\033[0m"
-        if [[ "${VERBOSE_LOGIN}" == "1" ]]; then
-          printf "\n\033[0;94m[SCRIPT]\033[3;94m %s\033[0m" "${COMMAND}"
-          printf "\n%s" "${OUTPUT[@]}"
-        fi
+        printf "\r\033[0;92m[  OK  ]\033[0m Online update\n"
       fi
     fi
   else
-    printf "\r\033[0;92m[  OK  ]\033[0m Online update\033[0m"
+    printf "\r\033[0;92m[  OK  ]\033[0m Online update\n"
   fi
 
   unset BRANCH
@@ -42,4 +39,3 @@ if [[ -d "${BASE_DIR}" ]]; then
   unset VERSION_NEW
 fi
 unset BASE_DIR
-printf "\033[0m\n"
