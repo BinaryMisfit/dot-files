@@ -13,7 +13,59 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 if [[ -o interactive ]]; then
-  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" != "screen"   if [ "${ITERM_ENABLE_SHELL_INTEGRATION_W =  if [ "${ITERM_ENAin  if [ "${ITERM_ENABLE];  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_ED=  if [ "${ITERM_ENALD  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$Ttp  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" exe  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM"et  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" !="   if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$Us rs  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" != #   if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" !=.,  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" ! i  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITHe) as  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" != "sar  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM"in  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" != "screen"   if [      if [ "${ITERM_ENABLE_SHELLit # 1) A command is entered at the prompt and you press return.
+  if [ "${ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX-}""$TERM" != "screen" -a "${ITERM_SHELL_INTEGRATION_INSTALLED-}" = "" -a "$TERM" != linux -a "$TERM" != dumb ]; then
+    ITERM_SHELL_INTEGRATION_INSTALLED=Yes
+    ITERM2_SHOULD_DECORATE_PROMPT="1"
+    # Indicates start of command output. Runs just before command executes.
+    iterm2_before_cmd_executes() {
+      printf "\033]133;C;\007"
+    }
+
+    iterm2_set_user_var() {
+      printf "\033]1337;SetUserVar=%s=%s\007" "$1" $(printf "%s" "$2" | base64 | tr -d '\n')
+    }
+
+    # Users can write their own version of this method. It should call
+    # iterm2_set_user_var but not produce any other output.
+    # e.g., iterm2_set_user_var currentDirectory $PWD
+    # Accessible in iTerm2 (in a badge now, elsewhere in the future) as
+    # \(user.currentDirectory).
+    whence -v iterm2_print_user_vars > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+      iterm2_print_user_vars() {
+          true
+      }
+    fi
+
+    iterm2_print_state_data() {
+      local _iterm2_hostname="${iterm2_hostname-}"
+      if [ -z "${iterm2_hostname:-}" ]; then
+        _iterm2_hostname=$(hostname -f 2>/dev/null)
+      fi
+      printf "\033]1337;RemoteHost=%s@%s\007" "$USER" "${_iterm2_hostname-}"
+      printf "\033]1337;CurrentDir=%s\007" "$PWD"
+      iterm2_print_user_vars
+    }
+
+    # Report return code of command; runs after command finishes but before prompt
+    iterm2_after_cmd_executes() {
+      printf "\033]133;D;%s\007" "$STATUS"
+      iterm2_print_state_data
+    }
+
+    # Mark start of prompt
+    iterm2_prompt_mark() {
+      printf "\033]133;A\007"
+    }
+
+    # Mark end of prompt
+    iterm2_prompt_end() {
+      printf "\033]133;B\007"
+    }
+
+    # There are three possible paths in life.
+    #
+    # 1) A command is entered at the prompt and you press return.
     #    The following steps happen:
     #    * iterm2_preexec is invoked
     #      * PS1 is set to ITERM2_PRECMD_PS1
@@ -115,5 +167,4 @@ if [[ -o interactive ]]; then
     printf "\033]1337;ShellIntegrationVersion=12;shell=zsh\007"
   fi
 fi
-
-alias imgcat=/Users/server/.iterm2/imgcat;alias imgls=/Users/server/.iterm2/imgls;alias it2api=/Users/server/.iterm2/it2api;alias it2attention=/Users/server/.iterm2/it2attention;alias it2check=/Users/server/.iterm2/it2check;alias it2copy=/Users/server/.iterm2/it2copy;alias it2dl=/Users/server/.iterm2/it2dl;alias it2getvar=/Users/server/.iterm2/it2getvar;alias it2git=/Users/server/.iterm2/it2git;alias it2setcolor=/Users/server/.iterm2/it2setcolor;alias it2setkeylabel=/Users/server/.iterm2/it2setkeylabel;alias it2ul=/Users/server/.iterm2/it2ul;alias it2universion=/Users/server/.iterm2/it2universion
+alias imgcat=${HOME}/.iterm2/imgcat;alias imgls=${HOME}/.iterm2/imgls;alias it2api=${HOME}/.iterm2/it2api;alias it2attention=${HOME}/.iterm2/it2attention;alias it2check=${HOME}/.iterm2/it2check;alias it2copy=${HOME}/.iterm2/it2copy;alias it2dl=${HOME}/.iterm2/it2dl;alias it2getvar=${HOME}/.iterm2/it2getvar;alias it2git=${HOME}/.iterm2/it2git;alias it2setcolor=${HOME}/.iterm2/it2setcolor;alias it2setkeylabel=${HOME}/.iterm2/it2setkeylabel;alias it2ul=${HOME}/.iterm2/it2ul;alias it2universion=${HOME}/.iterm2/it2universion
