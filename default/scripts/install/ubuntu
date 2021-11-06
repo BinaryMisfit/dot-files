@@ -16,6 +16,7 @@ fi
 printf "\033[0;92m[SCRIPT]\033[0;92m Ubuntu configurator V1.0.0"
 if [[ ${EUID} -eq 0 ]]; then
   printf "\r\033[0;91m[FAILED]\033[0m Running as sudo not supported"
+  exit 255
 fi
 
 BM_USER=${USER}
@@ -27,11 +28,14 @@ if groups "${USER}" | grep -q "\badmin\b"; then
   BM_USE_SUDO=1
 fi
 
-bm_print_info "User: ${BM_USER}"
-bm_print_info "Home: ${HOME}"
-bm_print_info "Sudo: ${BM_USE_SUDO}"
-bm_print_info "Script path: $0"
-bm_command_locate add-apt-repository
+printf "\n\033[0;92m[  ..  ]\033[0m Locating add-apt-repository"
+if [[ $(command -v "$1") == "" ]]; then
+  printf "\r\033[0;91m[FAILED]\033[0m Locating add-apt-repository"
+  exit 255
+fi
+
+printf "\r\033[0;92m[  OK  ]\033[0m Locating add-apt-repository"
+
 bm_command_locate md5sum
 bm_task_start "Configuring environment"
 if [[ ! -d "${HOME}/.npm_global" ]]; then
@@ -69,10 +73,6 @@ deb-src [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.co
     else
       bm_task_ok "Checking nodesource"
     fi
-
-    unset DISTRO
-    unset MD5_CURRENT
-    unset MD5_NEW
   fi
 
   if [[ ! -f /etc/apt/sources.list.d/nodesource.list ]]; then
@@ -283,7 +283,6 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
 
     bm_task_ok "Installing missing apps"
     bm_command_output_success
-    unset ARGS
     bm_task_start "Cleaning ubuntu"
     if ! bm_command_execute "sudo apt-get autoremove --yes"; then
       bm_task_failed "Cleaning ubuntu"
@@ -309,7 +308,6 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   fi
 fi
 
-unset INSTALL_LIST
 INSTALL_LIST=()
 
 bm_task_start "Checking neovim"
@@ -326,8 +324,6 @@ if [[ ${OUTPUT} -eq 1 ]]; then
 else
   bm_task_ok "Checking neovim"
 fi
-
-unset OUTPUT
 
 if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   bm_task_start "Checking pynvim"
@@ -392,8 +388,6 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   else
     bm_task_ok "Checking ${BM_USER} shell"
   fi
-
-  unset ZSH_PATH
 else
   bm_task_skip "Checking ${BM_USER} shell"
 fi
@@ -433,8 +427,6 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   else
     bm_task_ok "Checking default editor"
   fi
-
-  unset NVIM_PATH
 else
   bm_task_skip "Checking default editor"
 fi
@@ -489,8 +481,6 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   fi
 fi
 
-unset INSTALL_LIST
-
 if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   if [[ $(bm_command_check neofetch) -eq 0 ]]; then
     bm_task_start "Checking motd"
@@ -501,7 +491,6 @@ if [[ ${BM_USE_SUDO} -eq 1 ]]; then
 if [ -f /etc/neofetch/config.conf ]; then
   exec ${NEOFETCH_PATH} --config /etc/neofetch/config.conf
 fi"
-    unset NEOFETCH_PATH
     if [[ -f /etc/update-motd.d/01-neofetch ]]; then
       MD5_CURRENT=$(md5sum /etc/update-motd.d/01-neofetch | awk '{ print $1 }')
       MD5_NEW=$(printf "%s" "${FILE_CONTENT}" | md5sum | awk '{ print $1 }')
@@ -528,8 +517,6 @@ fi"
     bm_task_ok "Checking motd"
     bm_print_info "Version C: ${MD5_CURRENT}"
     bm_print_info "Version N: ${MD5_NEW}"
-    unset MD5_CURRENT
-    unset MD5_NEW
   else
     bm_task_skip "Checking motd"
   fi
