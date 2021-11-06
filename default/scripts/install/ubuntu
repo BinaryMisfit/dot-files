@@ -39,14 +39,21 @@ fi
 
 printf "\r\033[0;92m[  OK  ]\033[0m Locating add-apt-repository"
 
-bm_command_locate md5sum
-bm_task_start "Configuring environment"
+printf "\n\033[0;92m[  ..  ]\033[0m Locating md5sum"
+if [[ $(command -v md5sum) == "" ]]; then
+  printf "\r\033[0;91m[FAILED]\033[0m Locating md5sum"
+  exit 255
+fi
+
+printf "\r\033[0;92m[  OK  ]\033[0m Locating md5sum"
+printf "\n\033[0;92m[  ..  ]\033[0m Configuring environment"
 if [[ ! -d "${HOME}/.npm_global" ]]; then
-  bm_task_update "Configuring environment"
+  printf "\r\033[0;93m[UPDATE]\033[0m Configuring environment"
   bm_make_dir "${HOME}/.npm_global"
 fi
 
-bm_task_ok "Configuring environment"
+printf "\r\033[0;92m[  OK  ]\033[0m Configuring environment"
+
 bm_task_start "Checking nodesource"
 if [[ ${BM_USE_SUDO} -eq 1 ]]; then
   DISTRO="$(lsb_release -s -c)"

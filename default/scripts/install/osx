@@ -32,41 +32,13 @@ MD5_CURRENT=
 MD5_NEW=
 VERBOSE=0
 
-if [[ "" == "$(command -v brew)" ]]; then
-  printf "\033[0;31mbrew not found, aborting\033[0m\n"
-  exit 1
+printf "\n\033[0;92m[  ..  ]\033[0m Configuring environment"
+if [[ ! -d "${HOME}/.npm_global" ]]; then
+  printf "\r\033[0;93m[UPDATE]\033[0m Configuring environment"
+  bm_make_dir "${HOME}/.npm_global"
 fi
 
-while getopts "sv" OPT; do
-  case "${OPT}" in
-    s)
-      VERBOSE=-1
-      ;;
-    v)
-      ARGS_BREW=
-      VERBOSE=1
-      ;;
-    *)
-      ;;
-  esac
-done
-
-shift $((OPTIND-1))
-
-[[ "${1:-}" = "--" ]] && shift
-
-if [[ ! -d "/Users/${USER}/.npm_global" ]]; then
-  if [[ "${VERBOSE}" == "1" ]]; then
-    printf "\033[0;34mCreating npm_global\033[0m\n"
-  fi
-
-  mkdir -p "/Users/${USER}/.npm_global"
-  chown -R ${USER}:staff "/Users/${USER}/.npm_global"
-fi
-
-if [[ "${VERBOSE}" != "-1" ]]; then
-  printf "\033[0;32mAll commands have been executed\033[0m\n"
-fi
+printf "\r\033[0;92m[  OK  ]\033[0m Configuring environment"
 
 if [[ "${USER}" != "root" ]]; then
   if [[ "" == "$(brew ls --versions md5sha1sum)" ]]; then
