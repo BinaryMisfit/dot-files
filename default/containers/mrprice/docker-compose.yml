@@ -7,16 +7,15 @@ volumes:
 
 services:
   azuresql:
-    image: binarymisfit/azure-edge
+    build:
+      context: docker-images/azure_edge
     cap_add:
       - SYS_PTRACE
     container_name: LocalSql
+    init: true
     pid: "host"
     environment:
       - "ACCEPT_EULA=1"
     ports:
       - "1433:1433/tcp"
     restart: unless-stopped
-    volumes:
-      - sqlmaster:/var/opt/mssql/data/
-      - sqldata:/sqldata/
