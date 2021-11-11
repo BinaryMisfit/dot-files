@@ -7,12 +7,10 @@ volumes:
 
 services:
   azuresql:
-    build:
-      context: azure_edge
+    image: binarymisfit/azure-edge
     cap_add:
       - SYS_PTRACE
     container_name: LocalSql
-    init: true
     pid: "host"
     environment:
       - "ACCEPT_EULA=1"
