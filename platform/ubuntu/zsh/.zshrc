@@ -25,7 +25,7 @@ test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_in
 test -e /usr/bin/nvim && export EDITOR=$(which nvim)
 
 # Export aliases
-test -e /usr/bin/nvim && alias svi="sudo nvim "
+test -e /usr/bin/nvim && alias svi="sudoedit "
 
 # Update PATH
 test -e ${HOME}/.npm_global && PATH=${HOME}/.npm_global/bin:$PATH
