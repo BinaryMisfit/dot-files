@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+BACKUP_SOURCE="${HOME}/.config/backup/sources.list"
+
+printf "\n\033[0;92m[  ..  ]\033[0m Backup sources"
+if [[ ! -f ${BACKUP_SOURCE} ]]; then
+  printf "\r\033[0;91m[FAILED]\033[0m Backup sources"
+fi
