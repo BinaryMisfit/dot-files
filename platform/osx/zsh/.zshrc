@@ -41,7 +41,7 @@ fi
 
 # Update PATH
 test -e $HOME/.npm_global && PATH=$HOME/.npm_global/bin:$PATH
-test -e /usr/local/sbin && PATH=/usr/loca/sbin:$PATH
+test -e /usr/local/sbin && PATH=/usr/local/sbin:$PATH
 
 # Cleanup
 typeset -U PATH
