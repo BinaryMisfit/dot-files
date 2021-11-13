@@ -103,22 +103,22 @@ else
   bm_task_skip "Updating dotfiles"
 fi
 
-bm_task_start "Running installation"
-if [[ -x "${INSTALL_SCRIPTS}${BM_OS}" ]]; then
-  bm_task_update "Running installation"
-  COMMAND="${INSTALL_SCRIPTS}${BM_OS} ${BM_ARGS}"
-  if ! bm_script_execute "${COMMAND}"; then
-    bm_task_failed "Running installation"
-    bm_script_output_raw
-    bm_script_error
-  fi
-
-  bm_task_ok "Running installation"
-  bm_script_output_raw
-  unset COMMAND
-else
-  bm_task_skip "Running installation"
-fi
+#bm_task_start "Running installation"
+#if [[ -x "${INSTALL_SCRIPTS}${BM_OS}" ]]; then
+#  bm_task_update "Running installation"
+#  COMMAND="${INSTALL_SCRIPTS}${BM_OS} ${BM_ARGS}"
+#  if ! bm_script_execute "${COMMAND}"; then
+#    bm_task_failed "Running installation"
+#    bm_script_output_raw
+#    bm_script_error
+#  fi
+#
+#  bm_task_ok "Running installation"
+#  bm_script_output_raw
+#  unset COMMAND
+#else
+#  bm_task_skip "Running installation"
+#fi
 
 for CONF in ${DEFAULT_CONFIG_PREFIX} ${BM_OS} ${FINAL_CONFIG_PREFIX} "${@}"; do
   if [[ ! -f "${DEPLOY_DIR}/${CONF}${CONF_SUFFIX}" ]]; then
