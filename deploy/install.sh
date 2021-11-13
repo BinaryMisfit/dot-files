@@ -20,7 +20,6 @@ else
 fi
 
 bm_print_title "Dotfiles installer V1.0.0"
-bm_user_no_sudo
 bm_detect_os
 bm_command_locate git
 bm_command_locate md5sum
