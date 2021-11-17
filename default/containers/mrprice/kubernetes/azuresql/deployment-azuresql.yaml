@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azuresql
+  labels:
+    app: azuresql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azuresql
+  template:
+    metadata:
+      labels:
+        app: azuresql
+    spec:
+      volumes:
+        - name: vol-sqlmaster
+          persistentVolumeClaim:
+            claimName: pvc-sqlmaster
+        - name: vol-sqldata
+          persistentVolumeClaim:
+            claimName: pvc-sqldata
+      containers:
+        - name: azuresql
+          image: binarymisfit/azure-edge:latest
+          ports:
+            - containerPort: 1433
+              name: sql-server-port
+          volumeMounts:
+            - mountPath: "/var/opt/mssql/data"
+              name: vol-sqlmaster
+            - mountPath: "/sqldata"
+              name: vol-sqldata
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sql-sa-password
+                  key: MSSQL_SA_PASSWORD
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "while true; do sleep 30; done;" ]
+      imagePullSecrets:
+        - name: binaryhub

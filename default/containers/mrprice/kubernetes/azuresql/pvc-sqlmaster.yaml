@@ -1,11 +1,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: sqlmaster-claim
+  name: pvc-sqlmaster
 spec:
-  storageClassName: local-storage
+  storageClassName: standard
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 5G
+  volumeName: pv-sqlmaster
+  volumeMode: Filesystem

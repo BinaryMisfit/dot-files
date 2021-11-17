@@ -7,7 +7,5 @@ RUN mkdir -p /sqldata
 RUN mkdir -p /var/opt/mssql/data
 COPY *.sh /scripts
 RUN chmod -R +x /scripts/*.sh
-RUN chown -R mssql: /sqldata
-RUN chown -R mssql: /var/opt/mssql/data
-USER mssql
-ENTRYPOINT /bin/bash /scripts/entrypoint.sh
+#USER mssql
+#ENTRYPOINT /bin/bash /scripts/entrypoint.sh
