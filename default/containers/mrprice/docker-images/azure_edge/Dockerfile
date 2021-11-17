@@ -1,6 +1,7 @@
 ﻿FROM mcr.microsoft.com/azure-sql-edge:latest
 USER root
 RUN apt-get update
+RUN apt-get upgrade --yes
 RUN apt-get install mssql-cli --yes
 RUN mkdir -p /scripts
 RUN mkdir -p /sqldata

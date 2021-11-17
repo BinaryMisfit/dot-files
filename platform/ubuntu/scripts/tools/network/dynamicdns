@@ -119,7 +119,7 @@ for DOMAIN in "${DOMAINS[@]}"; do
   DOMAIN_ID=$(jq -r '.[] .id' <<<"${API_RESPONSE}")
   DOMAIN_IP=$(jq -r '.[] .record' <<<"${API_RESPONSE}")
   if [[ "${DOMAIN_ID}" == "" ]]; then
-    bm_task_failed "IPv6 ${DOMAIN}"
+    bm_task_skip "IPv6 ${DOMAIN}"
   elif [[ "${USE_IP6}" == "${DOMAIN_IP}" ]]; then
     bm_task_skip "IPv6 ${DOMAIN}"
   else
