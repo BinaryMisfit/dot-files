@@ -30,7 +30,7 @@ spec:
           volumeMounts:
             - mountPath: "/var/opt/mssql/data"
               name: vol-sqlmaster
-            - mountPath: "/sqldata"
+            - mountPath: "/var/opt/mssql/user-data"
               name: vol-sqldata
           env:
             - name: ACCEPT_EULA
@@ -40,7 +40,5 @@ spec:
                 secretKeyRef:
                   name: sql-sa-password
                   key: MSSQL_SA_PASSWORD
-          command: [ "/bin/bash", "-c", "--" ]
-          args: [ "while true; do sleep 30; done;" ]
       imagePullSecrets:
         - name: binaryhub
