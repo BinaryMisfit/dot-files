@@ -28,7 +28,7 @@ test -e /opt/homebrew/bin/nvim && export EDITOR=/opt/homebrew/bin/nvim
 
 # Export aliases
 if [[ -f /usr/local/bin/nvim ]]; then
-  alias svi="sudoedit "
+  alias svi="sudo /usr/local/bin/nvim "
   alias vi="/usr/local/bin/nvim "
   alias vim="/usr/local/bin/nvim "
 fi
