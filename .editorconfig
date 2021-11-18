@@ -5,7 +5,7 @@ charset = utf-8
 indent_style = space
 max_line_length = 125
 
-[*.{json,sh,yaml,vim}]
+[*.{json,sh,yaml,vim,gitconfig}]
 end_of_line = lf
 indent_size = 2
 insert_final_newline = false

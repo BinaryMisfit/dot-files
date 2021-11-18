@@ -1,15 +1,15 @@
-[user]
-  name = Willie Roberts
-  email = diagoza@me.com
+[checkout]
+  workers = -1
 [core]
+  precomposeUnicode = true
   editor = nvim
   autocrlf = input
+[columns]
+  ui = auto
 [push]
   default = simple
   followTags = true
   recurseSubmodules = on-demand
-[color]
-  ui = true
 [pull]
   rebase = true
 [rerere]
@@ -27,7 +27,7 @@
   encoding = UTF-8
 [submodule]
   recurse = true
-	stickyRecursiveClone = true
+    stickyRecursiveClone = true
 [alias]
   s = status -s
   clr = rm -rf --cached .
@@ -46,3 +46,6 @@
   smudge = git-lfs smudge -- %f
   process = git-lfs filter-process
   required = true
+[user]
+  name = Willie Roberts
+  email = diagoza@me.com
