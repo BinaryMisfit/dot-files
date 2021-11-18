@@ -49,3 +49,5 @@
 [user]
   name = Willie Roberts
   email = diagoza@me.com
+[init]
+	defaultBranch = feature

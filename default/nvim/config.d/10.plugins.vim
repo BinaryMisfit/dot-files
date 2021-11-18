@@ -20,6 +20,7 @@ if !exists('g:vscode')
   Plug 'zeekay/vimtips'                                 " Usefull VIM tips and tricks
   Plug 'ryanoasis/vim-devicons'                         " Enable file type icons
   Plug 'sheerun/vim-polyglot'                           " Syntax Highligting
+  Plug 'wakatime/vim-wakatime'                          " Wakatime Plugin
 endif
 
 " Initialize plugins
