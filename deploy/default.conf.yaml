@@ -13,15 +13,7 @@
       create: true
       glob: true
       relink: true
-    ~/.containers:
-      path: default/containers
-      create: true
-      relink: true
     ~/.iterm2_shell_integration.zsh:
       path: default/scripts/shell/.iterm2_shell_integration.zsh
-      create: true
-      relink: true
-    ~/.scripts/shared:
-      path: default/scripts/shared
       create: true
       relink: true
